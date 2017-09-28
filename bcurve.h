@@ -78,4 +78,9 @@ int BCurveOrder(BCurve *that);
 // Return 0 if argument is invalid
 int BCurveDim(BCurve *that);
 
+// Get the approximate length of the BCurve (sum of dist between
+// control points)
+// Return 0.0 if argument is invalid
+float BCurveApproxLen(BCurve *that);
+
 #endif

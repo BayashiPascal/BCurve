@@ -272,3 +272,20 @@ int BCurveDim(BCurve *that) {
     return 0;
   return that->_dim;
 }
+
+// Get the approximate length of the BCurve (sum of dist between
+// control points)
+// Return 0.0 if argument is invalid
+float BCurveApproxLen(BCurve *that) {
+  // Check arguments
+  if (that == NULL)
+    return 0.0;
+  // Declare a variable to calculate the length
+  float res = 0.0;
+  // Calculate the length
+  for (int iCtrl = 0; iCtrl < that->_order; ++iCtrl)
+    res += VecDist(that->_ctrl[iCtrl], that->_ctrl[iCtrl + 1]);
+  // Return the length
+  return res;
+}
+

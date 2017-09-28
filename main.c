@@ -108,6 +108,8 @@ int main(int argc, char **argv) {
     fprintf(stdout, "\n");
     VecFree(&w);
   }
+  // Print the curve approximate length
+  fprintf(stdout, "approx length: %.3f\n", BCurveApproxLen(curve));
   // Free memory
   VecFree(&v);
   BCurveFree(&curve);
