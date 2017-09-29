@@ -289,3 +289,16 @@ float BCurveApproxLen(BCurve *that) {
   return res;
 }
 
+// Rotate the curve CCW by 'theta' radians relatively to the origin
+// Do nothing if arguments are invalid
+void BCurveRot2D(BCurve *that, float theta) {
+  // Check arguments
+  if (that == NULL || that->_dim != 2)
+    return;
+  // For each control point
+  for (int iCtrl = 0; iCtrl <= that->_order; ++iCtrl) {
+    // Rotate the control point
+    VecRot2D(that->_ctrl[iCtrl], theta);
+  }
+}
+

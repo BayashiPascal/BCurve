@@ -20,3 +20,7 @@ clean :
 
 valgrind :
 	valgrind -v --track-origins=yes --leak-check=full --gen-suppressions=yes --show-leak-kinds=all ./main
+
+install :
+	cp bcurve.h ../Include; cp bcurve.o ../Include
+	

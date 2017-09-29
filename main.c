@@ -108,6 +108,26 @@ int main(int argc, char **argv) {
     fprintf(stdout, "\n");
     VecFree(&w);
   }
+  // Rotate the curve
+  BCurveRot2D(curve, PBMATH_PI * 0.5);
+  // Get some values of the curve
+  fprintf(stdout, "after rotation:\n");
+  for (float u = 0.0; u <= 1.01; u += 0.1) {
+    VecFloat *w = BCurveGet(curve, u);
+    // If we couldn't get the values
+    if (w == NULL) {
+      // Free memory
+      VecFree(&v);
+      BCurveFree(&curve);
+      BCurveFree(&loaded);
+      // Stop here 
+      return 7;
+    }
+    fprintf(stdout, "%.1f: ", u);
+    VecPrint(w, stdout);
+    fprintf(stdout, "\n");
+    VecFree(&w);
+  }  
   // Print the curve approximate length
   fprintf(stdout, "approx length: %.3f\n", BCurveApproxLen(curve));
   // Free memory

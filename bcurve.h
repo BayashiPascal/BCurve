@@ -83,4 +83,8 @@ int BCurveDim(BCurve *that);
 // Return 0.0 if argument is invalid
 float BCurveApproxLen(BCurve *that);
 
+// Rotate the curve CCW by 'theta' radians relatively to the origin
+// Do nothing if arguments are invalid
+void BCurveRot2D(BCurve *that, float theta);
+
 #endif
