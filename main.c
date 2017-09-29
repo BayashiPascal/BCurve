@@ -108,10 +108,18 @@ int main(int argc, char **argv) {
     fprintf(stdout, "\n");
     VecFree(&w);
   }
+  // Scale the curve
+  VecSet(v, 0, 0.5);
+  VecSet(v, 1, 1.0);
+  BCurveScale(curve, v);
   // Rotate the curve
   BCurveRot2D(curve, PBMATH_PI * 0.5);
+  // Translate the curve
+  VecSet(v, 0, -0.5);
+  VecSet(v, 1, 1.0);
+  BCurveTranslate(curve, v);
   // Get some values of the curve
-  fprintf(stdout, "after rotation:\n");
+  fprintf(stdout, "After transformation:\n");
   for (float u = 0.0; u <= 1.01; u += 0.1) {
     VecFloat *w = BCurveGet(curve, u);
     // If we couldn't get the values

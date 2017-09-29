@@ -87,4 +87,12 @@ float BCurveApproxLen(BCurve *that);
 // Do nothing if arguments are invalid
 void BCurveRot2D(BCurve *that, float theta);
 
+// Scale the curve by 'v' relatively to the origin
+// Do nothing if arguments are invalid
+void BCurveScale(BCurve *that, VecFloat *v);
+
+// Translate the curve by 'v'
+// Do nothing if arguments are invalid
+void BCurveTranslate(BCurve *that, VecFloat *v);
+
 #endif

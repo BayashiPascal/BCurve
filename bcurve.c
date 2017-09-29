@@ -296,9 +296,33 @@ void BCurveRot2D(BCurve *that, float theta) {
   if (that == NULL || that->_dim != 2)
     return;
   // For each control point
-  for (int iCtrl = 0; iCtrl <= that->_order; ++iCtrl) {
+  for (int iCtrl = 0; iCtrl <= that->_order; ++iCtrl)
     // Rotate the control point
     VecRot2D(that->_ctrl[iCtrl], theta);
-  }
 }
 
+// Scale the curve by 'v' relatively to the origin
+// Do nothing if arguments are invalid
+void BCurveScale(BCurve *that, VecFloat *v) {
+  // Check arguments
+  if (that == NULL || v == NULL)
+    return;
+  // For each control point
+  for (int iCtrl = 0; iCtrl <= that->_order; ++iCtrl)
+    // Scale the control point
+    for (int dim = 0; dim < VecDim(that->_ctrl[iCtrl]); ++dim)
+      VecSet(that->_ctrl[iCtrl], dim, 
+        VecGet(that->_ctrl[iCtrl], dim) * VecGet(v, dim));
+}
+
+// Translate the curve by 'v'
+// Do nothing if arguments are invalid
+void BCurveTranslate(BCurve *that, VecFloat *v) {
+  // Check arguments
+  if (that == NULL || v == NULL)
+    return;
+  // For each control point
+  for (int iCtrl = 0; iCtrl <= that->_order; ++iCtrl)
+    // Translate the control point
+    VecOp(that->_ctrl[iCtrl], 1.0, v, 1.0);
+}
