@@ -6,13 +6,13 @@ LIBPATH=/home/bayashi/Coding/Include
 
 all : main
 
-main: main.o bcurve.o $(LIBPATH)/pbmath.o Makefile 
-	gcc $(OPTIONS) main.o bcurve.o $(LIBPATH)/pbmath.o -o main -lm
+main: main.o bcurve.o $(LIBPATH)/pbmath.o $(LIBPATH)/gset.o Makefile 
+	gcc $(OPTIONS) main.o bcurve.o $(LIBPATH)/pbmath.o $(LIBPATH)/gset.o -o main -lm
 
 main.o : main.c bcurve.h Makefile
 	gcc $(OPTIONS) -I$(INCPATH) -c main.c
 
-bcurve.o : bcurve.c bcurve.h $(INCPATH)/pbmath.h Makefile
+bcurve.o : bcurve.c bcurve.h $(INCPATH)/pbmath.h $(INCPATH)/gset.h Makefile
 	gcc $(OPTIONS) -I$(INCPATH) -c bcurve.c
 
 clean : 

@@ -4,6 +4,16 @@
 #include <string.h>
 #include "bcurve.h"
 
+float CloudCurveX(float t) {
+  return t * t;
+  //return 2.0 * cos(t * PBMATH_HALFPI);
+}
+
+float CloudCurveY(float t) {
+  return sqrt(t);
+  //return sin(t * PBMATH_HALFPI);
+}
+
 int main(int argc, char **argv) {
   // Create a BCurve
   int order = 3;
@@ -138,7 +148,59 @@ int main(int argc, char **argv) {
   }  
   // Print the curve approximate length
   fprintf(stdout, "approx length: %.3f\n", BCurveApproxLen(curve));
+  // Print the weight of control points
+  fprintf(stdout, "Control points weight:\n");
+  for (float t = 0.0; t <= 1.01; t += 0.05) {
+    if (t > 1.0) t = 1.0;
+    VecFloat *w = BCurveGetWeightCtrlPt(curve, t);
+    if (w != NULL) {
+      fprintf(stdout, "%.3f ", t);
+      VecPrint(w, stdout);
+      fprintf(stdout, "\n");
+    }
+    VecFree(&w);
+  }
+  // Get a curve from a cloud point
+  GSet *cloud = GSetCreate();
+  if (cloud != NULL) {
+    VecFloat *w = NULL;
+    fprintf(stdout, "cloud:\n");
+    //for (float t = 0.0; t < 1.01; t += 0.25) {
+    //for (float t = 0.0; t < 1.01; t += 0.334) {
+    for (float t = 0.0; t < 1.01; t += 0.5) {
+      w = VecFloatCreate(2);
+      GSetAppend(cloud, w);
+      VecSet(w, 0, CloudCurveX(t));
+      VecSet(w, 1, CloudCurveY(t));
+      VecPrint(w, stdout);
+      fprintf(stdout, "\n");
+    }
+    w = NULL;
+    BCurve *cloudCurve = BCurveFromCloudPoint(cloud);
+    if (cloudCurve == NULL) {
+      fprintf(stdout, "Couldn't get curve from cloud\n");
+      return 8;
+    }
+    fprintf(stdout, "cloudCurve: ");
+    BCurvePrint(cloudCurve, stdout);
+    fprintf(stdout, "\n");
+    for (float t = 0.0; t < 1.01; t += 0.1) {
+      if (t > 1.0) t = 1.0;
+      fprintf(stdout, "%.3f ", t);
+      w = BCurveGet(cloudCurve, t);
+      VecPrint(w, stdout);
+      fprintf(stdout, "\n");
+      VecFree(&w);
+    }
+    BCurveFree(&cloudCurve);
+  }
   // Free memory
+  GSetElem *elem = cloud->_head;
+  while (elem != NULL) {
+    VecFree((VecFloat**)(&(elem->_data)));
+    elem = elem->_next;
+  }
+  GSetFree(&cloud);
   VecFree(&v);
   BCurveFree(&curve);
   BCurveFree(&loaded);

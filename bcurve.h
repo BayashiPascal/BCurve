@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "pbmath.h"
+#include "gset.h"
 
 // ================= Define ==================
 
@@ -94,5 +95,21 @@ void BCurveScale(BCurve *that, VecFloat *v);
 // Translate the curve by 'v'
 // Do nothing if arguments are invalid
 void BCurveTranslate(BCurve *that, VecFloat *v);
+
+// Create a BCurve which pass through the points given in the GSet 'set'
+// The GSet must contains VecFloat of same dimensions
+// The BCurve pass through the points in the order they are given
+// in the GSet. The points don't need to be uniformly distributed
+// The created BCurve is of same dimension as the VecFloat and of order 
+// equal to the number of VecFloat in 'set' minus one
+// Return NULL if it couldn't create the BCurve or the arguments are
+// invalid
+BCurve* BCurveFromCloudPoint(GSet *set);
+
+// Get a VecFloat of dimension equal to the number of control points
+// Values of the VecFloat are the weight of each control point in the 
+// BCurve given the curve's order and the value of 't' (in [0.0,1.0])
+// Return null if the arguments are invalid or memory allocation failed
+VecFloat* BCurveGetWeightCtrlPt(BCurve *curve, float t);
 
 #endif
