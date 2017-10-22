@@ -112,4 +112,10 @@ BCurve* BCurveFromCloudPoint(GSet *set);
 // Return null if the arguments are invalid or memory allocation failed
 VecFloat* BCurveGetWeightCtrlPt(BCurve *curve, float t);
 
+// Get the bounding box of the BCurve.
+// Return a Facoid whose axis are aligned on the standard coordinate 
+// system.
+// Return NULL if arguments are invalid.
+Shapoid* BCurveGetBoundingBox(BCurve *curve);
+
 #endif

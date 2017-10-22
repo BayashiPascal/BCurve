@@ -488,3 +488,44 @@ VecFloat* BCurveGetWeightCtrlPt(BCurve *curve, float t) {
   return res;
 }
 
+// Get the bounding box of the BCurve.
+// Return a Facoid whose axis are aligned on the standard coordinate 
+// system.
+// Return NULL if arguments are invalid.
+Shapoid* BCurveGetBoundingBox(BCurve *curve) {
+  // Check argument
+  if (curve == NULL)
+    return NULL;
+  // Declare a variable to memorize the result
+  Shapoid *res = FacoidCreate(curve->_dim);
+  // If we could allocate memory
+  if (res != NULL) {
+    // For each dimension
+    for (int iDim = curve->_dim; iDim--;) {
+      // For each control point
+      for (int iCtrl = curve->_order + 1; iCtrl--;) {
+        // If it's the first control point in this dimension
+        if (iCtrl == curve->_order) {
+          // Initialise the bounding box
+          VecSet(res->_pos, iDim, VecGet(curve->_ctrl[iCtrl], iDim));
+          VecSet(res->_axis[iDim], iDim, 
+            VecGet(curve->_ctrl[iCtrl], iDim));
+        // Else, it's not the first control point in this dimension
+        } else {
+          // Update the bounding box
+          if (VecGet(curve->_ctrl[iCtrl], iDim) < 
+            VecGet(res->_pos, iDim))
+            VecSet(res->_pos, iDim, VecGet(curve->_ctrl[iCtrl], iDim));
+          if (VecGet(curve->_ctrl[iCtrl], iDim) > 
+            VecGet(res->_axis[iDim], iDim))
+            VecSet(res->_axis[iDim], iDim,
+              VecGet(curve->_ctrl[iCtrl], iDim));
+        }
+      }
+      VecSet(res->_axis[iDim], iDim,
+        VecGet(res->_axis[iDim], iDim) - VecGet(res->_pos, iDim));
+    }
+  }
+  // Return the result
+  return res;
+}

@@ -194,6 +194,17 @@ int main(int argc, char **argv) {
     }
     BCurveFree(&cloudCurve);
   }
+  // Get the bounding box of the curve
+  Shapoid *bound = BCurveGetBoundingBox(curve);
+  if (bound == NULL) {
+    fprintf(stdout, "Couldn't get the bounding box\n");
+    return 9;
+  }
+  fprintf(stdout, "bounding box of \n");
+  BCurvePrint(curve, stdout);
+  fprintf(stdout, "\nis\n");
+  ShapoidPrint(bound, stdout);
+  ShapoidFree(&bound);
   // Free memory
   GSetElem *elem = cloud->_head;
   while (elem != NULL) {
