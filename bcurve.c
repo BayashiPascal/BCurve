@@ -460,19 +460,19 @@ BCurve* BCurveFromCloudPoint(GSet *set) {
 // Values of the VecFloat are the weight of each control point in the 
 // BCurve given the curve's order and the value of 't' (in [0.0,1.0])
 // Return null if the arguments are invalid or memory allocation failed
-VecFloat* BCurveGetWeightCtrlPt(BCurve *curve, float t) {
+VecFloat* BCurveGetWeightCtrlPt(BCurve *that, float t) {
   // Check arguments
-  if (curve == NULL || t < 0.0 || t > 1.0)
+  if (that == NULL || t < 0.0 || t > 1.0)
     return NULL;
   // Declare a variable to memorize the result
-  VecFloat *res = VecFloatCreate(curve->_order + 1);
+  VecFloat *res = VecFloatCreate(that->_order + 1);
   // If we could allocate memory
   if (res != NULL) {
     // Initilize the two first weights
     VecSet(res, 0, 1.0 - t);
     VecSet(res, 1, t);
     // For each higher order
-    for (int order = 1; order < curve->_order; ++order) {
+    for (int order = 1; order < that->_order; ++order) {
       // For each control point at this order, starting by the last one
       // to avoid using a temporary buffer
       for (int iCtrl = order + 2; iCtrl--;) {
@@ -492,34 +492,34 @@ VecFloat* BCurveGetWeightCtrlPt(BCurve *curve, float t) {
 // Return a Facoid whose axis are aligned on the standard coordinate 
 // system.
 // Return NULL if arguments are invalid.
-Shapoid* BCurveGetBoundingBox(BCurve *curve) {
+Shapoid* BCurveGetBoundingBox(BCurve *that) {
   // Check argument
-  if (curve == NULL)
+  if (that == NULL)
     return NULL;
   // Declare a variable to memorize the result
-  Shapoid *res = FacoidCreate(curve->_dim);
+  Shapoid *res = FacoidCreate(that->_dim);
   // If we could allocate memory
   if (res != NULL) {
     // For each dimension
-    for (int iDim = curve->_dim; iDim--;) {
+    for (int iDim = that->_dim; iDim--;) {
       // For each control point
-      for (int iCtrl = curve->_order + 1; iCtrl--;) {
+      for (int iCtrl = that->_order + 1; iCtrl--;) {
         // If it's the first control point in this dimension
-        if (iCtrl == curve->_order) {
+        if (iCtrl == that->_order) {
           // Initialise the bounding box
-          VecSet(res->_pos, iDim, VecGet(curve->_ctrl[iCtrl], iDim));
+          VecSet(res->_pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
           VecSet(res->_axis[iDim], iDim, 
-            VecGet(curve->_ctrl[iCtrl], iDim));
+            VecGet(that->_ctrl[iCtrl], iDim));
         // Else, it's not the first control point in this dimension
         } else {
           // Update the bounding box
-          if (VecGet(curve->_ctrl[iCtrl], iDim) < 
+          if (VecGet(that->_ctrl[iCtrl], iDim) < 
             VecGet(res->_pos, iDim))
-            VecSet(res->_pos, iDim, VecGet(curve->_ctrl[iCtrl], iDim));
-          if (VecGet(curve->_ctrl[iCtrl], iDim) > 
+            VecSet(res->_pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
+          if (VecGet(that->_ctrl[iCtrl], iDim) > 
             VecGet(res->_axis[iDim], iDim))
             VecSet(res->_axis[iDim], iDim,
-              VecGet(curve->_ctrl[iCtrl], iDim));
+              VecGet(that->_ctrl[iCtrl], iDim));
         }
       }
       VecSet(res->_axis[iDim], iDim,
@@ -528,4 +528,345 @@ Shapoid* BCurveGetBoundingBox(BCurve *curve) {
   }
   // Return the result
   return res;
+}
+
+// Create a new SCurve of dimension 'dim'
+// Return NULL if we couldn't create the SCurve
+SCurve* SCurveCreate(int dim) {
+  // Check arguments
+  if (dim <= 0)
+    return NULL;
+  // Declare a variable for the returned SCurve
+  SCurve *ret = (SCurve*)malloc(sizeof(SCurve));
+  // If we could allocate memory
+  if (ret != NULL) {
+    // Set the properties
+    ret->_dim = dim;
+    // Create the set
+    ret->_curves = GSetCreate();
+    // If we couldn't allocate memory
+    if (ret->_curves == NULL) {
+      // Free memory and stop here
+      SCurveFree(&ret);
+      return NULL;
+    }
+  }
+  // Return the new SCurve
+  return ret; 
+}
+
+// Clone the SCurve
+// Return NULL if we couldn't clone the SCurve
+SCurve* SCurveClone(SCurve *that) {
+  // Check arguments
+  if (that == NULL)
+    return NULL;
+  // Allocate memory
+  SCurve *ret = SCurveCreate(SCurveDim(that));
+  // If we could allocate memory
+  if (ret != NULL) {
+    // Declare a pointer to the elements of the set
+    GSetElem *ptr = that->_curves->_head;
+    // Loop on elements
+    while (ptr != NULL) {
+      // Clone the BCurve and add it to the clone of SCurve
+      GSetAppend(ret->_curves, BCurveClone((BCurve*)(ptr->_data)));
+      // Move to the next element
+      ptr = ptr->_next;
+    }
+  }
+  // Return the cloned SCurve
+  return ret;
+}
+
+// Load the SCurve from the stream
+// If the SCurve is already allocated, it is freed before loading
+// Return 0 in case of success, or:
+// 1: invalid arguments
+// 2: can't allocate memory
+// 3: invalid data
+// 4: fscanf error
+// 5: BCurveLoad error
+int SCurveLoad(SCurve **that, FILE *stream) {
+  // Check arguments
+  if (that == NULL || stream == NULL)
+    return 1;
+  // If 'that' is already allocated
+  if (*that != NULL) {
+    // Free memory
+    SCurveFree(that);
+  }
+  // Read the dimension and number of curve
+  int dim = 0;
+  int nbCurve = 0;
+  int ret = fscanf(stream, "%d %d", &dim, &nbCurve);
+  // If we couldn't read
+  if (ret == EOF) {
+    return 4;
+  }
+  // Allocate memory
+  *that = SCurveCreate(dim);
+  // If we couldn't allocate memory
+  if (*that == NULL) {
+    return 2;
+  }
+  // Loop on curves
+  for (int iCurve = 0; iCurve < nbCurve; ++iCurve) {
+    // Declare a variable to load the BCurve
+    BCurve *curve = NULL;
+    // Load the BCurve
+    ret = BCurveLoad(&curve, stream);
+    // If we couldn't load the BCurve
+    if (ret != 0)
+      return 5;
+    // Check the dimension of the curve
+    if (BCurveDim(curve) != dim)
+      return 3;
+    // Add the BCurve to the SCurve
+    SCurveAdd(*that, curve);
+  }
+  return 0;
+}
+
+// Save the SCurve to the stream
+// Return 0 upon success, else
+// 1: invalid arguments
+// 2: fprintf error
+// 3: BCurveSave error
+int SCurveSave(SCurve *that, FILE *stream) {
+  // Check arguments
+  if (that == NULL || stream == NULL)
+    return 1;
+  // Save the dimension and number of curve
+  int ret = fprintf(stream, "%d %d\n", that->_dim, 
+    that->_curves->_nbElem);
+  // If the fprintf failed
+  if (ret < 0)
+    // Stop here
+    return 2;
+  // Declare a pointer on elements of the set of curves
+  GSetElem *ptr = that->_curves->_head;
+  // Loop on elements
+  while (ptr != NULL) {
+    // Save the BCurve
+    BCurveSave((BCurve*)(ptr->_data), stream);
+    // Move to the next BCurve
+    ptr = ptr->_next;
+  }
+  return 0;
+}
+
+// Free the memory used by a SCurve
+// Do nothing if arguments are invalid
+void SCurveFree(SCurve **that) {
+  // Check argument
+  if (that == NULL || *that == NULL)
+    return;
+  // Declare a pointer on elements of the set of curves
+  GSetElem *ptr = (*that)->_curves->_head;
+  // Loop on elements
+  while (ptr != NULL) {
+    // Free the BCurve
+    BCurveFree((BCurve**)(&(ptr->_data)));
+    // Move to the next BCurve
+    ptr = ptr->_next;
+  }
+  // Free memory
+  GSetFree(&((*that)->_curves));
+  free(*that);
+  *that = NULL;
+}
+
+// Print the SCurve on 'stream'
+// Do nothing if arguments are invalid
+void SCurvePrint(SCurve *that, FILE *stream) {
+  // Check argument
+  if (that == NULL || stream == NULL)
+    return;
+  // Declare a pointer on elements of the set of curves
+  GSetElem *ptr = that->_curves->_head;
+  // Loop on elements
+  while (ptr != NULL) {
+    // Print the BCurve
+    BCurvePrint((BCurve*)(ptr->_data), stream);
+    fprintf(stream, "\n");
+    // Move to the next BCurve
+    ptr = ptr->_next;
+  }
+}
+
+// Set the 'iCurve'-th BCurve to a clone of 'curve'
+// 'iCurve' must be in [0, current number of BCurve]
+// 'curve' 's dimension must be equal to SCurve's dimension
+// Do nothing if arguments are invalid
+void SCurveSet(SCurve *that, int iCurve, BCurve *curve) {
+  // Check arguments
+  if (that == NULL || curve == NULL || iCurve < 0 || 
+    iCurve > that->_curves->_nbElem)
+    return;
+  // Clone the curve
+  BCurve *clone = BCurveClone(curve);
+  // If we could clone)
+  if (clone != NULL)
+    // Insert a clone of the curve
+    GSetInsert(that->_curves, clone, iCurve);
+}
+
+// Append a clone of 'curve'
+// 'curve' 's dimension must be equal to SCurve's dimension
+// Do nothing if arguments are invalid
+void SCurveAdd(SCurve *that, BCurve *curve) {
+  // Check arguments
+  if (that == NULL || curve == NULL)
+    return;
+  // Append the curve
+  SCurveSet(that, that->_curves->_nbElem, curve);
+}
+
+// Remove the 'iCurve'-th BCurve from the SCurve
+// Return NULL if arguments are invalid
+BCurve* SCurveRemove(SCurve *that, int iCurve) {
+  // Check arguments
+  if (that == NULL)
+    return NULL;
+  // Get the BCurve out of the set
+  BCurve *curve = (BCurve*)GSetRemove(that->_curves, iCurve);
+  // Return the curve
+  return curve;
+}
+
+// Get the 'iCurve'-th BCurve of the SCurve, without removing it
+// Return NULL if arguments are invalid
+BCurve* SCurveGet(SCurve *that, int iCurve) {
+  // Check arguments
+  if (that == NULL)
+    return NULL;
+  // Return the BCurve
+  return (BCurve*)(GSetGet(that->_curves, iCurve));
+}
+
+// Get the number of BCurve in the SCurve
+// Return 0 if arguments are invalid
+int SCurveGetNbCurve(SCurve *that) {
+  // Check arguments
+  if (that == NULL)
+    return 0;
+  // Return the number of BCurves
+  return that->_curves->_nbElem;
+}
+
+// Get the dimension of the SCurve
+// Return 0 if argument is invalid
+int SCurveDim(SCurve *that) {
+  // Check arguments
+  if (that == NULL)
+    return 0;
+  // Return the dimension
+  return that->_dim;
+}
+
+// Get the approximate length of the SCurve (sum of approxLen 
+// of its BCurves)
+// Return 0.0 if argument is invalid
+float SCurveApproxLen(SCurve *that) {
+  // Check arguments
+  if (that == NULL)
+    return 0.0;
+  // Declare a variable to calculate the length
+  float length = 0.0;
+  // Declare a pointer on elements of the set of curves
+  GSetElem *ptr = that->_curves->_head;
+  // Loop on elements
+  while (ptr != NULL) {
+    // Add the approximate length of this BCurve
+    length += BCurveApproxLen((BCurve*)(ptr->_data));
+    // Move to the next BCurve
+    ptr = ptr->_next;
+  }
+  // Return the length
+  return length;
+}
+
+// Rotate the SCurve CCW by 'theta' radians relatively to the origin
+// Do nothing if arguments are invalid
+void SCurveRot2D(SCurve *that, float theta) {
+  // Check arguments
+  if (that == NULL)
+    return;
+  // Declare a pointer on elements of the set of curves
+  GSetElem *ptr = that->_curves->_head;
+  // Loop on elements
+  while (ptr != NULL) {
+    // Rotate the BCurve
+    BCurveRot2D((BCurve*)(ptr->_data), theta);
+    // Move to the next BCurve
+    ptr = ptr->_next;
+  }
+}
+
+// Scale the SCurve by 'v' relatively to the origin
+// Do nothing if arguments are invalid
+void SCurveScale(SCurve *that, VecFloat *v) {
+  // Check arguments
+  if (that == NULL || v == NULL)
+    return;
+  // Declare a pointer on elements of the set of curves
+  GSetElem *ptr = that->_curves->_head;
+  // Loop on elements
+  while (ptr != NULL) {
+    // Rotate the BCurve
+    BCurveScale((BCurve*)(ptr->_data), v);
+    // Move to the next BCurve
+    ptr = ptr->_next;
+  }
+}
+
+// Translate the SCurve by 'v'
+// Do nothing if arguments are invalid
+void SCurveTranslate(SCurve *that, VecFloat *v) {
+  // Check arguments
+  if (that == NULL || v == NULL)
+    return;
+  // Declare a pointer on elements of the set of curves
+  GSetElem *ptr = that->_curves->_head;
+  // Loop on elements
+  while (ptr != NULL) {
+    // Translate the BCurve
+    BCurveTranslate((BCurve*)(ptr->_data), v);
+    // Move to the next BCurve
+    ptr = ptr->_next;
+  }
+}
+
+// Get the bounding box of the SCurve.
+// Return a Facoid whose axis are aligned on the standard coordinate 
+// system.
+// Return NULL if arguments are invalid.
+Shapoid* SCurveGetBoundingBox(SCurve *that) {
+  // Check arguments
+  if (that == NULL)
+    return NULL;
+  // Allocate memory for the set of bounding boxes of BCurve
+  GSet *set = GSetCreate();
+  // If we couldn't allocate memory
+  if (set == NULL) {
+    return NULL;
+  }
+  // Add the bounding box of each BCurve
+  GSetElem *ptr = set->_head;
+  while (ptr != NULL) {
+    GSetAppend(set, BCurveGetBoundingBox((BCurve*)(ptr->_data)));
+    ptr = ptr->_next;
+  }
+  // Get the bounding box of the set of bounding boxes of BCurve
+  Shapoid *ret = ShapoidGetBoundingBoxSet(set);
+  // Free memory used by the set of bounding boxes of BCurve
+  ptr = set->_head;
+  while (ptr != NULL) {
+    ShapoidFree((Shapoid**)(&(ptr->_data)));
+    ptr = ptr->_next;
+  }
+  GSetFree(&set);
+  // Return the result
+  return ret;
 }

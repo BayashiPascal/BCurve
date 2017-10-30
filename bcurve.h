@@ -26,6 +26,13 @@ typedef struct BCurve {
   VecFloat **_ctrl;
 } BCurve;
 
+typedef struct SCurve {
+  // Dimension
+  int _dim;
+  // Set of BCurve
+  GSet *_curves;
+} SCurve;
+
 // ================ Functions declaration ====================
 
 // Create a new BCurve of order 'order' and dimension 'dim'
@@ -110,12 +117,95 @@ BCurve* BCurveFromCloudPoint(GSet *set);
 // Values of the VecFloat are the weight of each control point in the 
 // BCurve given the curve's order and the value of 't' (in [0.0,1.0])
 // Return null if the arguments are invalid or memory allocation failed
-VecFloat* BCurveGetWeightCtrlPt(BCurve *curve, float t);
+VecFloat* BCurveGetWeightCtrlPt(BCurve *that, float t);
 
 // Get the bounding box of the BCurve.
 // Return a Facoid whose axis are aligned on the standard coordinate 
 // system.
 // Return NULL if arguments are invalid.
-Shapoid* BCurveGetBoundingBox(BCurve *curve);
+Shapoid* BCurveGetBoundingBox(BCurve *that);
+
+// Create a new SCurve of dimension 'dim'
+// Return NULL if we couldn't create the SCurve
+SCurve* SCurveCreate(int dim);
+
+// Clone the SCurve
+// Return NULL if we couldn't clone the SCurve
+SCurve* SCurveClone(SCurve *that);
+
+// Load the SCurve from the stream
+// If the SCurve is already allocated, it is freed before loading
+// Return 0 in case of success, or:
+// 1: invalid arguments
+// 2: can't allocate memory
+// 3: invalid data
+// 4: fscanf error
+// 5: BCurveLoad error
+int SCurveLoad(SCurve **that, FILE *stream);
+
+// Save the SCurve to the stream
+// Return 0 upon success, else
+// 1: invalid arguments
+// 2: fprintf error
+// 3: BCurveSave error
+int SCurveSave(SCurve *that, FILE *stream);
+
+// Free the memory used by a SCurve
+// Do nothing if arguments are invalid
+void SCurveFree(SCurve **that);
+
+// Print the SCurve on 'stream'
+// Do nothing if arguments are invalid
+void SCurvePrint(SCurve *that, FILE *stream);
+
+// Set the 'iCurve'-th BCurve to a clone of 'curve'
+// 'iCurve' must be in [0, current number of BCurve]
+// 'curve' 's dimension must be equal to SCurve's dimension
+// Do nothing if arguments are invalid
+void SCurveSet(SCurve *that, int iCurve, BCurve *curve);
+
+// Append a clone of 'curve'
+// 'curve' 's dimension must be equal to SCurve's dimension
+// Do nothing if arguments are invalid
+void SCurveAdd(SCurve *that, BCurve *curve);
+
+// Remove the 'iCurve'-th BCurve from the SCurve
+// Return NULL if arguments are invalid
+BCurve* SCurveRemove(SCurve *that, int iCurve);
+
+// Get the 'iCurve'-th BCurve of the SCurve without removing it
+// Return NULL if arguments are invalid
+BCurve* SCurveGet(SCurve *that, int iCurve);
+
+// Get the number of BCurve in the SCurve
+// Return 0 if arguments are invalid
+int SCurveGetNbCurve(SCurve *that);
+
+// Get the dimension of the SCurve
+// Return 0 if argument is invalid
+int SCurveDim(SCurve *that);
+
+// Get the approximate length of the SCurve (sum of approxLen 
+// of its BCurves)
+// Return 0.0 if argument is invalid
+float SCurveApproxLen(SCurve *that);
+
+// Rotate the SCurve CCW by 'theta' radians relatively to the origin
+// Do nothing if arguments are invalid
+void SCurveRot2D(SCurve *that, float theta);
+
+// Scale the SCurve by 'v' relatively to the origin
+// Do nothing if arguments are invalid
+void SCurveScale(SCurve *that, VecFloat *v);
+
+// Translate the SCurve by 'v'
+// Do nothing if arguments are invalid
+void SCurveTranslate(SCurve *that, VecFloat *v);
+
+// Get the bounding box of the SCurve.
+// Return a Facoid whose axis are aligned on the standard coordinate 
+// system.
+// Return NULL if arguments are invalid.
+Shapoid* SCurveGetBoundingBox(SCurve *that);
 
 #endif
