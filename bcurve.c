@@ -6,6 +6,18 @@
 
 // ================= Define ==================
 
+// ================ Functions declaration ====================
+
+// Get the index in _ctrl of the 'iCtrl' control point of 'that'
+// ctrl are ordered as follow: 
+// (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
+// Return -1 if arguments are invalid
+int BSurfGetIndexCtrl(BSurf *that, VecShort *iCtrl);
+
+// Recursive function to calculate the value of a BSurf
+VecFloat* BSurfGetRec(BSurf *that, BCurve *curve, 
+  VecShort *iCtrl, VecFloat *uSafe, int iDimIn);
+
 // ================ Functions implementation ====================
 
 // Create a new BCurve of order 'order' and dimension 'dim'
@@ -30,6 +42,10 @@ BCurve* BCurveCreate(int order, int dim) {
       // Stop here
       return NULL;
     }
+    // For each control point
+    for (int iCtrl = 0; iCtrl < order + 1; ++iCtrl)
+      // Initialize the pointer
+      that->_ctrl[iCtrl] = NULL;
     // For each control point
     for (int iCtrl = 0; iCtrl < order + 1; ++iCtrl) {
       // Allocate memory
@@ -869,4 +885,239 @@ Shapoid* SCurveGetBoundingBox(SCurve *that) {
   GSetFree(&set);
   // Return the result
   return ret;
+}
+
+// Create a new BSurf of order 'order' and dimension 'dim'
+// Controls are initialized with null vectors
+// Return NULL if we couldn't create the BSurf
+BSurf* BSurfCreate(int order, VecShort *dim) {
+  // Check arguments
+  if (order < 0 || dim == NULL || VecDim(dim) != 2)
+    return NULL;
+  for (int iDim = 2; iDim--;)
+    if (VecGet(dim, iDim) <= 0)
+      return NULL;
+  // Allocate memory for the new BSurf
+  BSurf *that = (BSurf*)malloc(sizeof(BSurf));
+  // If we could allocate memory
+  if (that != NULL) {
+    // Init pointers
+    that->_dim = NULL;
+    that->_ctrl = NULL;
+    // Init properties
+    that->_order = order;
+    that->_dim = VecClone(dim);
+    if (that->_dim == NULL) {
+      BSurfFree(&that);
+      return NULL;
+    }
+    // Init the control
+    int nbCtrl = BSurfGetNbCtrl(that);
+    that->_ctrl = (VecFloat**)malloc(sizeof(VecFloat*) * nbCtrl);
+    if (that->_ctrl == NULL) {
+      BSurfFree(&that);
+      return NULL;
+    }
+    for (int iCtrl = nbCtrl; iCtrl--;)
+      that->_ctrl[iCtrl] = NULL;
+    for (int iCtrl = nbCtrl; iCtrl--;) {
+      that->_ctrl[iCtrl] = VecFloatCreate(VecGet(dim, 1));
+      if (that->_ctrl[iCtrl] == NULL) {
+        BSurfFree(&that);
+        return NULL;
+      }
+    }
+  }
+  // Return the new BSurf
+  return that;
+}
+
+// Free the memory used by a BSurf
+// Do nothing if arguments are invalid
+void BSurfFree(BSurf **that) {
+  // Check arguments
+  if (that == NULL || *that == NULL)
+    return;
+  // Get the number of ctrl
+  int nbCtrl = BSurfGetNbCtrl(*that);
+  // Free memory
+  VecFree(&((*that)->_dim));
+  for (int iCtrl = nbCtrl; iCtrl--;) {
+    VecFree((*that)->_ctrl + iCtrl);
+  }
+  free((*that)->_ctrl);
+  free(*that);
+  *that = NULL;
+}
+
+// Set the value of the iCtrl-th control point to v
+// Do nothing if arguments are invalid
+void BSurfSet(BSurf *that, VecShort *iCtrl, VecFloat *v) {
+  // Check arguments
+  if (that == NULL || iCtrl == NULL || v == NULL ||
+    VecDim(iCtrl) != VecGet(that->_dim, 0) || 
+    VecDim(v) != VecGet(that->_dim, 1))
+    return;
+  // Get the index of the ctrl
+  int index = BSurfGetIndexCtrl(that, iCtrl);
+  // If we could get the index
+  if (index != -1)
+    // Set the ctrl
+    VecCopy(that->_ctrl[index], v);
+}
+
+// Get the value of the BSurf at paramater 'u' (in [0.0, 1.0])
+// Return NULL if arguments are invalid or malloc failed
+// Components of 'u' < 0.0 are replaced by 0.0
+// Components of 'u' > 1.0 are replaced by 1.0
+VecFloat* BSurfGet(BSurf *that, VecFloat *u) {
+  // Check arguments
+  if (that == NULL || u == NULL || VecDim(u) != VecGet(that->_dim, 0))
+    return NULL;
+  // Declare variables to memorize the nb of dimension
+  int nbDimIn = VecGet(that->_dim, 0);
+  int nbDimOut = VecGet(that->_dim, 1);
+  // Create a clone of u to be checked for components interval
+  VecFloat *uSafe = VecClone(u);
+  // Declare a vector to memorize the index of the ctrl
+  VecShort *iCtrl = VecShortCreate(nbDimIn);
+  // Declare a BCurve used for calculation
+  BCurve *curve = BCurveCreate(that->_order, nbDimOut);
+  // If we couldn't allocate memory
+  if (uSafe == NULL || curve == NULL || iCtrl == NULL) {
+    VecFree(&uSafe);
+    VecFree(&iCtrl);
+    BCurveFree(&curve);
+    return NULL;
+  }
+  // Check components
+  for (int iDim = nbDimIn; iDim--;) {
+    if (VecGet(uSafe, iDim) < 0.0)
+      VecSet(uSafe, iDim, 0.0);
+    if (VecGet(uSafe, iDim) > 1.0)
+      VecSet(uSafe, iDim, 1.0);
+  }
+  // Calculate recursively the result value
+  VecFloat *res = BSurfGetRec(that, curve, iCtrl, uSafe, 0);
+  // Free memory
+  VecFree(&uSafe);
+  VecFree(&iCtrl);
+  BCurveFree(&curve);
+  // Return the result
+  return res;
+}
+
+// Recursive function to calculate the value of SCurve
+VecFloat* BSurfGetRec(BSurf *that, BCurve *curve, 
+  VecShort *iCtrl, VecFloat *u, int iDimIn) {
+  // Declare a variable for the result
+  VecFloat *res = NULL;
+  // If we are at the last dimension in the recursion, 
+  // the curve controls are the controls of the surface at current
+  // position in control's space
+  if (iDimIn == VecGet(that->_dim, 0) - 1) {
+    for (int i = that->_order + 1; i--;) {
+      VecSet(iCtrl, iDimIn, i); 
+      BCurveSet(curve, i, BSurfGetCtrl(that, iCtrl));
+    }
+  // Else, we are not at the last dimension in control's space
+  } else {
+    // Clone the position (to edit the lower dimension at lower 
+    // level of the recursion)
+    VecShort *jCtrl = VecClone(iCtrl);
+    // If we couldn't clone
+    if (jCtrl == NULL)
+      // Return null
+      return NULL;
+    // Declare an array of VecFloat to memorize the control at 
+    // the current level
+    VecFloat **tmpCtrl = 
+      (VecFloat**)malloc(sizeof(VecFloat*) * (that->_order + 1));
+    // If we couldn't allocate memory
+    if (tmpCtrl == NULL)
+      // Return null
+      return NULL;
+    // For chaque control
+    for (int i = that->_order + 1; i--;) {
+      // Update the control position
+      VecSet(jCtrl, iDimIn, i);
+      // Get recursively the control (equal to the BCurve value at 
+      // lower level)
+      tmpCtrl[i] = 
+        BSurfGetRec(that, curve, jCtrl, u, iDimIn + 1);
+    }
+    // Set the control of the curve at current level
+    // Use a temporary instead of affecting directly into curve
+    // because it is shared between recursion level and affecting
+    // directly would lead to overwritting during the process
+    for (int i = that->_order + 1; i--;)
+      BCurveSet(curve, i, tmpCtrl[i]);
+    // Free the temporary Vecfloat for the controls
+    for (int i = that->_order + 1; i--;)
+      VecFree(tmpCtrl + i);
+    free(tmpCtrl);
+    // Free the temporary position in control space
+    VecFree(&jCtrl);
+  }
+  // Here we have the curve set up with the appropriate control at the 
+  // current recursion level
+  // Calculate its value at the parameters value for the current 
+  // dimension
+  res = BCurveGet(curve, VecGet(u, iDimIn));
+  // Return the result
+  return res;
+}
+
+// Get the number of control point of the BSurf 'that'
+// Return 0 if arguments are invalid
+int BSurfGetNbCtrl(BSurf *that) {
+  if (that == NULL)
+    return 0;
+  // Get the result
+  int nb = powi(that->_order + 1, VecGet(that->_dim, 0));
+  // Return the result;
+  return nb;
+}
+
+// Get the index in _ctrl of the 'iCtrl' control point of 'that'
+// ctrl are ordered as follow: 
+// (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
+// Return -1 if arguments are invalid
+int BSurfGetIndexCtrl(BSurf *that, VecShort *iCtrl) {
+  // Check arguments
+  if (that == NULL || iCtrl == NULL ||
+    VecDim(iCtrl) != VecGet(that->_dim, 0))
+    return -1;
+  for (int iDim = VecDim(iCtrl); iDim--;)
+    if (VecGet(iCtrl, iDim) < 0 || 
+      VecGet(iCtrl, iDim) > that->_order)
+      return -1;
+  // Declare a variable to memorize the dimension of input
+  int dim = VecDim(iCtrl);
+  // Get the index
+  int index = 0;
+  for (int iDim = 0; iDim < dim; ++iDim)
+    index += index * that->_order + VecGet(iCtrl, iDim);
+  // return the index
+  return index;
+}
+
+// Get the the 'iCtrl'-th control point of 'that'
+// ctrl are ordered as follow: 
+// (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
+// Return NULL if arguments are invalid
+VecFloat* BSurfGetCtrl(BSurf *that, VecShort *iCtrl) {
+  // Check arguments
+  if (that == NULL || iCtrl == NULL)
+    return NULL;
+  // Get the index
+  int index = BSurfGetIndexCtrl(that, iCtrl);
+  // If we could get the index
+  if (index != -1)
+    // Return the control
+    return that->_ctrl[index];
+  // Else, we couldn't get the index
+  else
+    // Return NULL
+    return NULL;
 }

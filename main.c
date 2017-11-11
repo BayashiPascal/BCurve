@@ -205,6 +205,96 @@ int main(int argc, char **argv) {
   fprintf(stdout, "\nis\n");
   ShapoidPrint(bound, stdout);
   ShapoidFree(&bound);
+  
+  // Test BSurf
+  printf("---------- Test BSurf\n");
+  VecShort *dimSurf = VecShortCreate(2);
+  VecSet(dimSurf, 0, 2);
+  VecSet(dimSurf, 1, 1);
+  int orderSurf = 2;
+  BSurf *surf = BSurfCreate(orderSurf, dimSurf);
+  if (surf == NULL) {
+    printf("Couldn't create BSurf\n");
+    return 10;
+  }
+  printf("surf nb ctrl %d\n", BSurfGetNbCtrl(surf));
+  VecFloat *ctrlSurf = VecFloatCreate(1);
+  if (ctrlSurf == NULL) {
+    printf("Couldn't create ctrlSurf\n");
+    return 11;
+  }
+  VecSet(ctrlSurf, 0, 0.51);
+  VecSet(dimSurf, 0, 0); VecSet(dimSurf, 1, 0); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+  VecSet(ctrlSurf, 0, 1.0);
+  VecSet(dimSurf, 0, 0); VecSet(dimSurf, 1, 1); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+  VecSet(ctrlSurf, 0, 0.52);
+  VecSet(dimSurf, 0, 0); VecSet(dimSurf, 1, 2); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+
+  VecSet(ctrlSurf, 0, 0.0);
+  VecSet(dimSurf, 0, 1); VecSet(dimSurf, 1, 0); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+  VecSet(ctrlSurf, 0, 0.5);
+  VecSet(dimSurf, 0, 1); VecSet(dimSurf, 1, 1); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+  VecSet(ctrlSurf, 0, 1.0);
+  VecSet(dimSurf, 0, 1); VecSet(dimSurf, 1, 2); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+
+  VecSet(ctrlSurf, 0, 0.53);
+  VecSet(dimSurf, 0, 2); VecSet(dimSurf, 1, 0); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+  VecSet(ctrlSurf, 0, 0.0);
+  VecSet(dimSurf, 0, 2); VecSet(dimSurf, 1, 1); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+  VecSet(ctrlSurf, 0, 0.54);
+  VecSet(dimSurf, 0, 2); VecSet(dimSurf, 1, 2); 
+  printf("Set surface ctrl ");VecPrint(dimSurf, stdout);printf(" ");
+  VecPrint(ctrlSurf, stdout);printf("\n");
+  BSurfSet(surf, dimSurf, ctrlSurf);
+
+  VecFloat *inSurf = VecFloatCreate(2);
+  if (inSurf == NULL) {
+    printf("Couldn't create inSurf\n");
+    return 12;
+  }
+  printf("surface:\n");
+  printf(" y\\x ");
+  for (VecSet(inSurf, 0, 0.0); VecGet(inSurf, 0) < 1.01;
+    VecSet(inSurf, 0, VecGet(inSurf, 0) + 0.1)) {
+    printf("%.2f ", VecGet(inSurf, 0));
+  }
+  printf("\n");
+  for (VecSet(inSurf, 1, 0.0); VecGet(inSurf, 1) < 1.01;
+    VecSet(inSurf, 1, VecGet(inSurf, 1) + 0.1)) {
+    printf("%.2f ", VecGet(inSurf, 1));
+    for (VecSet(inSurf, 0, 0.0); VecGet(inSurf, 0) < 1.01;
+      VecSet(inSurf, 0, VecGet(inSurf, 0) + 0.1)) {
+      VecFloat *surfPos = BSurfGet(surf, inSurf);
+      printf("%.2f ", VecGet(surfPos, 0));
+      VecFree(&surfPos);
+    }
+    printf("\n");
+  }
+  
   // Free memory
   GSetElem *elem = cloud->_head;
   while (elem != NULL) {
@@ -215,6 +305,11 @@ int main(int argc, char **argv) {
   VecFree(&v);
   BCurveFree(&curve);
   BCurveFree(&loaded);
+  VecFree(&inSurf);
+  VecFree(&ctrlSurf);
+  VecFree(&dimSurf);
+  BSurfFree(&surf);
+
   // Return success code
   return 0;
 }

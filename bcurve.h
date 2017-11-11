@@ -33,6 +33,15 @@ typedef struct SCurve {
   GSet *_curves;
 } SCurve;
 
+typedef struct BSurf {
+  // Order
+  int _order;
+  // Dimensions (input/output)
+  VecShort *_dim;
+  // ((_order + 1) ^ _dim[0]) control points of the surface
+  VecFloat **_ctrl;
+} BSurf;
+
 // ================ Functions declaration ====================
 
 // Create a new BCurve of order 'order' and dimension 'dim'
@@ -207,5 +216,34 @@ void SCurveTranslate(SCurve *that, VecFloat *v);
 // system.
 // Return NULL if arguments are invalid.
 Shapoid* SCurveGetBoundingBox(SCurve *that);
+
+// Create a new BSurf of order 'order' and dimension 'dim'
+// Controls are initialized with null vectors
+// Return NULL if we couldn't create the BSurf
+BSurf* BSurfCreate(int order, VecShort *dim);
+
+// Free the memory used by a BSurf
+// Do nothing if arguments are invalid
+void BSurfFree(BSurf **that);
+
+// Set the value of the iCtrl-th control point to v
+// Do nothing if arguments are invalid
+void BSurfSet(BSurf *that, VecShort *iCtrl, VecFloat *v);
+
+// Get the value of the BSurf at paramater 'u' (in [0.0, 1.0])
+// Return NULL if arguments are invalid or malloc failed
+// Components of 'u' < 0.0 are replaced by 0.0
+// Components of 'u' > 1.0 are replaced by 1.0
+VecFloat* BSurfGet(BSurf *that, VecFloat *u);
+
+// Get the number of control point of the BSurf 'that'
+// Return 0 if arguments are invalid
+int BSurfGetNbCtrl(BSurf *that);
+
+// Get the the 'iCtrl'-th control point of 'that'
+// ctrl are ordered as follow: 
+// (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
+// Return NULL if arguments are invalid
+VecFloat* BSurfGetCtrl(BSurf *that, VecShort *iCtrl);
 
 #endif
