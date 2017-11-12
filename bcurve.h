@@ -246,4 +246,11 @@ int BSurfGetNbCtrl(BSurf *that);
 // Return NULL if arguments are invalid
 VecFloat* BSurfGetCtrl(BSurf *that, VecShort *iCtrl);
 
+// Get the index in _ctrl of the 'iCtrl' control point of 'that'
+// ctrl are ordered as follow: 
+// (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
+// Return -1 if arguments are invalid
+int BSurfGetIndexCtrl(BSurf *that, VecShort *iCtrl);
+
+
 #endif

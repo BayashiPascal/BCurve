@@ -8,12 +8,6 @@
 
 // ================ Functions declaration ====================
 
-// Get the index in _ctrl of the 'iCtrl' control point of 'that'
-// ctrl are ordered as follow: 
-// (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
-// Return -1 if arguments are invalid
-int BSurfGetIndexCtrl(BSurf *that, VecShort *iCtrl);
-
 // Recursive function to calculate the value of a BSurf
 VecFloat* BSurfGetRec(BSurf *that, BCurve *curve, 
   VecShort *iCtrl, VecFloat *uSafe, int iDimIn);
