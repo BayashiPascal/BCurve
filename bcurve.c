@@ -236,11 +236,15 @@ VecFloat* BCurveGet(BCurve *that, float u) {
     u = 1.0;
   // Allocate memory for the result
   VecFloat *v = VecFloatCreate(that->_dim);
-  // If we couldn't allocate memory
-  if (v == NULL)
-    return NULL;
   // Declare a variable for calcul
   float *val = (float*)malloc(sizeof(float) * (that->_order + 1));
+  // If we couldn't allocate memory
+  if (v == NULL || val == NULL) {
+    VecFree(&v);
+    if (val == NULL) 
+      free(val);
+    return NULL;
+  }
   // Loop on dimension
   for (int dim = that->_dim; dim--;) {
     // Initialise the temporary variable with the value in current

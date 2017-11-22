@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "pbmath.h"
+#include "shapoid.h"
 #include "gset.h"
 
 // ================= Define ==================
