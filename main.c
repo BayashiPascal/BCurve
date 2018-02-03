@@ -13,13 +13,13 @@
 void UnitTestBCurveCreateCloneFree() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
+  BCurve* curve = BCurveCreate(order, dim);
   if (curve->_dim != dim || curve->_order != order){
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "BCurveCreate failed");
     PBErrCatch(BCurveErr);
   }
-  VecFloat *v = VecFloatCreate(dim);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = order + 1; iCtrl--;) {
     if (VecIsEqual(curve->_ctrl[iCtrl], v) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
@@ -32,7 +32,7 @@ void UnitTestBCurveCreateCloneFree() {
       VecSet(v, iDim, iCtrl * dim + iDim);
     BCurveSetCtrl(curve, iCtrl, v);
   }
-  BCurve *clone= BCurveClone(curve);
+  BCurve* clone= BCurveClone(curve);
   if (clone->_dim != dim || clone->_order != order){
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "BCurveClone failed");
@@ -61,8 +61,8 @@ void UnitTestBCurveCreateCloneFree() {
 void UnitTestBCurveLoadSavePrint() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *v = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = order + 1; iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
@@ -70,13 +70,13 @@ void UnitTestBCurveLoadSavePrint() {
   }
   BCurvePrint(curve, stdout);
   printf("\n");
-  FILE *file = fopen("./bcurve.txt", "w");
+  FILE* file = fopen("./bcurve.txt", "w");
   if (BCurveSave(curve, file) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "BCurveSave failed");
     PBErrCatch(BCurveErr);
   }
-  BCurve *load = BCurveCreate(order, dim);
+  BCurve* load = BCurveCreate(order, dim);
   fclose(file);
   file = fopen("./bcurve.txt", "r");
   if (BCurveLoad(&load, file) == false) {
@@ -108,8 +108,8 @@ void UnitTestBCurveLoadSavePrint() {
 void UnitTestBCurveGetSetCtrl() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *v = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = order + 1; iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
@@ -119,7 +119,7 @@ void UnitTestBCurveGetSetCtrl() {
       sprintf(BCurveErr->_msg, "BCurveSetCtrl failed");
       PBErrCatch(BCurveErr);
     }
-    VecFloat *w = BCurveGetCtrl(curve, iCtrl);
+    VecFloat* w = BCurveGetCtrl(curve, iCtrl);
     if (VecIsEqual(w, v) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "BCurveGetCtrl failed");
@@ -140,15 +140,15 @@ void UnitTestBCurveGetSetCtrl() {
 void UnitTestBCurveGet() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *v = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = order + 1; iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
     BCurveSetCtrl(curve, iCtrl, v);
   }
   for (float u = 0.0; u < 1.0 + PBMATH_EPSILON; u += 0.1) {
-    VecFloat *w = BCurveGet(curve, u);
+    VecFloat* w = BCurveGet(curve, u);
     if (ISEQUALF(VecGet(w, 0), u * 6.0) == false ||
       ISEQUALF(VecGet(w, 1), u * 6.0 + 1.0) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
@@ -165,7 +165,7 @@ void UnitTestBCurveGet() {
 void UnitTestBCurveGetOrderDim() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
+  BCurve* curve = BCurveCreate(order, dim);
   if (BCurveGetOrder(curve) != order) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "BCurveGetOrder failed");
@@ -183,8 +183,8 @@ void UnitTestBCurveGetOrderDim() {
 void UnitTestBCurveGetApproxLenCenter() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *v = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = order + 1; iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
@@ -196,7 +196,7 @@ void UnitTestBCurveGetApproxLenCenter() {
     sprintf(BCurveErr->_msg, "BCurveGetApproxLen failed");
     PBErrCatch(BCurveErr);
   }
-  VecFloat *center = BCurveGetCenter(curve);
+  VecFloat* center = BCurveGetCenter(curve);
   VecSet(v, 0, 3.0);
   VecSet(v, 1, 4.0);
   if (VecIsEqual(v, center) == false) {
@@ -213,8 +213,8 @@ void UnitTestBCurveGetApproxLenCenter() {
 void UnitTestBCurveRot() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *v = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = order + 1; iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
@@ -259,8 +259,8 @@ void UnitTestBCurveRot() {
 void UnitTestBCurveScale() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *v = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = order + 1; iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
@@ -305,8 +305,8 @@ void UnitTestBCurveScale() {
 void UnitTestBCurveTranslate() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *v = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = order + 1; iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
@@ -334,31 +334,31 @@ void UnitTestBCurveTranslate() {
 void UnitTestBCurveFromCloudPoint() {
   int order = 2;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *vA = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* vA = VecFloatCreate(dim);
   VecSet(vA, 0, 0.0); VecSet(vA, 1, 0.0);
   BCurveSetCtrl(curve, 0, vA);
-  VecFloat *vB = VecFloatCreate(dim);
+  VecFloat* vB = VecFloatCreate(dim);
   VecSet(vB, 0, 0.5); VecSet(vB, 1, 1.0);
   BCurveSetCtrl(curve, 1, vB);
-  VecFloat *vC = VecFloatCreate(dim);
+  VecFloat* vC = VecFloatCreate(dim);
   VecSet(vC, 0, 1.0); VecSet(vC, 1, 0.0);
   BCurveSetCtrl(curve, 2, vC);
-  GSet *set = GSetCreate();
+  GSet* set = GSetCreate();
   VecFree(&vB);
   vB = BCurveGet(curve, 0.5);
   GSetAppend(set, vA);
   GSetAppend(set, vB);
   GSetAppend(set, vC);
-  BCurve *cloud = BCurveFromCloudPoint(set);
+  BCurve* cloud = BCurveFromCloudPoint(set);
   if (cloud == NULL) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "BCurveFromCloudPoint failed");
     PBErrCatch(BCurveErr);
   }
   for (float u = 0.0; u < 1.0 + PBMATH_EPSILON; u += 0.1) {
-    VecFloat *wA = BCurveGet(curve, u);
-    VecFloat *wB = BCurveGet(cloud, u);
+    VecFloat* wA = BCurveGet(curve, u);
+    VecFloat* wB = BCurveGet(cloud, u);
     if (VecIsEqual(wA, wB) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "BCurveFromCloudPoint failed");
@@ -379,14 +379,14 @@ void UnitTestBCurveFromCloudPoint() {
 void UnitTestBCurveGetWeightCtrlPt() {
   int order = 2;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *vA = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* vA = VecFloatCreate(dim);
   VecSet(vA, 0, 0.0); VecSet(vA, 1, 0.0);
   BCurveSetCtrl(curve, 0, vA);
-  VecFloat *vB = VecFloatCreate(dim);
+  VecFloat* vB = VecFloatCreate(dim);
   VecSet(vB, 0, 0.5); VecSet(vB, 1, 1.0);
   BCurveSetCtrl(curve, 1, vB);
-  VecFloat *vC = VecFloatCreate(dim);
+  VecFloat* vC = VecFloatCreate(dim);
   VecSet(vC, 0, 1.0); VecSet(vC, 1, 0.0);
   BCurveSetCtrl(curve, 2, vC);
   float pa[11] = 
@@ -397,7 +397,7 @@ void UnitTestBCurveGetWeightCtrlPt() {
     {0.0, 0.01, 0.04, 0.09, 0.16, 0.25, 0.36, 0.49, 0.64, 0.81, 1.0};
   int iArr = 0;
   for (float u = 0.0; u < 1.0 + PBMATH_EPSILON; u += 0.1, ++iArr) {
-    VecFloat *w = BCurveGetWeightCtrlPt(curve, u);
+    VecFloat* w = BCurveGetWeightCtrlPt(curve, u);
     if (ISEQUALF(VecGet(w, 0), pa[iArr]) == false ||
       ISEQUALF(VecGet(w, 1), pb[iArr]) == false ||
       ISEQUALF(VecGet(w, 2), pc[iArr]) == false) {
@@ -417,8 +417,8 @@ void UnitTestBCurveGetWeightCtrlPt() {
 void UnitTestBCurveGetBoundingBox() {
   int order = 3;
   int dim = 2;
-  BCurve *curve = BCurveCreate(order, dim);
-  VecFloat *v = VecFloatCreate(dim);
+  BCurve* curve = BCurveCreate(order, dim);
+  VecFloat* v = VecFloatCreate(dim);
   VecSet(v, 0, -0.5); VecSet(v, 1, -0.5);
   BCurveSetCtrl(curve, 0, v);
   VecSet(v, 0, 0.0); VecSet(v, 1, 1.0);
@@ -427,8 +427,8 @@ void UnitTestBCurveGetBoundingBox() {
   BCurveSetCtrl(curve, 2, v);
   VecSet(v, 0, 1.5); VecSet(v, 1, 0.0);
   BCurveSetCtrl(curve, 3, v);
-  Facoid *bound = BCurveGetBoundingBox(curve);
-  Facoid *check = FacoidCreate(dim);
+  Facoid* bound = BCurveGetBoundingBox(curve);
+  Facoid* check = FacoidCreate(dim);
   float scale = 2.0;
   ShapoidScale(check, scale);
   VecSet(v, 0, -0.5); VecSet(v, 1, -0.5);
@@ -465,7 +465,7 @@ void UnitTestSCurveCreateCloneFree() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   if (curve->_dim != dim || curve->_order != order || 
     curve->_nbSeg != nbSeg || 
     GSetNbElem(&(curve->_ctrl)) != 1 + order * nbSeg){
@@ -473,10 +473,10 @@ void UnitTestSCurveCreateCloneFree() {
     sprintf(BCurveErr->_msg, "SCurveCreate failed");
     PBErrCatch(BCurveErr);
   }
-  VecFloat *v = VecFloatCreate(dim);
+  VecFloat* v = VecFloatCreate(dim);
   GSetIterForward iter = GSetIterForwardCreateStatic(&(curve->_ctrl));
   do {
-    VecFloat *ctrl = GSetIterGet(&iter);
+    VecFloat* ctrl = GSetIterGet(&iter);
     if (VecIsEqual(ctrl, v) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveCreate failed");
@@ -484,9 +484,9 @@ void UnitTestSCurveCreateCloneFree() {
     }
   } while (GSetIterStep(&iter));
   iter = GSetIterForwardCreateStatic(&(curve->_seg));
-  VecFloat *prevCtrl = (VecFloat*)(curve->_ctrl._head->_data);
+  VecFloat* prevCtrl = (VecFloat*)(curve->_ctrl._head->_data);
   do {
-    BCurve *seg = GSetIterGet(&iter);
+    BCurve* seg = GSetIterGet(&iter);
     if (seg->_ctrl[0] != prevCtrl) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveCreate failed");
@@ -497,12 +497,12 @@ void UnitTestSCurveCreateCloneFree() {
   iter = GSetIterForwardCreateStatic(&(curve->_ctrl));
   int iCtrl = 0;
   do {
-    VecFloat *ctrl = GSetIterGet(&iter);
+    VecFloat* ctrl = GSetIterGet(&iter);
     for (int iDim = dim; iDim--;)
       VecSet(ctrl, iDim, iCtrl * dim + iDim);
     ++iCtrl;
   } while (GSetIterStep(&iter));
-  SCurve *clone= SCurveClone(curve);
+  SCurve* clone= SCurveClone(curve);
   if (clone->_dim != dim || clone->_order != order || 
     clone->_nbSeg != nbSeg){
     BCurveErr->_type = PBErrTypeUnitTestFailed;
@@ -513,8 +513,8 @@ void UnitTestSCurveCreateCloneFree() {
   GSetIterForward iterClone = 
     GSetIterForwardCreateStatic(&(clone->_ctrl));
   do {
-    VecFloat *ctrl = GSetIterGet(&iter);
-    VecFloat *ctrlClone = GSetIterGet(&iterClone);
+    VecFloat* ctrl = GSetIterGet(&iter);
+    VecFloat* ctrlClone = GSetIterGet(&iterClone);
     if (VecIsEqual(ctrl, ctrlClone) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveClone failed");
@@ -536,24 +536,24 @@ void UnitTestSCurveLoadSavePrint() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   GSetIterForward iter = GSetIterForwardCreateStatic(&(curve->_ctrl));
   int iCtrl = 0;
   do {
-    VecFloat *ctrl = GSetIterGet(&iter);
+    VecFloat* ctrl = GSetIterGet(&iter);
     for (int iDim = dim; iDim--;)
       VecSet(ctrl, iDim, iCtrl * dim + iDim);
     ++iCtrl;
   } while (GSetIterStep(&iter));
   SCurvePrint(curve, stdout);
   printf("\n");
-  FILE *file = fopen("./scurve.txt", "w");
+  FILE* file = fopen("./scurve.txt", "w");
   if (SCurveSave(curve, file) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "SCurveSave failed");
     PBErrCatch(BCurveErr);
   }
-  SCurve *load = SCurveCreate(order, dim, nbSeg);
+  SCurve* load = SCurveCreate(order, dim, nbSeg);
   fclose(file);
   file = fopen("./scurve.txt", "r");
   if (SCurveLoad(&load, file) == false) {
@@ -572,8 +572,8 @@ void UnitTestSCurveLoadSavePrint() {
   GSetIterForward iterLoad = 
     GSetIterForwardCreateStatic(&(load->_ctrl));
   do {
-    VecFloat *ctrl = GSetIterGet(&iter);
-    VecFloat *ctrlLoad = GSetIterGet(&iterLoad);
+    VecFloat* ctrl = GSetIterGet(&iter);
+    VecFloat* ctrlLoad = GSetIterGet(&iterLoad);
     if (VecIsEqual(ctrl, ctrlLoad) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveLoad failed");
@@ -589,8 +589,8 @@ void UnitTestSCurveGetSetCtrl() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
-  VecFloat *v = VecFloatCreate(dim);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
@@ -601,7 +601,7 @@ void UnitTestSCurveGetSetCtrl() {
   do {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
-    VecFloat *ctrl = GSetIterGet(&iter);
+    VecFloat* ctrl = GSetIterGet(&iter);
     if (VecIsEqual(ctrl, v) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveSetCtrl failed");
@@ -630,15 +630,15 @@ void UnitTestSCurveGetAddRemoveSeg() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
-  VecFloat *v = VecFloatCreate(dim);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
+  VecFloat* v = VecFloatCreate(dim);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);
     SCurveSetCtrl(curve, iCtrl, v);
   }
   for (int iSeg = SCurveGetNbSeg(curve); iSeg--;) {
-    BCurve *seg = SCurveGetSeg(curve, iSeg);
+    BCurve* seg = SCurveGetSeg(curve, iSeg);
     if (BCurveGetDim(seg) != dim || BCurveGetOrder(seg) != order) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveGetSeg failed");
@@ -669,7 +669,7 @@ void UnitTestSCurveGetAddRemoveSeg() {
     SCurveSetCtrl(curve, iCtrl, v);
   }
   for (int iSeg = SCurveGetNbSeg(curve); iSeg--;) {
-    BCurve *seg = SCurveGetSeg(curve, iSeg);
+    BCurve* seg = SCurveGetSeg(curve, iSeg);
     if (BCurveGetDim(seg) != dim || BCurveGetOrder(seg) != order) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveGetSeg failed1");
@@ -700,7 +700,7 @@ void UnitTestSCurveGetAddRemoveSeg() {
     SCurveSetCtrl(curve, iCtrl, v);
   }
   for (int iSeg = SCurveGetNbSeg(curve); iSeg--;) {
-    BCurve *seg = SCurveGetSeg(curve, iSeg);
+    BCurve* seg = SCurveGetSeg(curve, iSeg);
     if (BCurveGetDim(seg) != dim || BCurveGetOrder(seg) != order) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveGetSeg failed");
@@ -732,14 +732,14 @@ void UnitTestSCurveGet() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
   }
   for (float u = 0.0; u < SCurveGetMaxU(curve) + PBMATH_EPSILON; 
     u += 0.1) {
-    VecFloat *v = SCurveGet(curve, u);
+    VecFloat* v = SCurveGet(curve, u);
     if (ISEQUALF(VecGet(v, 0), u * 6.0) == false || 
       ISEQUALF(VecGet(v, 1), 1.0 + u * 6.0) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
@@ -756,7 +756,7 @@ void UnitTestSCurveGetOrderDimNbSegMaxUNbCtrl() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
@@ -794,13 +794,13 @@ void UnitTestSCurveGetApproxLenCenter() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
   }
-  VecFloat *center = SCurveGetCenter(curve);
-  VecFloat *check = VecFloatCreate(dim);
+  VecFloat* center = SCurveGetCenter(curve);
+  VecFloat* check = VecFloatCreate(dim);
   VecSet(check, 0, 9.0);
   VecSet(check, 1, 10.0);
   if (VecIsEqual(center, check) == false) {
@@ -824,7 +824,7 @@ void UnitTestSCurveRot() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
@@ -879,7 +879,7 @@ void UnitTestSCurveScale() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
@@ -931,7 +931,7 @@ void UnitTestSCurveScale() {
     for (int iDim = dim; iDim--;)
       VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
   }
-  VecFloat *v = VecFloatCreate(dim);
+  VecFloat* v = VecFloatCreate(dim);
   VecSet(v, 0, 2.0);
   VecSet(v, 1, -1.0);
   SCurveScaleStart(curve, v);
@@ -984,12 +984,12 @@ void UnitTestSCurveTranslate() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
   }
-  VecFloat *v = VecFloatCreate(dim);
+  VecFloat* v = VecFloatCreate(dim);
   VecSet(v, 0, -1.0);
   VecSet(v, 1, 2.0);
   SCurveTranslate(curve, v);
@@ -1014,14 +1014,14 @@ void UnitTestSCurveGetBoundingBox() {
   int order = 3;
   int dim = 2;
   int nbSeg = 3;
-  SCurve *curve = SCurveCreate(order, dim, nbSeg);
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     VecSet(SCurveCtrl(curve, iCtrl), 0, 
       cos(PBMATH_QUARTERPI * (float)iCtrl * 0.5));
     VecSet(SCurveCtrl(curve, iCtrl), 1, 
       sin(PBMATH_QUARTERPI * (float)iCtrl * 0.5));
   }
-  Facoid *bound = SCurveGetBoundingBox(curve);
+  Facoid* bound = SCurveGetBoundingBox(curve);
   if (ISEQUALF(VecGet(ShapoidPos(bound), 0), -1.0) == false ||
     ISEQUALF(VecGet(ShapoidPos(bound), 1), -0.382683) == false ||
     ISEQUALF(VecGet(ShapoidAxis(bound, 0), 0), 2.0) == false ||

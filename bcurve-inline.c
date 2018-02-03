@@ -6,7 +6,7 @@
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveSetCtrl(BCurve *that, int iCtrl, VecFloat *v) {
+void BCurveSetCtrl(BCurve* that, int iCtrl, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -39,7 +39,7 @@ void BCurveSetCtrl(BCurve *that, int iCtrl, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* BCurveGetCtrl(BCurve *that, int iCtrl) {
+VecFloat* BCurveGetCtrl(BCurve* that, int iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -61,7 +61,7 @@ VecFloat* BCurveGetCtrl(BCurve *that, int iCtrl) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* BCurveCtrl(BCurve *that, int iCtrl) {
+VecFloat* BCurveCtrl(BCurve* that, int iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -83,7 +83,7 @@ VecFloat* BCurveCtrl(BCurve *that, int iCtrl) {
 #if BUILDMODE != 0
 inline
 #endif 
-int BCurveGetOrder(BCurve *that) {
+int BCurveGetOrder(BCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -98,7 +98,7 @@ int BCurveGetOrder(BCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-int BCurveGetDim(BCurve *that) {
+int BCurveGetDim(BCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -114,7 +114,7 @@ int BCurveGetDim(BCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-float BCurveGetApproxLen(BCurve *that) {
+float BCurveGetApproxLen(BCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -135,7 +135,7 @@ float BCurveGetApproxLen(BCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* BCurveGetCenter(BCurve *that) {
+VecFloat* BCurveGetCenter(BCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -144,7 +144,7 @@ VecFloat* BCurveGetCenter(BCurve *that) {
   }
 #endif
   // Sum all the control points
-  VecFloat *center = VecClone(that->_ctrl[that->_order]);
+  VecFloat* center = VecClone(that->_ctrl[that->_order]);
   for (int iCtrl = that->_order; iCtrl--;)
     VecOp(center, 1.0, that->_ctrl[iCtrl], 1.0);
   // Get the average
@@ -158,7 +158,7 @@ VecFloat* BCurveGetCenter(BCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveRotOrigin(BCurve *that, float theta) {
+void BCurveRotOrigin(BCurve* that, float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -183,7 +183,7 @@ void BCurveRotOrigin(BCurve *that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveRotStart(BCurve *that, float theta) {
+void BCurveRotStart(BCurve* that, float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -213,7 +213,7 @@ void BCurveRotStart(BCurve *that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveRotCenter(BCurve *that, float theta) {
+void BCurveRotCenter(BCurve* that, float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -228,7 +228,7 @@ void BCurveRotCenter(BCurve *that, float theta) {
   }
 #endif
   // Get the center
-  VecFloat *center = BCurveGetCenter(that);
+  VecFloat* center = BCurveGetCenter(that);
   // For each control point
   for (int iCtrl = that->_order + 1; iCtrl--;) {
     // Translate the control point
@@ -246,7 +246,7 @@ void BCurveRotCenter(BCurve *that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleOriginVector(BCurve *that, VecFloat *v) {
+void BCurveScaleOriginVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -261,7 +261,7 @@ void BCurveScaleOriginVector(BCurve *that, VecFloat *v) {
 #endif
   // For each control point
   for (int iCtrl = that->_order + 1; iCtrl--;) {
-    VecFloat *ctrl = that->_ctrl[iCtrl];
+    VecFloat* ctrl = that->_ctrl[iCtrl];
     // Scale the control point
     for (int dim = 0; dim < VecDim(ctrl); ++dim)
       VecSet(ctrl, dim, VecGet(ctrl, dim) * VecGet(v, dim));
@@ -272,7 +272,7 @@ void BCurveScaleOriginVector(BCurve *that, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleOriginScalar(BCurve *that, float c) {
+void BCurveScaleOriginScalar(BCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -291,7 +291,7 @@ void BCurveScaleOriginScalar(BCurve *that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleStartVector(BCurve *that, VecFloat *v) {
+void BCurveScaleStartVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -306,7 +306,7 @@ void BCurveScaleStartVector(BCurve *that, VecFloat *v) {
 #endif
   // For each control point except the first one
   for (int iCtrl = that->_order + 1; iCtrl-- && iCtrl != 0;) {
-    VecFloat *ctrl = that->_ctrl[iCtrl];
+    VecFloat* ctrl = that->_ctrl[iCtrl];
     // Translate the control point
     VecOp(ctrl, 1.0, that->_ctrl[0], -1.0);
     // Scale the control point
@@ -322,7 +322,7 @@ void BCurveScaleStartVector(BCurve *that, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleStartScalar(BCurve *that, float c) {
+void BCurveScaleStartScalar(BCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -332,7 +332,7 @@ void BCurveScaleStartScalar(BCurve *that, float c) {
 #endif
   // For each control point except the first one
   for (int iCtrl = that->_order + 1; iCtrl-- && iCtrl != 0;) {
-    VecFloat *ctrl = that->_ctrl[iCtrl];
+    VecFloat* ctrl = that->_ctrl[iCtrl];
     // Translate the control point
     VecOp(ctrl, 1.0, that->_ctrl[0], -1.0);
     // Scale the control point
@@ -347,7 +347,7 @@ void BCurveScaleStartScalar(BCurve *that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleCenterVector(BCurve *that, VecFloat *v) {
+void BCurveScaleCenterVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -360,10 +360,10 @@ void BCurveScaleCenterVector(BCurve *that, VecFloat *v) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat *center = BCurveGetCenter(that);
+  VecFloat* center = BCurveGetCenter(that);
   // For each control point
   for (int iCtrl = that->_order + 1; iCtrl--;) {
-    VecFloat *ctrl = that->_ctrl[iCtrl];
+    VecFloat* ctrl = that->_ctrl[iCtrl];
     // Translate the control point
     VecOp(ctrl, 1.0, center, -1.0);
     // Scale the control point
@@ -381,7 +381,7 @@ void BCurveScaleCenterVector(BCurve *that, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleCenterScalar(BCurve *that, float c) {
+void BCurveScaleCenterScalar(BCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -389,10 +389,10 @@ void BCurveScaleCenterScalar(BCurve *that, float c) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat *center = BCurveGetCenter(that);
+  VecFloat* center = BCurveGetCenter(that);
   // For each control point
   for (int iCtrl = that->_order + 1; iCtrl--;) {
-    VecFloat *ctrl = that->_ctrl[iCtrl];
+    VecFloat* ctrl = that->_ctrl[iCtrl];
     // Translate the control point
     VecOp(ctrl, 1.0, center, -1.0);
     // Scale the control point
@@ -408,7 +408,7 @@ void BCurveScaleCenterScalar(BCurve *that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveTranslate(BCurve *that, VecFloat *v) {
+void BCurveTranslate(BCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -431,7 +431,7 @@ void BCurveTranslate(BCurve *that, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-int SCurveGetNbSeg(SCurve *that) {
+int SCurveGetNbSeg(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -447,7 +447,7 @@ int SCurveGetNbSeg(SCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-int SCurveGetDim(SCurve *that) {
+int SCurveGetDim(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -462,7 +462,7 @@ int SCurveGetDim(SCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-int SCurveGetOrder(SCurve *that) {
+int SCurveGetOrder(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -477,7 +477,7 @@ int SCurveGetOrder(SCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveGetCtrl(SCurve *that, int iCtrl) {
+VecFloat* SCurveGetCtrl(SCurve* that, int iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -498,7 +498,7 @@ VecFloat* SCurveGetCtrl(SCurve *that, int iCtrl) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveCtrl(SCurve *that, int iCtrl) {
+VecFloat* SCurveCtrl(SCurve* that, int iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -519,7 +519,7 @@ VecFloat* SCurveCtrl(SCurve *that, int iCtrl) {
 #if BUILDMODE != 0
 inline
 #endif 
-BCurve* SCurveGetSeg(SCurve *that, int iSeg) {
+BCurve* SCurveGetSeg(SCurve* that, int iSeg) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -540,7 +540,7 @@ BCurve* SCurveGetSeg(SCurve *that, int iSeg) {
 #if BUILDMODE != 0
 inline
 #endif 
-BCurve* SCurveSeg(SCurve *that, int iSeg) {
+BCurve* SCurveSeg(SCurve* that, int iSeg) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -561,7 +561,7 @@ BCurve* SCurveSeg(SCurve *that, int iSeg) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveGetCenter(SCurve *that) {
+VecFloat* SCurveGetCenter(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -570,7 +570,7 @@ VecFloat* SCurveGetCenter(SCurve *that) {
   }
 #endif
   // Sum all the control points
-  VecFloat *center = VecFloatCreate(that->_dim);
+  VecFloat* center = VecFloatCreate(that->_dim);
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   do {
     VecOp(center, 1.0, (VecFloat*)GSetIterGet(&iter), 1.0);
@@ -585,7 +585,7 @@ VecFloat* SCurveGetCenter(SCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-float SCurveGetMaxU(SCurve *that) {
+float SCurveGetMaxU(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -600,7 +600,7 @@ float SCurveGetMaxU(SCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-int SCurveGetNbCtrl(SCurve *that) {
+int SCurveGetNbCtrl(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -616,7 +616,7 @@ int SCurveGetNbCtrl(SCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveRotOrigin(SCurve *that, float theta) {
+void SCurveRotOrigin(SCurve* that, float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -637,7 +637,7 @@ void SCurveRotOrigin(SCurve *that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveRotStart(SCurve *that, float theta) {
+void SCurveRotStart(SCurve* that, float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -645,12 +645,12 @@ void SCurveRotStart(SCurve *that, float theta) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat *origin = (VecFloat*)(that->_ctrl._head->_data);
+  VecFloat* origin = (VecFloat*)(that->_ctrl._head->_data);
   // For each control point except the first one
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   if (GSetIterStep(&iter)) {
     do {
-      VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+      VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
       // Translate the control point
       VecOp(ctrl, 1.0, origin, -1.0);
       // Rotate the control point
@@ -666,7 +666,7 @@ void SCurveRotStart(SCurve *that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveRotCenter(SCurve *that, float theta) {
+void SCurveRotCenter(SCurve* that, float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -675,11 +675,11 @@ void SCurveRotCenter(SCurve *that, float theta) {
   }
 #endif
   // Get the center
-  VecFloat *center = SCurveGetCenter(that);
+  VecFloat* center = SCurveGetCenter(that);
   // For each control point
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   do {
-    VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
     // Translate the control point
     VecOp(ctrl, 1.0, center, -1.0);
     // Rotate the control point
@@ -696,7 +696,7 @@ void SCurveRotCenter(SCurve *that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleOriginVector(SCurve *that, VecFloat *v) {
+void SCurveScaleOriginVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -707,7 +707,7 @@ void SCurveScaleOriginVector(SCurve *that, VecFloat *v) {
   // For each control point
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   do {
-    VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
     // Scale the control point
     for (int iDim = SCurveGetDim(that); iDim--;)
       VecSet(ctrl, iDim, VecGet(ctrl, iDim) * VecGet(v, iDim));
@@ -719,7 +719,7 @@ void SCurveScaleOriginVector(SCurve *that, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleOriginScalar(SCurve *that, float c) {
+void SCurveScaleOriginScalar(SCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -740,7 +740,7 @@ void SCurveScaleOriginScalar(SCurve *that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleStartVector(SCurve *that, VecFloat *v) {
+void SCurveScaleStartVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -759,12 +759,12 @@ void SCurveScaleStartVector(SCurve *that, VecFloat *v) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat *origin = (VecFloat*)(that->_ctrl._head->_data);
+  VecFloat* origin = (VecFloat*)(that->_ctrl._head->_data);
   // For each control point except the first one
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   if (GSetIterStep(&iter)) {
     do {
-      VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+      VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
       // Translate the control point
       VecOp(ctrl, 1.0, origin, -1.0);
       // Scale the control point
@@ -781,7 +781,7 @@ void SCurveScaleStartVector(SCurve *that, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleStartScalar(SCurve *that, float c) {
+void SCurveScaleStartScalar(SCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -789,12 +789,12 @@ void SCurveScaleStartScalar(SCurve *that, float c) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat *origin = (VecFloat*)(that->_ctrl._head->_data);
+  VecFloat* origin = (VecFloat*)(that->_ctrl._head->_data);
   // For each control point except teh first one
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   if (GSetIterStep(&iter)) {
     do {
-      VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+      VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
       // Translate the control point
       VecOp(ctrl, 1.0, origin, -1.0);
       // Scale the control point
@@ -810,7 +810,7 @@ void SCurveScaleStartScalar(SCurve *that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleCenterVector(SCurve *that, VecFloat *v) {
+void SCurveScaleCenterVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -829,11 +829,11 @@ void SCurveScaleCenterVector(SCurve *that, VecFloat *v) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat *center = SCurveGetCenter(that);
+  VecFloat* center = SCurveGetCenter(that);
   // For each control point
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   do {
-    VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
     // Translate the control point
     VecOp(ctrl, 1.0, center, -1.0);
     // Scale the control point
@@ -851,7 +851,7 @@ void SCurveScaleCenterVector(SCurve *that, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleCenterScalar(SCurve *that, float c) {
+void SCurveScaleCenterScalar(SCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -859,11 +859,11 @@ void SCurveScaleCenterScalar(SCurve *that, float c) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat *center = SCurveGetCenter(that);
+  VecFloat* center = SCurveGetCenter(that);
   // For each control point
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   do {
-    VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
     // Translate the control point
     VecOp(ctrl, 1.0, center, -1.0);
     // Scale the control point
@@ -879,7 +879,7 @@ void SCurveScaleCenterScalar(SCurve *that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveTranslate(SCurve *that, VecFloat *v) {
+void SCurveTranslate(SCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -905,7 +905,7 @@ void SCurveTranslate(SCurve *that, VecFloat *v) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveGet(SCurve *that, float u) {
+VecFloat* SCurveGet(SCurve* that, float u) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -933,7 +933,7 @@ VecFloat* SCurveGet(SCurve *that, float u) {
 #if BUILDMODE != 0
 inline
 #endif 
-float SCurveGetApproxLen(SCurve *that) {
+float SCurveGetApproxLen(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -957,7 +957,7 @@ float SCurveGetApproxLen(SCurve *that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveSetCtrl(SCurve *that, int iCtrl, VecFloat *v) {
+void SCurveSetCtrl(SCurve* that, int iCtrl, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;

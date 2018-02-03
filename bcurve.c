@@ -24,7 +24,7 @@ BCurve* BCurveCreate(int order, int dim) {
   }
 #endif
   // Allocate memory
-  BCurve *that = PBErrMalloc(BCurveErr, sizeof(BCurve));
+  BCurve* that = PBErrMalloc(BCurveErr, sizeof(BCurve));
   // Set the values
   that->_dim = dim;
   that->_order = order;
@@ -39,7 +39,7 @@ BCurve* BCurveCreate(int order, int dim) {
 }
 
 // Clone the BCurve
-BCurve* BCurveClone(BCurve *that) {
+BCurve* BCurveClone(BCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -48,7 +48,7 @@ BCurve* BCurveClone(BCurve *that) {
   }
 #endif
   // Allocate memory for the clone
-  BCurve *clone = PBErrMalloc(BCurveErr, sizeof(BCurve));
+  BCurve* clone = PBErrMalloc(BCurveErr, sizeof(BCurve));
   // Clone the properties
   clone->_dim = that->_dim;
   clone->_order = that->_order;
@@ -66,7 +66,7 @@ BCurve* BCurveClone(BCurve *that) {
 // Load the BCurve from the stream
 // If the BCurve is already allocated, it is freed before loading
 // Return true upon success, false else
-bool BCurveLoad(BCurve **that, FILE *stream) {
+bool BCurveLoad(BCurve** that, FILE* stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -107,7 +107,7 @@ bool BCurveLoad(BCurve **that, FILE *stream) {
 
 // Save the BCurve to the stream
 // Return true upon success, false else
-bool BCurveSave(BCurve *that, FILE *stream) {
+bool BCurveSave(BCurve* that, FILE* stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -140,7 +140,7 @@ bool BCurveSave(BCurve *that, FILE *stream) {
 }
 
 // Free the memory used by a BCurve
-void BCurveFree(BCurve **that) {
+void BCurveFree(BCurve** that) {
   // Check argument
   if (that == NULL || *that == NULL)
     return;
@@ -158,7 +158,7 @@ void BCurveFree(BCurve **that) {
 }
 
 // Print the BCurve on 'stream'
-void BCurvePrint(BCurve *that, FILE *stream) {
+void BCurvePrint(BCurve* that, FILE* stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -182,7 +182,7 @@ void BCurvePrint(BCurve *that, FILE *stream) {
 }
 
 // Get the value of the BCurve at paramater 'u' (in [0.0, 1.0])
-VecFloat* BCurveGet(BCurve *that, float u) {
+VecFloat* BCurveGet(BCurve* that, float u) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -196,9 +196,9 @@ VecFloat* BCurveGet(BCurve *that, float u) {
   }
 #endif
   // Allocate memory for the result
-  VecFloat *v = VecFloatCreate(that->_dim);
+  VecFloat* v = VecFloatCreate(that->_dim);
   // Declare a variable for calcul
-  VecFloat *val = VecFloatCreate(that->_order + 1);
+  VecFloat* val = VecFloatCreate(that->_order + 1);
   // Loop on dimension
   for (int dim = that->_dim; dim--;) {
     // Initialise the temporary variable with the value in current
@@ -230,7 +230,7 @@ VecFloat* BCurveGet(BCurve *that, float u) {
 // The created BCurve is of same dimension as the VecFloat and of order 
 // equal to the number of VecFloat in 'set' minus one
 // Return NULL if it couldn't create the BCurve
-BCurve* BCurveFromCloudPoint(GSet *set) {
+BCurve* BCurveFromCloudPoint(GSet* set) {
 #if BUILDMODE == 0
   if (set == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -246,7 +246,7 @@ BCurve* BCurveFromCloudPoint(GSet *set) {
   // Declare a variable to memorize the result
   int order = set->_nbElem - 1;
   int dim = VecDim((VecFloat*)(set->_head->_data));
-  BCurve *curve = BCurveCreate(order, dim);
+  BCurve* curve = BCurveCreate(order, dim);
   // Set the first control point to the first point in the point cloud
   BCurveSetCtrl(curve, 0, (VecFloat*)(set->_head->_data));
   // If the order is greater than 0
@@ -262,12 +262,12 @@ BCurve* BCurveFromCloudPoint(GSet *set) {
       // in the linear system to solve
       VecShort2D dimMat = VecShortCreateStatic2D();
       // Declare a variable to memorize the t values
-      VecFloat *t = VecFloatCreate(set->_nbElem);
+      VecFloat* t = VecFloatCreate(set->_nbElem);
       // Set the dimensions of the matrix of the linear system
       VecSet(&dimMat, 0, order - 1);
       VecSet(&dimMat, 1, order - 1);
       // For each point 
-      GSetElem *elem = set->_head->_next;
+      GSetElem* elem = set->_head->_next;
       int iPoint = 1;
       while (elem != NULL) {
         // Get the distance from the previous point
@@ -284,8 +284,8 @@ BCurve* BCurveFromCloudPoint(GSet *set) {
       for (int iDim = dim; iDim--;) {
         // Declare a variable to memorize the matrix and vector 
         // of the linear system
-        MatFloat *m = MatFloatCreate(&dimMat);
-        VecFloat *v = VecFloatCreate(order - 1);
+        MatFloat* m = MatFloatCreate(&dimMat);
+        VecFloat* v = VecFloatCreate(order - 1);
         // Set the values of the linear system
         // For each line (equivalent to each intermediate point 
         // in point cloud)
@@ -294,7 +294,7 @@ BCurve* BCurveFromCloudPoint(GSet *set) {
           VecSet(&dimMat, 1, VecGet(&dimMat, 1) + 1)) {
           // Get the weight of the control point at the value 
           // of t for this point
-          VecFloat *weight = 
+          VecFloat* weight = 
             BCurveGetWeightCtrlPt(curve, VecGet(t, 
             VecGet(&dimMat, 1) + 1));
           // For each intermediate control point
@@ -318,9 +318,9 @@ BCurve* BCurveFromCloudPoint(GSet *set) {
           VecFree(&weight);
         }
         // Declare a variable to memorize the linear system
-        SysLinEq *sys = SysLinEqCreate(m, v);
+        SysLinEq* sys = SysLinEqCreate(m, v);
         // Solve the system
-        VecFloat *solSys = SysLinEqSolve(sys);
+        VecFloat* solSys = SysLinEqSolve(sys);
         // If we could solve the linear system
         if (solSys != NULL) {
           // Memorize the values of control points for the 
@@ -356,7 +356,7 @@ BCurve* BCurveFromCloudPoint(GSet *set) {
 // Get a VecFloat of dimension equal to the number of control points
 // Values of the VecFloat are the weight of each control point in the 
 // BCurve given the curve's order and the value of 't' (in [0.0,1.0])
-VecFloat* BCurveGetWeightCtrlPt(BCurve *that, float t) {
+VecFloat* BCurveGetWeightCtrlPt(BCurve* that, float t) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -370,7 +370,7 @@ VecFloat* BCurveGetWeightCtrlPt(BCurve *that, float t) {
   }
 #endif
   // Declare a variable to memorize the result
-  VecFloat *res = VecFloatCreate(that->_order + 1);
+  VecFloat* res = VecFloatCreate(that->_order + 1);
   // Initilize the two first weights
   VecSet(res, 0, 1.0 - t);
   VecSet(res, 1, t);
@@ -392,7 +392,7 @@ VecFloat* BCurveGetWeightCtrlPt(BCurve *that, float t) {
 // Get the bounding box of the BCurve.
 // Return a Facoid whose axis are aligned on the standard coordinate 
 // system.
-Facoid* BCurveGetBoundingBox(BCurve *that) {
+Facoid* BCurveGetBoundingBox(BCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -401,7 +401,7 @@ Facoid* BCurveGetBoundingBox(BCurve *that) {
   }
 #endif
   // Declare a variable to memorize the result
-  Facoid *res = FacoidCreate(that->_dim);
+  Facoid* res = FacoidCreate(that->_dim);
   // For each dimension
   for (int iDim = that->_dim; iDim--;) {
     // For each control point
@@ -453,7 +453,7 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
   }
 #endif
   // Allocate memory
-  SCurve *that = PBErrMalloc(BCurveErr, sizeof(SCurve));
+  SCurve* that = PBErrMalloc(BCurveErr, sizeof(SCurve));
   // Set the values
   that->_dim = dim;
   that->_order = order;
@@ -464,7 +464,7 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
   // For each segment
   for (int iSeg = nbSeg; iSeg--;) {
     // Create a segment
-    BCurve *seg = BCurveCreate(order, dim);
+    BCurve* seg = BCurveCreate(order, dim);
     // If it's not the first added segment
     if (iSeg != nbSeg - 1) {
       // Replace the last control points by the current first
@@ -487,7 +487,7 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
 }
 
 // Clone the SCurve
-SCurve* SCurveClone(SCurve *that) {
+SCurve* SCurveClone(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -495,15 +495,15 @@ SCurve* SCurveClone(SCurve *that) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  SCurve *clone = SCurveCreate(SCurveGetOrder(that), SCurveGetDim(that),
+  SCurve* clone = SCurveCreate(SCurveGetOrder(that), SCurveGetDim(that),
     SCurveGetNbSeg(that));
   // For each control point
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   GSetIterForward iterClone = 
     GSetIterForwardCreateStatic(&(clone->_ctrl));
   do {
-    VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
-    VecFloat *ctrlClone = (VecFloat*)GSetIterGet(&iterClone);
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
+    VecFloat* ctrlClone = (VecFloat*)GSetIterGet(&iterClone);
     VecCopy(ctrlClone, ctrl);
   } while (GSetIterStep(&iter) && GSetIterStep(&iterClone));
   return clone;
@@ -512,7 +512,7 @@ SCurve* SCurveClone(SCurve *that) {
 // Load the SCurve from the stream
 // If the SCurve is already allocated, it is freed before loading
 // Return true in case of success, false else
-bool SCurveLoad(SCurve **that, FILE *stream) {
+bool SCurveLoad(SCurve** that, FILE* stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -546,7 +546,7 @@ bool SCurveLoad(SCurve **that, FILE *stream) {
   GSetIterForward iter = GSetIterForwardCreateStatic(&((*that)->_ctrl));
   do {
     // Load the control point
-    VecFloat *loadCtrl = NULL;
+    VecFloat* loadCtrl = NULL;
     ret = VecLoad(&loadCtrl, stream);
     // If we couldn't read the control point or the control point
     // is not of the correct dimension
@@ -564,7 +564,7 @@ bool SCurveLoad(SCurve **that, FILE *stream) {
 
 // Save the SCurve to the stream
 // Return true upon success, false else
-bool SCurveSave(SCurve *that, FILE *stream) {
+bool SCurveSave(SCurve* that, FILE* stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -587,7 +587,7 @@ bool SCurveSave(SCurve *that, FILE *stream) {
   // For each control point
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   do {
-    VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
     // Save the control point
     ret = VecSave(ctrl, stream);
     // If we couldn't save the control point
@@ -600,14 +600,14 @@ bool SCurveSave(SCurve *that, FILE *stream) {
 }
 
 // Free the memory used by a SCurve
-void SCurveFree(SCurve **that) {
+void SCurveFree(SCurve** that) {
   // Check argument
   if (that == NULL || *that == NULL)
     return;
   // For each control point
   GSetIterForward iter = GSetIterForwardCreateStatic(&((*that)->_ctrl));
   do {
-    VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
     // Free the memory used by the control point
     VecFree(&ctrl);
   } while (GSetIterStep(&iter));
@@ -616,7 +616,7 @@ void SCurveFree(SCurve **that) {
   // For each segment
   iter = GSetIterForwardCreateStatic(&((*that)->_seg));
   do {
-    BCurve *seg = (BCurve*)GSetIterGet(&iter);
+    BCurve* seg = (BCurve*)GSetIterGet(&iter);
     // Disconnect the control points which have been already freed
     // or doesn't need to be freed (the last one)
     for (int iCtrl = 0; iCtrl <= (*that)->_order; ++iCtrl)
@@ -632,7 +632,7 @@ void SCurveFree(SCurve **that) {
 }
 
 // Print the SCurve on 'stream'
-void SCurvePrint(SCurve *that, FILE *stream) {
+void SCurvePrint(SCurve* that, FILE* stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -647,7 +647,7 @@ void SCurvePrint(SCurve *that, FILE *stream) {
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   int iMark = 0;
   do {
-    VecFloat *ctrl = (VecFloat*)GSetIterGet(&iter);
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
     if (iMark == 0)
       fprintf(stream, "<");
     VecPrint(ctrl, stream);
@@ -664,7 +664,7 @@ void SCurvePrint(SCurve *that, FILE *stream) {
 // Add one segment at the end of the curve (controls are set to 
 // vectors null, except the first one which the last one of the current
 // last segment)
-void SCurveAddSegTail(SCurve *that) {
+void SCurveAddSegTail(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -673,7 +673,7 @@ void SCurveAddSegTail(SCurve *that) {
   }
 #endif
   // Create the new segment
-  BCurve *seg = BCurveCreate(that->_order, that->_dim);
+  BCurve* seg = BCurveCreate(that->_order, that->_dim);
   // Free memory used by the first control point
   VecFree(seg->_ctrl);
   // Replace it with the current last control
@@ -690,7 +690,7 @@ void SCurveAddSegTail(SCurve *that) {
 // Add one segment at the head of the curve (controls are set to 
 // vectors null, except the last one which the first one of the current
 // first segment)
-void SCurveAddSegHead(SCurve *that) {
+void SCurveAddSegHead(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -699,7 +699,7 @@ void SCurveAddSegHead(SCurve *that) {
   }
 #endif
   // Create the new segment
-  BCurve *seg = BCurveCreate(that->_order, that->_dim);
+  BCurve* seg = BCurveCreate(that->_order, that->_dim);
   // Free memory used by the last control point
   VecFree(seg->_ctrl + that->_order);
   // Replace it with the current first control
@@ -715,7 +715,7 @@ void SCurveAddSegHead(SCurve *that) {
 
 // Remove the first segment of the curve (which must have more than one
 // segment)
-void SCurveRemoveHeadSeg(SCurve *that) {
+void SCurveRemoveHeadSeg(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -730,7 +730,7 @@ void SCurveRemoveHeadSeg(SCurve *that) {
 #endif
   // Remove the control points from the set of control points
   for (int iCtrl = 0; iCtrl < that->_order; ++iCtrl) {
-    VecFloat *ctrl = (VecFloat*)GSetPop(&(that->_ctrl));
+    VecFloat* ctrl = (VecFloat*)GSetPop(&(that->_ctrl));
     VecFree(&ctrl);
   }
   // Remove the first segment
@@ -747,7 +747,7 @@ void SCurveRemoveHeadSeg(SCurve *that) {
 
 // Remove the last segment of the curve (which must have more than one
 // segment)
-void SCurveRemoveTailSeg(SCurve *that) {
+void SCurveRemoveTailSeg(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -762,7 +762,7 @@ void SCurveRemoveTailSeg(SCurve *that) {
 #endif
   // Remove the control points from the set of control points
   for (int iCtrl = 0; iCtrl < that->_order; ++iCtrl) {
-    VecFloat *ctrl = (VecFloat*)GSetDrop(&(that->_ctrl));
+    VecFloat* ctrl = (VecFloat*)GSetDrop(&(that->_ctrl));
     VecFree(&ctrl);
   }
   // Remove the last segment
@@ -780,7 +780,7 @@ void SCurveRemoveTailSeg(SCurve *that) {
 // Get the bounding box of the SCurve.
 // Return a Facoid whose axis are aligned on the standard coordinate 
 // system.
-Facoid* SCurveGetBoundingBox(SCurve *that) {
+Facoid* SCurveGetBoundingBox(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -798,11 +798,11 @@ Facoid* SCurveGetBoundingBox(SCurve *that) {
       BCurveGetBoundingBox((BCurve*)GSetIterGet(&iter)));
   } while (GSetIterStep(&iter));
   // Get the bounding box of all the segment's bounding box
-  Facoid *bound = ShapoidGetBoundingBoxSet(&set);
+  Facoid* bound = ShapoidGetBoundingBoxSet(&set);
   // Free the memory used by the bounding box of each segment
   iter = GSetIterForwardCreateStatic(&set);
   do {
-    Facoid *facoid = (Facoid*)GSetIterGet(&iter);
+    Facoid* facoid = (Facoid*)GSetIterGet(&iter);
     ShapoidFree(&facoid);
   } while (GSetIterStep(&iter));
   GSetFlush(&set);
