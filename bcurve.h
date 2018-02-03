@@ -19,35 +19,35 @@
 
 // ================= Polymorphism ==================
 
-#define BCurveScaleOrigin(T, C) _Generic((C), \
+#define BCurveScaleOrigin(Curve, Scale) _Generic(Scale, \
   VecFloat*: BCurveScaleOriginVector, \
   float: BCurveScaleOriginScalar, \
-  default: PBErrInvalidPolymorphism)(T, C)
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
 
-#define BCurveScaleStart(T, C) _Generic((C), \
+#define BCurveScaleStart(Curve, Scale) _Generic(Scale, \
   VecFloat*: BCurveScaleStartVector, \
   float: BCurveScaleStartScalar, \
-  default: PBErrInvalidPolymorphism)(T, C)
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
 
-#define BCurveScaleCenter(T, C) _Generic((C), \
+#define BCurveScaleCenter(Curve, Scale) _Generic(Scale, \
   VecFloat*: BCurveScaleCenterVector, \
   float: BCurveScaleCenterScalar, \
-  default: PBErrInvalidPolymorphism)(T, C)
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
 
-#define SCurveScaleOrigin(T, C) _Generic((C), \
+#define SCurveScaleOrigin(Curve, Scale) _Generic(Scale, \
   VecFloat*: SCurveScaleOriginVector, \
   float: SCurveScaleOriginScalar, \
-  default: PBErrInvalidPolymorphism)(T, C)
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
 
-#define SCurveScaleStart(T, C) _Generic((C), \
+#define SCurveScaleStart(Curve, Scale) _Generic(Scale, \
   VecFloat*: SCurveScaleStartVector, \
   float: SCurveScaleStartScalar, \
-  default: PBErrInvalidPolymorphism)(T, C)
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
 
-#define SCurveScaleCenter(T, C) _Generic((C), \
+#define SCurveScaleCenter(Curve, Scale) _Generic(Scale, \
   VecFloat*: SCurveScaleCenterVector, \
   float: SCurveScaleCenterScalar, \
-  default: PBErrInvalidPolymorphism)(T, C)
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
 
 // ================= Data structure ===================
 
