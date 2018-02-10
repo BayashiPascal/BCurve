@@ -922,8 +922,14 @@ VecFloat* SCurveGet(SCurve* that, float u) {
 #endif
   // Get the segment the corresponding to 'u'
   int iSeg = (int)floor(u);
-  // Get the value of 'u' in this segment
-  u -= (float)iSeg;
+  // Ensure iSeg is correct for the case u == nbSeg
+  if (iSeg == that->_nbSeg) {
+    iSeg = that->_nbSeg - 1;
+    u = 1.0;
+  } else {
+    // Get the value of 'u' in this segment
+    u -= (float)iSeg;
+  }
   // Get the value of the BCurve
   return BCurveGet(SCurveSeg(that, iSeg), u);
 }
