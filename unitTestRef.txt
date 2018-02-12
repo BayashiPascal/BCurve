@@ -25,4 +25,17 @@ UnitTestSCurveScale OK
 UnitTestSCurveTranslate OK
 UnitTestSCurveGetBoundingBox OK
 UnitTestSCurve OK
+UnitTestBBodyCreateFree OK
+UnitTestBBodyGetSet OK
+UnitTestBBodyGet OK
+UnitTestBBodyClone OK
+order(1) dim(<2,3>) <0.000,0.000,0.000> <0.000,1.000,0.000><1.000,0.000,0.000><0.000,0.000,1.000>
+UnitTestBBodyPrint OK
+UnitTestBBodyLoadSave OK
+UnitTestBBodyGetCenter OK
+UnitTestBBodyTranslate OK
+UnitTestBBodyScale OK
+UnitTestBBodyGetBoundingBox OK
+UnitTestBBodyRotate OK
+UnitTestBBody OK
 UnitTestAll OK

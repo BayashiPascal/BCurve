@@ -1052,9 +1052,725 @@ void UnitTestSCurve() {
   printf("UnitTestSCurve OK\n");
 }
 
+void UnitTestBBodyCreateFree() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  if (VecGet(&(surf->_dim), 0) != VecGet(&dim, 0) ||
+    VecGet(&(surf->_dim), 1) != VecGet(&dim, 1) ||
+    surf->_order != order) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyCreate failed");
+    PBErrCatch(BCurveErr);
+  }
+  BBodyFree(&surf);
+  printf("UnitTestBBodyCreateFree OK\n");
+}
+
+void UnitTestBBodyGetSet() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  if (BBodyGetOrder(surf) != 1) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetOrder failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecIsEqual(BBodyDim(surf), &dim) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyDim failed");
+    PBErrCatch(BCurveErr);
+  }
+  VecShort2D dimB = VecShortCreateStatic2D();
+  dimB = BBodyGetDim(surf);
+  if (VecIsEqual(&dimB, &dim) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetDim failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (BBodyGetNbCtrl(surf) != 4) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetNbCtrl failed");
+    PBErrCatch(BCurveErr);
+  }
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  if (BBodyGetIndexCtrl(surf, &iCtrl) != 2) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetIndexCtrl failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (BBodyCtrl(surf, &iCtrl) != surf->_ctrl[2]) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyCtrl failed");
+    PBErrCatch(BCurveErr);
+  }
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 2.0); VecSet(&v, 2, 3.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  if (VecIsEqual(BBodyCtrl(surf, &iCtrl), (VecFloat*)&v) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodySetCtrl failed");
+    PBErrCatch(BCurveErr);
+  }
+  BBodyFree(&surf);
+  printf("UnitTestBBodyGetSet OK\n");
+}
+
+void UnitTestBBodyGet() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecFloat2D u = VecFloatCreateStatic2D();
+  float du = 0.2;
+  int iCheck = 0;
+  float check[75] = {
+    0.0,0.0,0.0,0.0,0.2,0.0,0.0,0.4,0.0,0.0,0.6,0.0,0.0,0.8,0.0,
+    0.2,0.0,0.0,0.16,0.16,0.04,0.12,0.32,0.08,0.08,0.48,0.12,0.04,
+    0.64,0.16,0.4,0.0,0.0,0.32,0.12,0.08,0.24,0.24,0.16,0.16,0.36,
+    0.24,0.08,0.48,0.32,0.6,0.0,0.0,0.48,0.08,0.12,0.36,0.16,0.24,
+    0.24,0.24,0.36,0.12,0.32,0.48,0.8,0.0,0.0,0.64,0.04,0.16,0.48,
+    0.08,0.32,0.32,0.12,0.48,0.16,0.16,0.64
+    };
+  for (VecSet(&u, 0, 0.0); VecGet(&u, 0) < 1.0; 
+    VecSet(&u, 0, VecGet(&u, 0) + du)) {
+    for (VecSet(&u, 1, 0.0); VecGet(&u, 1) < 1.0; 
+      VecSet(&u, 1, VecGet(&u, 1) + du)) {
+      VecFloat* p = BBodyGet(surf, &u);
+      if (ISEQUALF(p->_val[0], check[iCheck]) == false ||
+        ISEQUALF(p->_val[1], check[iCheck + 1]) == false ||
+        ISEQUALF(p->_val[2], check[iCheck + 2]) == false) {
+        BCurveErr->_type = PBErrTypeUnitTestFailed;
+        sprintf(BCurveErr->_msg, "BBodyGet failed");
+        PBErrCatch(BCurveErr);
+      }
+      iCheck += 3;
+      VecFree(&p);
+    }
+  }
+  BBodyFree(&surf);
+  printf("UnitTestBBodyGet OK\n");
+}
+
+void UnitTestBBodyClone() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  BBody* clone = BBodyClone(surf);
+  if (BBodyGetOrder(clone) != BBodyGetOrder(surf)) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyClone failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecIsEqual(BBodyDim(clone), BBodyDim(surf)) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyClone failed");
+    PBErrCatch(BCurveErr);
+  }
+  for (int iCtrl = BBodyGetNbCtrl(clone); iCtrl--;) {
+    if (VecIsEqual(clone->_ctrl[iCtrl], surf->_ctrl[iCtrl]) == false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyClone failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyFree(&surf);
+  BBodyFree(&clone);
+  printf("UnitTestBBodyClone OK\n");
+}
+  
+void UnitTestBBodyPrint() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  BBodyPrint(surf, stdout);
+  printf("\n");
+  BBodyFree(&surf);
+  printf("UnitTestBBodyPrint OK\n");
+}
+
+void UnitTestBBodyLoadSave() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  FILE* file = fopen("./bbody.txt", "w");
+  if (BBodySave(surf, file) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodySave failed");
+    PBErrCatch(BCurveErr);
+  }
+  fclose(file);
+  BBody* clone = NULL;
+  file = fopen("./bbody.txt", "r");
+  if (BBodyLoad(&clone, file) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyLoad failed");
+    PBErrCatch(BCurveErr);
+  }
+  fclose(file);
+  if (BBodyGetOrder(clone) != BBodyGetOrder(surf)) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyLoadSave failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecIsEqual(BBodyDim(clone), BBodyDim(surf)) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyLoadSave failed");
+    PBErrCatch(BCurveErr);
+  }
+  for (int iCtrl = BBodyGetNbCtrl(clone); iCtrl--;) {
+    if (VecIsEqual(clone->_ctrl[iCtrl], surf->_ctrl[iCtrl]) == false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyLoadSave failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyFree(&surf);
+  BBodyFree(&clone);
+  printf("UnitTestBBodyLoadSave OK\n");
+}
+
+void UnitTestBBodyGetCenter() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecFloat* center = BBodyGetCenter(surf);
+  VecSet(&v, 0, 0.25); VecSet(&v, 1, 0.25); VecSet(&v, 2, 0.25); 
+  if (VecIsEqual(center, (VecFloat*)&v) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetCenter failed");
+    PBErrCatch(BCurveErr);
+  }
+  BBodyFree(&surf);
+  VecFree(&center);
+  printf("UnitTestBBodyGetCenter OK\n");
+}
+
+void UnitTestBBodyTranslate() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 2.0); VecSet(&v, 2, 3.0); 
+  BBodyTranslate(surf, &v);
+  float check[12] = {
+    1.0,2.0,3.0,
+    1.0,3.0,3.0,
+    2.0,2.0,3.0,
+    1.0,2.0,4.0
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(check[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(check[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(check[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyTranslate failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyFree(&surf);
+  printf("UnitTestBBodyTranslate OK\n");
+}
+
+void UnitTestBBodyScale() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 2.0); VecSet(&v, 2, 3.0); 
+  BBodyScaleCenter(surf, (VecFloat*)&v);
+  float checka[12] = {
+    0.0,-0.25,-0.5,
+    0.0,1.75,-0.5,
+    1.0,-0.25,-0.5,
+    0.0,-0.25,2.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checka[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checka[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checka[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyScaleCenter failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyScaleOrigin(surf, (VecFloat*)&v);
+  float checkb[12] = {
+    0.0,-0.5,-1.5,
+    0.0,3.5,-1.5,
+    1.0,-0.5,-1.5,
+    0.0,-0.5,7.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkb[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkb[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkb[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyScale failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyScaleStart(surf, (VecFloat*)&v);
+  float checkc[12] = {
+    0.0,-0.5,-1.5,
+    0.0,7.5,-1.5,
+    1.0,-0.5,-1.5,
+    0.0,-0.5,25.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkc[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkc[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkc[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyScale failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyFree(&surf);
+  printf("UnitTestBBodyScale OK\n");
+}
+
+void UnitTestBBodyGetBoundingBox() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  BBodyScaleCenter(surf, (float)2.0);
+  Facoid* bound = BBodyGetBoundingBox(surf);
+  VecSet(&v, 0, -0.25); VecSet(&v, 1, -0.25); VecSet(&v, 2, -0.25); 
+  if (VecIsEqual(ShapoidPos(bound), (VecFloat*)&v) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetBoundingBox failed");
+    PBErrCatch(BCurveErr);
+  }
+  VecSet(&v, 0, 2.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  if (VecIsEqual(ShapoidAxis(bound, 0), (VecFloat*)&v) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetBoundingBox failed");
+    PBErrCatch(BCurveErr);
+  }
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 2.0); VecSet(&v, 2, 0.0); 
+  if (VecIsEqual(ShapoidAxis(bound, 1), (VecFloat*)&v) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetBoundingBox failed");
+    PBErrCatch(BCurveErr);
+  }
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 2.0); 
+  if (VecIsEqual(ShapoidAxis(bound, 2), (VecFloat*)&v) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BBodyGetBoundingBox failed");
+    PBErrCatch(BCurveErr);
+  }
+  ShapoidFree(&bound);
+  BBodyFree(&surf);
+  printf("UnitTestBBodyGetBoundingBox OK\n");
+}
+
+void UnitTestBBodyRotate() {
+  int order = 1;
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(&dim, 0, 2); VecSet(&dim, 1, 3);
+  BBody* surf = BBodyCreate(order, &dim);
+  VecShort2D iCtrl = VecShortCreateStatic2D();
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 0); 
+  VecFloat3D v = VecFloatCreateStatic3D();
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 0); 
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 0); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 1.0); VecSet(&v, 2, 0.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  VecSet(&iCtrl, 0, 1); VecSet(&iCtrl, 1, 1); 
+  VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
+  BBodySetCtrl(surf, &iCtrl, &v);
+  float theta = PBMATH_HALFPI;
+  BBodyRotateXCenter(surf, theta);
+  float checka[12] = {
+    0.0,0.5,0.0,
+    0.0,0.5,1.0,
+    1.0,0.5,0.0,
+    0.0,-0.5,0.0
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checka[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checka[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checka[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateXCenter failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateXOrigin(surf, theta);
+  float checkb[12] = {
+    0.0,0.0,0.5,
+    0.0,-1.0,0.5,
+    1.0,0.0,0.5,
+    0.0,0.0,-0.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkb[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkb[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkb[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateXOrigin failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateXStart(surf, theta);
+  float checkc[12] = {
+    0.0,0.0,0.5,
+    0.0,0.0,-0.5,
+    1.0,0.0,0.5,
+    0.0,1.0,0.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkc[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkc[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkc[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateXStart failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateYCenter(surf, theta);
+  float checkd[12] = {
+    0.5,0.0,0.5,
+    -0.5,0.0,0.5,
+    0.5,0.0,-0.5,
+    0.5,1.0,0.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkd[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkd[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkd[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateYCenter failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateYOrigin(surf, theta);
+  float checke[12] = {
+    0.5,0.0,-0.5,
+    0.5,0.0,0.5,
+    -0.5,0.0,-0.5,
+    0.5,1.0,-0.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checke[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checke[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checke[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateYOrigin failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateYStart(surf, theta);
+  float checkf[12] = {
+    0.5,0.0,-0.5,
+    1.5,0.0,-0.5,
+    0.5,0.0,0.5,
+    0.5,1.0,-0.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkf[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkf[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkf[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateYStart failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateZCenter(surf, theta);
+  float checkg[12] = {
+    1.0,0.0,-0.5,
+    1.0,1.0,-0.5,
+    1.0,0.0,0.5,
+    0.0,0.0,-0.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkg[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkg[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkg[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateZCenter failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateZOrigin(surf, theta);
+  float checkh[12] = {
+    0.0,1.0,-0.5,
+    -1.0,1.0,-0.5,
+    0.0,1.0,0.5,
+    0.0,0.0,-0.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkh[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkh[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkh[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateZOrigin failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateZStart(surf, theta);
+  float checki[12] = {
+    0.0,1.0,-0.5,
+    0.0,0.0,-0.5,
+    0.0,1.0,0.5,
+    1.0,1.0,-0.5
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checki[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checki[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checki[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateZStart failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  VecFloat3D axis = VecFloatCreateStatic3D();
+  VecSet(&axis, 0, 1.0); VecSet(&axis, 1, 1.0); VecSet(&axis, 2, 1.0);
+  VecNormalise(&axis);
+  BBodyRotateCenter(surf, &axis, theta);
+  float checkj[12] = {
+    -0.122009,0.666667,-0.044658,
+    0.122008,0.333334,-0.955342,
+    0.788675,0.422650,0.288675,
+    0.211325,1.577350,-0.288675
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkj[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkj[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkj[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateCenter failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateOrigin(surf, &axis, theta);
+  float checkk[12] = {
+    -0.244017,0.122008,0.622008,
+    -0.910684,0.455342,-0.044658,
+    0.422650,0.788675,0.288675,
+    -0.577350,0.788675,1.288675
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkk[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkk[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkk[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateOrigin failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyRotateStart(surf, &axis, theta);
+  float checkl[12] = {
+    -0.244017,0.122008,0.622008,
+    -1.154700,-0.211325,0.866026,
+    -0.488034,1.032692,0.955342,
+    0.089317,-0.122008,1.532692
+    };
+  for (int iCtrl = BBodyGetNbCtrl(surf); iCtrl--;) {
+    if (ISEQUALF(checkl[3 * iCtrl], surf->_ctrl[iCtrl]->_val[0]) == 
+      false ||
+      ISEQUALF(checkl[3 * iCtrl + 1], surf->_ctrl[iCtrl]->_val[1]) == 
+      false ||
+      ISEQUALF(checkl[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
+      false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "BBodyRotateStart failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  BBodyFree(&surf);
+  printf("UnitTestBBodyRotate OK\n");
+}
+  
+void UnitTestBBody() {
+  UnitTestBBodyCreateFree();
+  UnitTestBBodyGetSet();
+  UnitTestBBodyGet();
+  UnitTestBBodyClone();
+  UnitTestBBodyPrint();
+  UnitTestBBodyLoadSave();
+  UnitTestBBodyGetCenter();
+  UnitTestBBodyTranslate();
+  UnitTestBBodyScale();
+  UnitTestBBodyGetBoundingBox();
+  UnitTestBBodyRotate();
+  printf("UnitTestBBody OK\n");
+}
+
 void UnitTestAll() {
   UnitTestBCurve();
   UnitTestSCurve();
+  UnitTestBBody();
   printf("UnitTestAll OK\n");
 }
 

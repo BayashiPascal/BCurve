@@ -7,6 +7,12 @@
 #include "bcurve-inline.c"
 #endif
 
+// ================ Functions declaration ====================
+
+// Recursive function to calculate the value of a BBody
+VecFloat* BBodyGetRec(BBody *that, BCurve *curve, 
+  VecShort *iCtrl, VecFloat *u, int iDimIn);
+
 // ================ Functions implementation ====================
 
 // Create a new BCurve of order 'order' and dimension 'dim'
@@ -181,17 +187,13 @@ void BCurvePrint(BCurve* that, FILE* stream) {
   }
 }
 
-// Get the value of the BCurve at paramater 'u' (in [0.0, 1.0])
+// Get the value of the BCurve at paramater 'u'
+// u can extend beyond [0.0, 1.0]
 VecFloat* BCurveGet(BCurve* that, float u) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
     sprintf(BCurveErr->_msg, "'that' is null");
-    PBErrCatch(BCurveErr);
-  }
-  if (u < 0.0 - PBMATH_EPSILON || u > 1.0 + PBMATH_EPSILON) {
-    BCurveErr->_type = PBErrTypeInvalidArg;
-    sprintf(BCurveErr->_msg, "'u' is invalid (0.0<=%f<=1.0)", u);
     PBErrCatch(BCurveErr);
   }
 #endif
@@ -404,25 +406,19 @@ Facoid* BCurveGetBoundingBox(BCurve* that) {
   Facoid* res = FacoidCreate(that->_dim);
   // For each dimension
   for (int iDim = that->_dim; iDim--;) {
+    // Initialise the bounding box in this dimension
+    VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[0], iDim));
+    VecSet(res->_s._axis[iDim], iDim, VecGet(that->_ctrl[0], iDim));
     // For each control point
     for (int iCtrl = that->_order + 1; iCtrl--;) {
-      // If it's the first control point in this dimension
-      if (iCtrl == that->_order) {
-        // Initialise the bounding box
+      // Update the bounding box
+      if (VecGet(that->_ctrl[iCtrl], iDim) < 
+        VecGet(res->_s._pos, iDim))
         VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
-        VecSet(res->_s._axis[iDim], iDim, 
+      if (VecGet(that->_ctrl[iCtrl], iDim) > 
+        VecGet(ShapoidAxis(res, iDim), iDim))
+        VecSet(ShapoidAxis(res, iDim), iDim,
           VecGet(that->_ctrl[iCtrl], iDim));
-      // Else, it's not the first control point in this dimension
-      } else {
-        // Update the bounding box
-        if (VecGet(that->_ctrl[iCtrl], iDim) < 
-          VecGet(res->_s._pos, iDim))
-          VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
-        if (VecGet(that->_ctrl[iCtrl], iDim) > 
-          VecGet(ShapoidAxis(res, iDim), iDim))
-          VecSet(ShapoidAxis(res, iDim), iDim,
-            VecGet(that->_ctrl[iCtrl], iDim));
-      }
     }
     VecSet(ShapoidAxis(res, iDim), iDim,
       VecGet(ShapoidAxis(res, iDim), iDim) - 
@@ -639,6 +635,11 @@ void SCurvePrint(SCurve* that, FILE* stream) {
     sprintf(BCurveErr->_msg, "'that' is null");
     PBErrCatch(BCurveErr);
   }
+  if (stream == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'stream' is null");
+    PBErrCatch(BCurveErr);
+  }
 #endif
   // Print the order and dim
   fprintf(stream, "order(%d) dim(%d) nbSeg(%d) ", 
@@ -808,4 +809,320 @@ Facoid* SCurveGetBoundingBox(SCurve* that) {
   GSetFlush(&set);
   // Return the bounding box
   return bound;
+}
+
+// Create a new BBody of order 'order' and dimension 'dim'
+// Controls are initialized with null vectors
+BBody* BBodyCreate(int order, VecShort2D* dim) {
+#if BUILDMODE == 0
+  if (order < 0) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Invalid order (%d>=0)", order);
+    PBErrCatch(BCurveErr);
+  }
+  if (dim == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'dim' is null");
+    PBErrCatch(BCurveErr);
+  }
+  for (int iDim = 2; iDim--;) {
+    if (VecGet(dim, iDim) <= 0) {
+      BCurveErr->_type = PBErrTypeInvalidArg;
+      sprintf(BCurveErr->_msg, "Dimension is invalid (dim[%d]:%d>0)", 
+        iDim, VecGet(dim, iDim));
+      PBErrCatch(BCurveErr);
+    }
+  }
+#endif
+  // Allocate memory for the new BBody
+  BBody *that = PBErrMalloc(BCurveErr, sizeof(BBody));
+  // Init pointers
+  that->_dim = VecShortCreateStatic2D();
+  that->_ctrl = NULL;
+  // Init properties
+  that->_order = order;
+  that->_dim = *dim;
+  // Init the control
+  int nbCtrl = BBodyGetNbCtrl(that);
+  that->_ctrl = PBErrMalloc(BCurveErr, sizeof(VecFloat*) * nbCtrl);
+  for (int iCtrl = nbCtrl; iCtrl--;)
+    that->_ctrl[iCtrl] = VecFloatCreate(VecGet(dim, 1));
+  // Return the new BBody
+  return that;
+}
+
+// Free the memory used by a BBody
+void BBodyFree(BBody** that) {
+  // Check arguments
+  if (that == NULL || *that == NULL)
+    return;
+  // Get the number of ctrl
+  int nbCtrl = BBodyGetNbCtrl(*that);
+  // Free memory
+  for (int iCtrl = nbCtrl; iCtrl--;)
+    VecFree((*that)->_ctrl + iCtrl);
+  free((*that)->_ctrl);
+  free(*that);
+  *that = NULL;
+}
+
+// Get the value of the BBody at paramater 'u'
+// u can extend beyond [0.0, 1.0]
+VecFloat* _BBodyGet(BBody* that, VecFloat* u) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (u == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'u' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(u) != VecGet(&(that->_dim), 0)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'u' is invalid (%d=%d)", 
+      VecDim(u), VecGet(&(that->_dim), 0));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Declare variables to memorize the nb of dimension
+  int nbDimIn = VecGet(&(that->_dim), 0);
+  int nbDimOut = VecGet(&(that->_dim), 1);
+  // Create a clone of u to be checked for components interval
+  VecFloat *uSafe = VecClone(u);
+  // Declare a vector to memorize the index of the ctrl
+  VecShort *iCtrl = VecShortCreate(nbDimIn);
+  // Declare a BCurve used for calculation
+  BCurve *curve = BCurveCreate(that->_order, nbDimOut);
+  // Calculate recursively the result value
+  VecFloat *res = BBodyGetRec(that, curve, iCtrl, uSafe, 0);
+  // Free memory
+  VecFree(&uSafe);
+  VecFree(&iCtrl);
+  BCurveFree(&curve);
+  // Return the result
+  return res;
+}
+
+// Recursive function to calculate the value of SCurve
+VecFloat* BBodyGetRec(BBody* that, BCurve* curve, 
+  VecShort* iCtrl, VecFloat* u, int iDimIn) {
+  // Declare a variable for the result
+  VecFloat *res = NULL;
+  // If we are at the last dimension in the recursion, 
+  // the curve controls are the controls of the surface at current
+  // position in control's space
+  if (iDimIn == VecGet(&(that->_dim), 0) - 1) {
+    for (int i = that->_order + 1; i--;) {
+      VecSet(iCtrl, iDimIn, i); 
+      BCurveSetCtrl(curve, i, BBodyCtrl(that, iCtrl));
+    }
+  // Else, we are not at the last dimension in control's space
+  } else {
+    // Clone the position (to edit the lower dimension at lower 
+    // level of the recursion)
+    VecShort *jCtrl = VecClone(iCtrl);
+    // Declare an array of VecFloat to memorize the control at 
+    // the current level
+    VecFloat **tmpCtrl = 
+      PBErrMalloc(BCurveErr, sizeof(VecFloat*) * (that->_order + 1));
+    // For each control
+    for (int i = that->_order + 1; i--;) {
+      // Update the control position
+      VecSet(jCtrl, iDimIn, i);
+      // Get recursively the control (equal to the BCurve value at 
+      // lower level)
+      tmpCtrl[i] = 
+        BBodyGetRec(that, curve, jCtrl, u, iDimIn + 1);
+    }
+    // Set the control of the curve at current level
+    // Use a temporary instead of affecting directly into curve
+    // because it is shared between recursion level and affecting
+    // directly would lead to overwritting during the process
+    for (int i = that->_order + 1; i--;)
+      BCurveSetCtrl(curve, i, tmpCtrl[i]);
+    // Free the temporary Vecfloat for the controls
+    for (int i = that->_order + 1; i--;)
+      VecFree(tmpCtrl + i);
+    free(tmpCtrl);
+    // Free the temporary position in control space
+    VecFree(&jCtrl);
+  }
+  // Here we have the curve set up with the appropriate control at the 
+  // current recursion level
+  // Calculate its value at the parameters value for the current 
+  // dimension
+  res = BCurveGet(curve, VecGet(u, iDimIn));
+  // Return the result
+  return res;
+}
+
+// Return a clone of the BBody 'that'
+BBody* BBodyClone(BBody* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Declare the clone
+  BBody* clone = BBodyCreate(BBodyGetOrder(that), BBodyDim(that));
+  // For each control
+  for (int iCtrl = BBodyGetNbCtrl(clone); iCtrl--;)
+    // Copy the control values
+    VecCopy(clone->_ctrl[iCtrl], that->_ctrl[iCtrl]);
+  // Return the clone
+  return clone;
+}
+
+// Print the BBody 'that' on the stream 'stream'
+void BBodyPrint(BBody* that, FILE* stream) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (stream == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'stream' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Print the order and dim
+  fprintf(stream, "order(%d) dim(", that->_order);
+  VecPrint(&(that->_dim), stream);
+  fprintf(stream, ") ");
+  // For each control point
+  for (int iCtrl = 0; iCtrl < BBodyGetNbCtrl(that); ++iCtrl) {
+    VecPrint(that->_ctrl[iCtrl], stream);
+    if (iCtrl < that->_order) 
+      fprintf(stream, " ");
+  }
+}
+
+// Load the BBody from the stream
+// If the BBody is already allocated, it is freed before loading
+// Return true upon success, false else
+bool BBodyLoad(BBody** that, FILE* stream) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (stream == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'stream' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // If 'that' is already allocated
+  if (*that != NULL)
+    // Free memory
+    BBodyFree(that);
+  // Read the order and dimension
+  int order;
+  VecShort* dim = NULL;
+  int ret = fscanf(stream, "%d", &order);
+  // If we couldn't read
+  if (ret == EOF)
+    return false;
+  ret = VecLoad(&dim, stream);
+  // If we couldn't read
+  if (ret == EOF ||
+    VecDim(dim) != 2) {
+    VecFree(&dim);
+    return false;
+  }
+  // Allocate memory
+  *that = BBodyCreate(order, (VecShort2D*)dim);
+  // Free memory
+  VecFree(&dim);
+  // For each control point
+  for (int iCtrl = 0; iCtrl < BBodyGetNbCtrl(*that); ++iCtrl) {
+    // Load the control point
+    ret = VecLoad((*that)->_ctrl + iCtrl, stream);
+    // If we couldn't read the control point or the control point
+    // is not of the correct dimension
+    if (ret == false || 
+      VecDim((*that)->_ctrl[iCtrl]) != VecGet(&((*that)->_dim), 1))
+      return false;
+  }
+  // Return success code
+  return true;
+}
+
+// Save the BBody to the stream
+// Return true upon success, false else
+bool BBodySave(BBody* that, FILE* stream) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (stream == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'stream' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Save the order and dimension
+  int ret = fprintf(stream, "%d\n", that->_order);
+  VecSave(&(that->_dim), stream);
+  // If the fprintf failed
+  if (ret < 0)
+    // Stop here
+    return false;
+  // For each control point
+  for (int iCtrl = 0; iCtrl < BBodyGetNbCtrl(that); ++iCtrl) {
+    // Save the control point
+    ret = VecSave(that->_ctrl[iCtrl], stream);
+    // If we couldn't save the control point
+    if (ret == false)
+      // Stop here
+      return false;
+  }
+  // Return success code
+  return true;
+}
+
+// Get the bounding box of the BBody.
+// Return a Facoid whose axis are aligned on the standard coordinate 
+// system.
+Facoid* BBodyGetBoundingBox(BBody* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Declare a variable to memorize the result
+  Facoid* res = FacoidCreate(VecGet(BBodyDim(that), 1));
+  // For each dimension
+  for (int iDim = VecGet(BBodyDim(that), 1); iDim--;) {
+    // Initialise the bounding box in this dimension
+    VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[0], iDim));
+    VecSet(res->_s._axis[iDim], iDim, VecGet(that->_ctrl[0], iDim));
+    // For each control point except the first one
+    for (int iCtrl = BBodyGetNbCtrl(that); iCtrl-- && iCtrl != 0;) {
+      // Update the bounding box
+      if (VecGet(that->_ctrl[iCtrl], iDim) < VecGet(res->_s._pos, iDim))
+        VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
+      if (VecGet(that->_ctrl[iCtrl], iDim) > 
+        VecGet(ShapoidAxis(res, iDim), iDim))
+        VecSet(ShapoidAxis(res, iDim), iDim,
+          VecGet(that->_ctrl[iCtrl], iDim));
+    }
+    VecSet(ShapoidAxis(res, iDim), iDim,
+      VecGet(ShapoidAxis(res, iDim), iDim) - 
+      VecGet(ShapoidPos(res), iDim));
+  }
+  // Return the result
+  return res;
 }

@@ -19,35 +19,112 @@
 
 // ================= Polymorphism ==================
 
+#define BCurveTranslate(Curve, Vec) _Generic(Vec, \
+  VecFloat*: _BCurveTranslate, \
+  VecFloat2D*: _BCurveTranslate, \
+  VecFloat3D*: _BCurveTranslate, \
+  default: PBErrInvalidPolymorphism)(Curve, (VecFloat*)(Vec))
+
+#define SCurveTranslate(Curve, Vec) _Generic(Vec, \
+  VecFloat*: _SCurveTranslate, \
+  VecFloat2D*: _SCurveTranslate, \
+  VecFloat3D*: _SCurveTranslate, \
+  default: PBErrInvalidPolymorphism)(Curve, (VecFloat*)(Vec))
+
+#define BBodyTranslate(Body, Vec) _Generic(Vec, \
+  VecFloat*: _BBodyTranslate, \
+  VecFloat2D*: _BBodyTranslate, \
+  VecFloat3D*: _BBodyTranslate, \
+  default: PBErrInvalidPolymorphism)(Body, (VecFloat*)(Vec))
+
 #define BCurveScaleOrigin(Curve, Scale) _Generic(Scale, \
-  VecFloat*: BCurveScaleOriginVector, \
-  float: BCurveScaleOriginScalar, \
+  VecFloat*: _BCurveScaleOriginVector, \
+  float: _BCurveScaleOriginScalar, \
   default: PBErrInvalidPolymorphism)(Curve, Scale)
 
 #define BCurveScaleStart(Curve, Scale) _Generic(Scale, \
-  VecFloat*: BCurveScaleStartVector, \
-  float: BCurveScaleStartScalar, \
+  VecFloat*: _BCurveScaleStartVector, \
+  float: _BCurveScaleStartScalar, \
   default: PBErrInvalidPolymorphism)(Curve, Scale)
 
 #define BCurveScaleCenter(Curve, Scale) _Generic(Scale, \
-  VecFloat*: BCurveScaleCenterVector, \
-  float: BCurveScaleCenterScalar, \
+  VecFloat*: _BCurveScaleCenterVector, \
+  float: _BCurveScaleCenterScalar, \
   default: PBErrInvalidPolymorphism)(Curve, Scale)
 
+#define BBodyScaleOrigin(Body, Scale) _Generic(Scale, \
+  VecFloat*: _BBodyScaleOriginVector, \
+  float: _BBodyScaleOriginScalar, \
+  default: PBErrInvalidPolymorphism)(Body, Scale)
+
+#define BBodyScaleStart(Body, Scale) _Generic(Scale, \
+  VecFloat*: _BBodyScaleStartVector, \
+  float: _BBodyScaleStartScalar, \
+  default: PBErrInvalidPolymorphism)(Body, Scale)
+
+#define BBodyScaleCenter(Body, Scale) _Generic(Scale, \
+  VecFloat*: _BBodyScaleCenterVector, \
+  float: _BBodyScaleCenterScalar, \
+  default: PBErrInvalidPolymorphism)(Body, Scale)
+
 #define SCurveScaleOrigin(Curve, Scale) _Generic(Scale, \
-  VecFloat*: SCurveScaleOriginVector, \
-  float: SCurveScaleOriginScalar, \
+  VecFloat*: _SCurveScaleOriginVector, \
+  float: _SCurveScaleOriginScalar, \
   default: PBErrInvalidPolymorphism)(Curve, Scale)
 
 #define SCurveScaleStart(Curve, Scale) _Generic(Scale, \
-  VecFloat*: SCurveScaleStartVector, \
-  float: SCurveScaleStartScalar, \
+  VecFloat*: _SCurveScaleStartVector, \
+  float: _SCurveScaleStartScalar, \
   default: PBErrInvalidPolymorphism)(Curve, Scale)
 
 #define SCurveScaleCenter(Curve, Scale) _Generic(Scale, \
-  VecFloat*: SCurveScaleCenterVector, \
-  float: SCurveScaleCenterScalar, \
+  VecFloat*: _SCurveScaleCenterVector, \
+  float: _SCurveScaleCenterScalar, \
   default: PBErrInvalidPolymorphism)(Curve, Scale)
+
+#define BBodyGetIndexCtrl(Body, ICtrl) _Generic(ICtrl, \
+  VecShort*: _BBodyGetIndexCtrl, \
+  VecShort2D*: _BBodyGetIndexCtrl, \
+  VecShort3D*: _BBodyGetIndexCtrl, \
+  VecShort4D*: _BBodyGetIndexCtrl, \
+  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl))
+
+#define BBodyGet(Body, U) _Generic(U, \
+  VecFloat*: _BBodyGet, \
+  VecFloat2D*: _BBodyGet, \
+  VecFloat3D*: _BBodyGet, \
+  default: PBErrInvalidPolymorphism)(Body, (VecFloat*)(U))
+
+#define BBodyCtrl(Body, ICtrl) _Generic(ICtrl, \
+  VecShort*: _BBodyCtrl, \
+  VecShort2D*: _BBodyCtrl, \
+  VecShort3D*: _BBodyCtrl, \
+  VecShort4D*: _BBodyCtrl, \
+  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl))
+
+#define BBodySetCtrl(Body, ICtrl, Vec) _Generic(ICtrl, \
+  VecShort*: _Generic(Vec, \
+    VecFloat*: _BBodySetCtrl, \
+    VecFloat2D*: _BBodySetCtrl, \
+    VecFloat3D*: _BBodySetCtrl, \
+    default: PBErrInvalidPolymorphism), \
+  VecShort2D*: _Generic(Vec, \
+    VecFloat*: _BBodySetCtrl, \
+    VecFloat2D*: _BBodySetCtrl, \
+    VecFloat3D*: _BBodySetCtrl, \
+    default: PBErrInvalidPolymorphism), \
+  VecShort3D*: _Generic(Vec, \
+    VecFloat*: _BBodySetCtrl, \
+    VecFloat2D*: _BBodySetCtrl, \
+    VecFloat3D*: _BBodySetCtrl, \
+    default: PBErrInvalidPolymorphism), \
+  VecShort4D*: _Generic(Vec, \
+    VecFloat*: _BBodySetCtrl, \
+    VecFloat2D*: _BBodySetCtrl, \
+    VecFloat3D*: _BBodySetCtrl, \
+    default: PBErrInvalidPolymorphism), \
+  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl), \
+    (VecFloat*)(Vec))
 
 // ================= Data structure ===================
 
@@ -74,14 +151,16 @@ typedef struct SCurve {
   GSet _ctrl;
 } SCurve;
 
-/*typedef struct BSurf {
+typedef struct BBody {
   // Order
   int _order;
-  // Dimensions (input/output)
-  VecShort* _dim;
+  // Dimensions (input/output) (for example (2,3) gives a surface in 3D)
+  VecShort2D _dim;
   // ((_order + 1) ^ _dim[0]) control points of the surface
+  // they are ordered as follow: 
+  // (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
   VecFloat** _ctrl;
-} BSurf;*/
+} BBody;
 
 // ================ Functions declaration ====================
 
@@ -124,7 +203,8 @@ inline
 #endif 
 VecFloat* BCurveCtrl(BCurve* that, int iCtrl);
 
-// Get the value of the BCurve at paramater 'u' (in [0.0, 1.0])
+// Get the value of the BCurve at paramater 'u'
+// u can extend beyond [0.0, 1.0]
 VecFloat* BCurveGet(BCurve* that, float u);
 
 // Get the order of the BCurve
@@ -178,48 +258,48 @@ void BCurveRotCenter(BCurve* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleOriginVector(BCurve* that, VecFloat* v);
+void _BCurveScaleOriginVector(BCurve* that, VecFloat* v);
 
 // Scale the curve by 'c' relatively to the origin
 // of the coordinates system
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleOriginScalar(BCurve* that, float c);
+void _BCurveScaleOriginScalar(BCurve* that, float c);
 
 // Scale the curve by 'v' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleStartVector(BCurve* that, VecFloat* v);
+void _BCurveScaleStartVector(BCurve* that, VecFloat* v);
 
 // Scale the curve by 'c' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleStartScalar(BCurve* that, float c);
+void _BCurveScaleStartScalar(BCurve* that, float c);
 
 // Scale the curve by 'v' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleCenterVector(BCurve* that, VecFloat* v);
+void _BCurveScaleCenterVector(BCurve* that, VecFloat* v);
 
 // Scale the curve by 'c' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleCenterScalar(BCurve* that, float c);
+void _BCurveScaleCenterScalar(BCurve* that, float c);
 
 // Translate the curve by 'v'
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveTranslate(BCurve* that, VecFloat* v);
+void _BCurveTranslate(BCurve* that, VecFloat* v);
 
 // Create a BCurve which pass through the points given in the GSet 'set'
 // The GSet must contains VecFloat of same dimensions
@@ -347,9 +427,10 @@ inline
 #endif 
 VecFloat* SCurveGetCenter(SCurve* that);
 
-// Get the value of the SCurve at paramater 'u' (in [0.0, _nbSeg])
+// Get the value of the SCurve at paramater 'u' 
 // The value is equal to the value of the floor(u)-th segment at
 // value (u - floor(u))
+// u can extend beyond [0.0, _nbSeg]
 #if BUILDMODE != 0
 inline
 #endif 
@@ -392,48 +473,271 @@ void SCurveRotCenter(SCurve* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleOriginVector(SCurve* that, VecFloat* v);
+void _SCurveScaleOriginVector(SCurve* that, VecFloat* v);
 
 // Scale the curve by 'c' relatively to the origin
 // of the coordinates system
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleOriginScalar(SCurve* that, float c);
+void _SCurveScaleOriginScalar(SCurve* that, float c);
 
 // Scale the curve by 'v' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleStartVector(SCurve* that, VecFloat* v);
+void _SCurveScaleStartVector(SCurve* that, VecFloat* v);
 
 // Scale the curve by 'c' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleStartScalar(SCurve* that, float c);
+void _SCurveScaleStartScalar(SCurve* that, float c);
 
 // Scale the curve by 'v' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleCenterVector(SCurve* that, VecFloat* v);
+void _SCurveScaleCenterVector(SCurve* that, VecFloat* v);
 
 // Scale the curve by 'c' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleCenterScalar(SCurve* that, float c);
+void _SCurveScaleCenterScalar(SCurve* that, float c);
 
 // Translate the curve by 'v'
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveTranslate(SCurve* that, VecFloat* v);
+void _SCurveTranslate(SCurve* that, VecFloat* v);
+
+// Create a new BBody of order 'order' and dimension 'dim'
+// Controls are initialized with null vectors
+BBody* BBodyCreate(int order, VecShort2D* dim);
+
+// Free the memory used by a BBody
+void BBodyFree(BBody** that);
+
+// Set the value of the iCtrl-th control point to v
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodySetCtrl(BBody* that, VecShort* iCtrl, VecFloat* v);
+
+// Get the value of the BBody at paramater 'u'
+// u can extend beyond [0.0, 1.0]
+VecFloat* _BBodyGet(BBody* that, VecFloat* u);
+
+// Get the number of control points of the BBody 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+int BBodyGetNbCtrl(BBody* that);
+
+// Get the the 'iCtrl'-th control point of 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+VecFloat* _BBodyCtrl(BBody* that, VecShort* iCtrl);
+
+// Get the index in _ctrl of the 'iCtrl' control point of 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+int _BBodyGetIndexCtrl(BBody* that, VecShort* iCtrl);
+
+// Get the order of the BBody 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+int BBodyGetOrder(BBody* that);
+
+// Get the dimensions of the BBody 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+VecShort2D* BBodyDim(BBody* that);
+
+// Get a copy of the dimensions of the BBody 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+VecShort2D BBodyGetDim(BBody* that);
+
+// Return a clone of the BBody 'that'
+BBody* BBodyClone(BBody* that);
+
+// Print the BBody 'that' on the stream 'stream'
+void BBodyPrint(BBody* that, FILE* stream);
+
+// Load the BBody from the stream
+// If the BBody is already allocated, it is freed before loading
+// Return true upon success, false else
+bool BBodyLoad(BBody** that, FILE* stream);
+
+// Save the BBody to the stream
+// Return true upon success, false else
+bool BBodySave(BBody* that, FILE* stream);
+
+// Return the center of the BBody (average of control points)
+#if BUILDMODE != 0
+inline
+#endif 
+VecFloat* BBodyGetCenter(BBody* that);
+
+// Translate the BBody by 'v'
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyTranslate(BBody* that, VecFloat* v);
+
+// Scale the curve by 'v' relatively to the origin
+// of the coordinates system
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleOriginVector(BBody* that, VecFloat* v);
+
+// Scale the curve by 'c' relatively to the origin
+// of the coordinates system
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleOriginScalar(BBody* that, float c);
+
+// Scale the curve by 'v' relatively to its origin
+// (first control point)
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleStartVector(BBody* that, VecFloat* v);
+
+// Scale the curve by 'c' relatively to its origin
+// (first control point)
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleStartScalar(BBody* that, float c);
+
+// Scale the curve by 'v' relatively to its center
+// (average of control points)
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleCenterVector(BBody* that, VecFloat* v);
+
+// Scale the curve by 'c' relatively to its center
+// (average of control points)
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleCenterScalar(BBody* that, float c);
+
+// Get the bounding box of the BBody.
+// Return a Facoid whose axis are aligned on the standard coordinate 
+// system.
+Facoid* BBodyGetBoundingBox(BBody* that);
+
+// Rotate the BBody by 'theta' relatively to the origin
+// of the coordinates system around 'axis'
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateOrigin(BBody* that, VecFloat3D* axis, float theta);
+
+// Rotate the BBody by 'theta' relatively to the center
+// of the body around 'axis'
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateCenter(BBody* that, VecFloat3D* axis, float theta);
+
+// Rotate the BBody by 'theta' relatively to the first control point
+// of the body around 'axis'
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateStart(BBody* that, VecFloat3D* axis, float theta);
+
+// Rotate the BBody by 'theta' relatively to the origin
+// of the coordinates system around X
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateXOrigin(BBody* that, float theta);
+
+// Rotate the BBody by 'theta' relatively to the center
+// of the body around X
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateXCenter(BBody* that, float theta);
+
+// Rotate the BBody by 'theta' relatively to the first control point
+// of the body around X
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateXStart(BBody* that, float theta);
+
+// Rotate the BBody by 'theta' relatively to the origin
+// of the coordinates system around Y
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateYOrigin(BBody* that, float theta);
+
+// Rotate the BBody by 'theta' relatively to the center
+// of the body around Y
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateYCenter(BBody* that, float theta);
+
+// Rotate the BBody by 'theta' relatively to the first control point
+// of the body around Y
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateYStart(BBody* that, float theta);
+
+// Rotate the BBody by 'theta' relatively to the origin
+// of the coordinates system around Z
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateZOrigin(BBody* that, float theta);
+
+// Rotate the BBody by 'theta' relatively to the center
+// of the body around Z
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateZCenter(BBody* that, float theta);
+
+// Rotate the BBody by 'theta' relatively to the first control point
+// of the body around Z
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateZStart(BBody* that, float theta);
 
 // ================ Inliner ====================
 

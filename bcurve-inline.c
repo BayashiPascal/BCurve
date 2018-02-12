@@ -246,7 +246,7 @@ void BCurveRotCenter(BCurve* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleOriginVector(BCurve* that, VecFloat* v) {
+void _BCurveScaleOriginVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -256,6 +256,12 @@ void BCurveScaleOriginVector(BCurve* that, VecFloat* v) {
   if (v == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
     sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != BCurveGetDim(that)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), BCurveGetDim(that));
     PBErrCatch(BCurveErr);
   }
 #endif
@@ -272,7 +278,7 @@ void BCurveScaleOriginVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleOriginScalar(BCurve* that, float c) {
+void _BCurveScaleOriginScalar(BCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -291,7 +297,7 @@ void BCurveScaleOriginScalar(BCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleStartVector(BCurve* that, VecFloat* v) {
+void _BCurveScaleStartVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -301,6 +307,12 @@ void BCurveScaleStartVector(BCurve* that, VecFloat* v) {
   if (v == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
     sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != BCurveGetDim(that)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), BCurveGetDim(that));
     PBErrCatch(BCurveErr);
   }
 #endif
@@ -322,7 +334,7 @@ void BCurveScaleStartVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleStartScalar(BCurve* that, float c) {
+void _BCurveScaleStartScalar(BCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -347,7 +359,7 @@ void BCurveScaleStartScalar(BCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleCenterVector(BCurve* that, VecFloat* v) {
+void _BCurveScaleCenterVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -357,6 +369,12 @@ void BCurveScaleCenterVector(BCurve* that, VecFloat* v) {
   if (v == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
     sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != BCurveGetDim(that)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), BCurveGetDim(that));
     PBErrCatch(BCurveErr);
   }
 #endif
@@ -381,7 +399,7 @@ void BCurveScaleCenterVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveScaleCenterScalar(BCurve* that, float c) {
+void _BCurveScaleCenterScalar(BCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -408,7 +426,7 @@ void BCurveScaleCenterScalar(BCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveTranslate(BCurve* that, VecFloat* v) {
+void _BCurveTranslate(BCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -418,6 +436,12 @@ void BCurveTranslate(BCurve* that, VecFloat* v) {
   if (v == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
     sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != BCurveGetDim(that)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), BCurveGetDim(that));
     PBErrCatch(BCurveErr);
   }
 #endif
@@ -696,7 +720,7 @@ void SCurveRotCenter(SCurve* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleOriginVector(SCurve* that, VecFloat* v) {
+void _SCurveScaleOriginVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -719,7 +743,7 @@ void SCurveScaleOriginVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleOriginScalar(SCurve* that, float c) {
+void _SCurveScaleOriginScalar(SCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -740,7 +764,7 @@ void SCurveScaleOriginScalar(SCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleStartVector(SCurve* that, VecFloat* v) {
+void _SCurveScaleStartVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -781,7 +805,7 @@ void SCurveScaleStartVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleStartScalar(SCurve* that, float c) {
+void _SCurveScaleStartScalar(SCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -810,7 +834,7 @@ void SCurveScaleStartScalar(SCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleCenterVector(SCurve* that, VecFloat* v) {
+void _SCurveScaleCenterVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -851,7 +875,7 @@ void SCurveScaleCenterVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveScaleCenterScalar(SCurve* that, float c) {
+void _SCurveScaleCenterScalar(SCurve* that, float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -879,7 +903,7 @@ void SCurveScaleCenterScalar(SCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveTranslate(SCurve* that, VecFloat* v) {
+void _SCurveTranslate(SCurve* that, VecFloat* v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -891,6 +915,12 @@ void SCurveTranslate(SCurve* that, VecFloat* v) {
     sprintf(BCurveErr->_msg, "'v' is null");
     PBErrCatch(BCurveErr);
   }
+  if (VecDim(v) != SCurveGetDim(that)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), SCurveGetDim(that));
+    PBErrCatch(BCurveErr);
+  }
 #endif
   // Translate all the control points
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
@@ -899,9 +929,10 @@ void SCurveTranslate(SCurve* that, VecFloat* v) {
   } while (GSetIterStep(&iter));
 }
 
-// Get the value of the SCurve at paramater 'u' (in [0.0, _nbSeg])
+// Get the value of the SCurve at paramater 'u'
 // The value is equal to the value of the floor(u)-th segment at
 // value (u - floor(u))
+// u can extend beyond [0.0, _nbSeg]
 #if BUILDMODE != 0
 inline
 #endif 
@@ -912,22 +943,17 @@ VecFloat* SCurveGet(SCurve* that, float u) {
     sprintf(BCurveErr->_msg, "'that' is null");
     PBErrCatch(BCurveErr);
   }
-  if (u < 0.0 - PBMATH_EPSILON || 
-    u > (float)(that->_nbSeg) + PBMATH_EPSILON) {
-    BCurveErr->_type = PBErrTypeInvalidArg;
-    sprintf(BCurveErr->_msg, "'u' is invalid (0.0<=%f<=%d.0)",
-      u, that->_nbSeg);
-    PBErrCatch(BCurveErr);
-  }
 #endif
+  // Declare a variable to memorize the relevant segment
+  int iSeg = 0;
   // Get the segment the corresponding to 'u'
-  int iSeg = (int)floor(u);
-  // Ensure iSeg is correct for the case u == nbSeg
-  if (iSeg == that->_nbSeg) {
+  if (u < 0.0)
+    iSeg = 0;
+  else if (u > that->_nbSeg) {
     iSeg = that->_nbSeg - 1;
-    u = 1.0;
-  } else {
-    // Get the value of 'u' in this segment
+    u -= (float)(that->_nbSeg - 1);
+  } else { 
+    iSeg = (int)floor(u);
     u -= (float)iSeg;
   }
   // Get the value of the BCurve
@@ -984,3 +1010,809 @@ void SCurveSetCtrl(SCurve* that, int iCtrl, VecFloat* v) {
 #endif
   VecCopy((VecFloat*)GSetGet(&(that->_ctrl), iCtrl), v);
 }
+
+// Set the value of the iCtrl-th control point to v
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodySetCtrl(BBody* that, VecShort* iCtrl, VecFloat* v) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (iCtrl == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'iCtrl' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (v == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(iCtrl) != VecGet(&(that->_dim), 0)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'iCtrl' is invalid (%d=%d)",
+      VecDim(iCtrl), VecGet(&(that->_dim), 0));
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != VecGet(&(that->_dim), 1)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), VecGet(&(that->_dim), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Get the index of the ctrl
+  int index = BBodyGetIndexCtrl(that, iCtrl);
+  // If we could get the index
+  if (index != -1)
+    // Set the ctrl
+    VecCopy(that->_ctrl[index], v);
+}
+
+// Get the number of control points of the BBody 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+int BBodyGetNbCtrl(BBody* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Return the number of control points
+  return powi(that->_order + 1, VecGet(&(that->_dim), 0));
+}
+
+// Get the the 'iCtrl'-th control point of 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+VecFloat* _BBodyCtrl(BBody* that, VecShort* iCtrl) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (iCtrl == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'iCtrl' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(iCtrl) != VecGet(&(that->_dim), 0)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'iCtrl' is invalid (%d=%d)",
+      VecDim(iCtrl), VecGet(&(that->_dim), 0));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Get the index
+  int index = BBodyGetIndexCtrl(that, iCtrl);
+  // If we could get the index
+  if (index != -1)
+    // Return the control
+    return that->_ctrl[index];
+  // Else, we couldn't get the index
+  else
+    // Return NULL
+    return NULL;
+}
+
+// Get the index in _ctrl of the 'iCtrl' control point of 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+int _BBodyGetIndexCtrl(BBody* that, VecShort* iCtrl) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (iCtrl == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'iCtrl' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(iCtrl) != VecGet(&(that->_dim), 0)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'iCtrl' is invalid (%d=%d)",
+      VecDim(iCtrl), VecGet(&(that->_dim), 0));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  for (int iDim = VecDim(iCtrl); iDim--;)
+    if (VecGet(iCtrl, iDim) < 0 || 
+      VecGet(iCtrl, iDim) > that->_order)
+      return -1;
+  // Declare a variable to memorize the dimension of input
+  int dim = VecDim(iCtrl);
+  // Get the index
+  int index = 0;
+  for (int iDim = 0; iDim < dim; ++iDim)
+    index += index * that->_order + VecGet(iCtrl, iDim);
+  // return the index
+  return index;
+}
+
+// Get the order of the BBody 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+int BBodyGetOrder(BBody* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return that->_order;
+}
+
+// Get the dimensions of the BBody 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+VecShort2D* BBodyDim(BBody* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return &(that->_dim);
+}
+
+// Get a copy of the dimensions of the BBody 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+VecShort2D BBodyGetDim(BBody* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return that->_dim;
+}
+
+// Return the center of the BBody (average of control points)
+#if BUILDMODE != 0
+inline
+#endif 
+VecFloat* BBodyGetCenter(BBody* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Sum all the control points
+  VecFloat* center = VecFloatCreate(VecGet(BBodyDim(that), 1));
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;)
+    VecOp(center, 1.0, that->_ctrl[iCtrl], 1.0);
+  // Get the average
+  VecScale(center, 1.0 / (float)(BBodyGetNbCtrl(that)));
+  // Return the result
+  return center;
+}
+
+// Translate the BBody by 'v'
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyTranslate(BBody* that, VecFloat* v) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (v == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != VecGet(BBodyDim(that), 1)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;)
+    // Translate the control point
+    VecOp(that->_ctrl[iCtrl], 1.0, v, 1.0);
+}
+
+// Scale the BBody by 'v' relatively to the origin
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleOriginVector(BBody* that, VecFloat* v) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (v == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != VecGet(BBodyDim(that), 1)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Scale the control point
+    for (int dim = 0; dim < VecDim(ctrl); ++dim)
+      VecSet(ctrl, dim, VecGet(ctrl, dim) * VecGet(v, dim));
+  }
+}
+
+// Scale the BBody by 'c' relatively to the origin
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleOriginScalar(BBody* that, float c) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;)
+    // Scale the control point
+    VecScale(that->_ctrl[iCtrl], c);
+}
+
+// Scale the BBody by 'v' relatively to its origin
+// (first control point)
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleStartVector(BBody* that, VecFloat* v) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (v == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != VecGet(BBodyDim(that), 1)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point except the first one
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl-- && iCtrl != 0;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, that->_ctrl[0], -1.0);
+    // Scale the control point
+    for (int dim = 0; dim < VecDim(that->_ctrl[iCtrl]); ++dim)
+      VecSet(ctrl, dim, VecGet(ctrl, dim) * VecGet(v, dim));
+    // Translate back the control point
+    VecOp(ctrl, 1.0, that->_ctrl[0], 1.0);
+  }
+}
+
+// Scale the BBody by 'c' relatively to its origin
+// (first control point)
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleStartScalar(BBody* that, float c) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point except the first one
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl-- && iCtrl != 0;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, that->_ctrl[0], -1.0);
+    // Scale the control point
+    VecScale(ctrl, c);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, that->_ctrl[0], 1.0);
+  }
+}
+
+// Scale the BBody by 'v' relatively to its center
+// (average of control points)
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleCenterVector(BBody* that, VecFloat* v) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (v == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'v' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecDim(v) != VecGet(BBodyDim(that), 1)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "Dimension of 'v' is invalid (%d=%d)",
+      VecDim(v), VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* center = BBodyGetCenter(that);
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, center, -1.0);
+    // Scale the control point
+    for (int dim = 0; dim < VecDim(that->_ctrl[iCtrl]); ++dim)
+      VecSet(ctrl, dim, VecGet(ctrl, dim) * VecGet(v, dim));
+    // Translate back the control point
+    VecOp(ctrl, 1.0, center, 1.0);
+  }
+  // Free memory
+  VecFree(&center);
+}
+
+// Scale the BBody by 'c' relatively to its center
+// (average of control points)
+#if BUILDMODE != 0
+inline
+#endif 
+void _BBodyScaleCenterScalar(BBody* that, float c) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* center = BBodyGetCenter(that);
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, center, -1.0);
+    // Scale the control point
+    VecScale(ctrl, c);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, center, 1.0);
+  }
+  // Free memory
+  VecFree(&center);
+}
+
+// Rotate the BBody by 'theta' relatively to the origin
+// of the coordinates system around 'axis'
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateOrigin(BBody* that, VecFloat3D* axis, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (axis == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'axis' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Rotate the control point
+    VecRotAxis((VecFloat3D*)ctrl, axis, theta);
+  }
+}
+
+// Rotate the BBody by 'theta' relatively to the center
+// of the body around 'axis'
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateCenter(BBody* that, VecFloat3D* axis, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (axis == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'axis' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* center = BBodyGetCenter(that);
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, center, -1.0);
+    // Rotate the control point
+    VecRotAxis((VecFloat3D*)ctrl, axis, theta);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, center, 1.0);
+  }
+  // Free memory
+  VecFree(&center);
+}
+
+// Rotate the BBody by 'theta' relatively to the first control point
+// of the body around 'axis'
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateStart(BBody* that, VecFloat3D* axis, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (axis == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'axis' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* start = that->_ctrl[0];
+  // For each control point except the first one
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl-- && iCtrl != 0;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, start, -1.0);
+    // Rotate the control point
+    VecRotAxis((VecFloat3D*)ctrl, axis, theta);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, start, 1.0);
+  }
+}
+
+// Rotate the BBody by 'theta' relatively to the origin
+// of the coordinates system around X
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateXOrigin(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Rotate the control point
+    VecRotAxisX((VecFloat3D*)ctrl, theta);
+  }
+}
+
+// Rotate the BBody by 'theta' relatively to the center
+// of the body around X
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateXCenter(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* center = BBodyGetCenter(that);
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, center, -1.0);
+    // Rotate the control point
+    VecRotAxisX((VecFloat3D*)ctrl, theta);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, center, 1.0);
+  }
+  // Free memory
+  VecFree(&center);
+}
+
+// Rotate the BBody by 'theta' relatively to the first control point
+// of the body around X
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateXStart(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* start = that->_ctrl[0];
+  // For each control point except the first one
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl-- && iCtrl != 0;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, start, -1.0);
+    // Rotate the control point
+    VecRotAxisX((VecFloat3D*)ctrl, theta);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, start, 1.0);
+  }
+}
+
+// Rotate the BBody by 'theta' relatively to the origin
+// of the coordinates system around Y
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateYOrigin(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Rotate the control point
+    VecRotAxisY((VecFloat3D*)ctrl, theta);
+  }
+}
+
+// Rotate the BBody by 'theta' relatively to the center
+// of the body around Y
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateYCenter(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* center = BBodyGetCenter(that);
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, center, -1.0);
+    // Rotate the control point
+    VecRotAxisY((VecFloat3D*)ctrl, theta);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, center, 1.0);
+  }
+  // Free memory
+  VecFree(&center);
+}
+
+// Rotate the BBody by 'theta' relatively to the first control point
+// of the body around Y
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateYStart(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* start = that->_ctrl[0];
+  // For each control point except the first one
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl-- && iCtrl != 0;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, start, -1.0);
+    // Rotate the control point
+    VecRotAxisY((VecFloat3D*)ctrl, theta);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, start, 1.0);
+  }
+}
+
+// Rotate the BBody by 'theta' relatively to the origin
+// of the coordinates system around Z
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateZOrigin(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Rotate the control point
+    VecRotAxisZ((VecFloat3D*)ctrl, theta);
+  }
+}
+
+// Rotate the BBody by 'theta' relatively to the center
+// of the body around Z
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateZCenter(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* center = BBodyGetCenter(that);
+  // For each control point
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl--;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, center, -1.0);
+    // Rotate the control point
+    VecRotAxisZ((VecFloat3D*)ctrl, theta);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, center, 1.0);
+  }
+  // Free memory
+  VecFree(&center);
+}
+
+// Rotate the BBody by 'theta' relatively to the first control point
+// of the body around Z
+// dim[1] of BBody must be 3
+#if BUILDMODE != 0
+inline
+#endif 
+void BBodyRotateZStart(BBody* that, float theta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (VecGet(BBodyDim(that), 1) != 3) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' 's dimension is invalid (%d=3)",
+      VecGet(BBodyDim(that), 1));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecFloat* start = that->_ctrl[0];
+  // For each control point except the first one
+  for (int iCtrl = BBodyGetNbCtrl(that); iCtrl-- && iCtrl != 0;) {
+    VecFloat* ctrl = that->_ctrl[iCtrl];
+    // Translate the control point
+    VecOp(ctrl, 1.0, start, -1.0);
+    // Rotate the control point
+    VecRotAxisZ((VecFloat3D*)ctrl, theta);
+    // Translate back the control point
+    VecOp(ctrl, 1.0, start, 1.0);
+  }
+}
+
