@@ -104,7 +104,7 @@ bool BCurveLoad(BCurve** that, FILE* stream) {
     ret = VecLoad((*that)->_ctrl + iCtrl, stream);
     // If we couldn't read the control point or the control point
     // is not of the correct dimension
-    if (ret == false || VecDim((*that)->_ctrl[iCtrl]) != (*that)->_dim)
+    if (ret == false || VecGetDim((*that)->_ctrl[iCtrl]) != (*that)->_dim)
       return false;
   }
   // Return success code
@@ -247,7 +247,7 @@ BCurve* BCurveFromCloudPoint(GSet* set) {
 #endif
   // Declare a variable to memorize the result
   int order = set->_nbElem - 1;
-  int dim = VecDim((VecFloat*)(set->_head->_data));
+  int dim = VecGetDim((VecFloat*)(set->_head->_data));
   BCurve* curve = BCurveCreate(order, dim);
   // Set the first control point to the first point in the point cloud
   BCurveSetCtrl(curve, 0, (VecFloat*)(set->_head->_data));
@@ -546,7 +546,7 @@ bool SCurveLoad(SCurve** that, FILE* stream) {
     ret = VecLoad(&loadCtrl, stream);
     // If we couldn't read the control point or the control point
     // is not of the correct dimension
-    if (ret == false || VecDim(loadCtrl) != (*that)->_dim)
+    if (ret == false || VecGetDim(loadCtrl) != (*that)->_dim)
       return false;
     // Set the loaded control point into the set of control point
     // and segment
@@ -880,10 +880,10 @@ VecFloat* _BBodyGet(BBody* that, VecFloat* u) {
     sprintf(BCurveErr->_msg, "'u' is null");
     PBErrCatch(BCurveErr);
   }
-  if (VecDim(u) != VecGet(&(that->_dim), 0)) {
+  if (VecGetDim(u) != VecGet(&(that->_dim), 0)) {
     BCurveErr->_type = PBErrTypeInvalidArg;
     sprintf(BCurveErr->_msg, "Dimension of 'u' is invalid (%d=%d)", 
-      VecDim(u), VecGet(&(that->_dim), 0));
+      VecGetDim(u), VecGet(&(that->_dim), 0));
     PBErrCatch(BCurveErr);
   }
 #endif
@@ -1034,7 +1034,7 @@ bool BBodyLoad(BBody** that, FILE* stream) {
   ret = VecLoad(&dim, stream);
   // If we couldn't read
   if (ret == EOF ||
-    VecDim(dim) != 2) {
+    VecGetDim(dim) != 2) {
     VecFree(&dim);
     return false;
   }
@@ -1049,7 +1049,7 @@ bool BBodyLoad(BBody** that, FILE* stream) {
     // If we couldn't read the control point or the control point
     // is not of the correct dimension
     if (ret == false || 
-      VecDim((*that)->_ctrl[iCtrl]) != VecGet(&((*that)->_dim), 1))
+      VecGetDim((*that)->_ctrl[iCtrl]) != VecGet(&((*that)->_dim), 1))
       return false;
   }
   // Return success code

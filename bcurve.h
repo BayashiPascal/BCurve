@@ -649,7 +649,7 @@ Facoid* BBodyGetBoundingBox(BBody* that);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateOrigin(BBody* that, VecFloat3D* axis, float theta);
+void BBodyRotAxisOrigin(BBody* that, VecFloat3D* axis, float theta);
 
 // Rotate the BBody by 'theta' relatively to the center
 // of the body around 'axis'
@@ -657,7 +657,7 @@ void BBodyRotateOrigin(BBody* that, VecFloat3D* axis, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateCenter(BBody* that, VecFloat3D* axis, float theta);
+void BBodyRotAxisCenter(BBody* that, VecFloat3D* axis, float theta);
 
 // Rotate the BBody by 'theta' relatively to the first control point
 // of the body around 'axis'
@@ -665,7 +665,7 @@ void BBodyRotateCenter(BBody* that, VecFloat3D* axis, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateStart(BBody* that, VecFloat3D* axis, float theta);
+void BBodyRotAxisStart(BBody* that, VecFloat3D* axis, float theta);
 
 // Rotate the BBody by 'theta' relatively to the origin
 // of the coordinates system around X
@@ -673,7 +673,7 @@ void BBodyRotateStart(BBody* that, VecFloat3D* axis, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateXOrigin(BBody* that, float theta);
+void BBodyRotXOrigin(BBody* that, float theta);
 
 // Rotate the BBody by 'theta' relatively to the center
 // of the body around X
@@ -681,7 +681,7 @@ void BBodyRotateXOrigin(BBody* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateXCenter(BBody* that, float theta);
+void BBodyRotXCenter(BBody* that, float theta);
 
 // Rotate the BBody by 'theta' relatively to the first control point
 // of the body around X
@@ -689,7 +689,7 @@ void BBodyRotateXCenter(BBody* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateXStart(BBody* that, float theta);
+void BBodyRotXStart(BBody* that, float theta);
 
 // Rotate the BBody by 'theta' relatively to the origin
 // of the coordinates system around Y
@@ -697,7 +697,7 @@ void BBodyRotateXStart(BBody* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateYOrigin(BBody* that, float theta);
+void BBodyRotYOrigin(BBody* that, float theta);
 
 // Rotate the BBody by 'theta' relatively to the center
 // of the body around Y
@@ -705,7 +705,7 @@ void BBodyRotateYOrigin(BBody* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateYCenter(BBody* that, float theta);
+void BBodyRotYCenter(BBody* that, float theta);
 
 // Rotate the BBody by 'theta' relatively to the first control point
 // of the body around Y
@@ -713,7 +713,7 @@ void BBodyRotateYCenter(BBody* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateYStart(BBody* that, float theta);
+void BBodyRotYStart(BBody* that, float theta);
 
 // Rotate the BBody by 'theta' relatively to the origin
 // of the coordinates system around Z
@@ -721,7 +721,7 @@ void BBodyRotateYStart(BBody* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateZOrigin(BBody* that, float theta);
+void BBodyRotZOrigin(BBody* that, float theta);
 
 // Rotate the BBody by 'theta' relatively to the center
 // of the body around Z
@@ -729,7 +729,7 @@ void BBodyRotateZOrigin(BBody* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateZCenter(BBody* that, float theta);
+void BBodyRotZCenter(BBody* that, float theta);
 
 // Rotate the BBody by 'theta' relatively to the first control point
 // of the body around Z
@@ -737,7 +737,7 @@ void BBodyRotateZCenter(BBody* that, float theta);
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotateZStart(BBody* that, float theta);
+void BBodyRotZStart(BBody* that, float theta);
 
 // ================ Inliner ====================
 

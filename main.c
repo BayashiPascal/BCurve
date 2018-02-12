@@ -1517,7 +1517,7 @@ void UnitTestBBodyRotate() {
   VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
   BBodySetCtrl(surf, &iCtrl, &v);
   float theta = PBMATH_HALFPI;
-  BBodyRotateXCenter(surf, theta);
+  BBodyRotXCenter(surf, theta);
   float checka[12] = {
     0.0,0.5,0.0,
     0.0,0.5,1.0,
@@ -1532,11 +1532,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checka[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateXCenter failed");
+      sprintf(BCurveErr->_msg, "BBodyRotXCenter failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateXOrigin(surf, theta);
+  BBodyRotXOrigin(surf, theta);
   float checkb[12] = {
     0.0,0.0,0.5,
     0.0,-1.0,0.5,
@@ -1551,11 +1551,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkb[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateXOrigin failed");
+      sprintf(BCurveErr->_msg, "BBodyRotXOrigin failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateXStart(surf, theta);
+  BBodyRotXStart(surf, theta);
   float checkc[12] = {
     0.0,0.0,0.5,
     0.0,0.0,-0.5,
@@ -1570,11 +1570,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkc[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateXStart failed");
+      sprintf(BCurveErr->_msg, "BBodyRotXStart failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateYCenter(surf, theta);
+  BBodyRotYCenter(surf, theta);
   float checkd[12] = {
     0.5,0.0,0.5,
     -0.5,0.0,0.5,
@@ -1589,11 +1589,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkd[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateYCenter failed");
+      sprintf(BCurveErr->_msg, "BBodyRotYCenter failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateYOrigin(surf, theta);
+  BBodyRotYOrigin(surf, theta);
   float checke[12] = {
     0.5,0.0,-0.5,
     0.5,0.0,0.5,
@@ -1608,11 +1608,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checke[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateYOrigin failed");
+      sprintf(BCurveErr->_msg, "BBodyRotYOrigin failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateYStart(surf, theta);
+  BBodyRotYStart(surf, theta);
   float checkf[12] = {
     0.5,0.0,-0.5,
     1.5,0.0,-0.5,
@@ -1627,11 +1627,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkf[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateYStart failed");
+      sprintf(BCurveErr->_msg, "BBodyRotYStart failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateZCenter(surf, theta);
+  BBodyRotZCenter(surf, theta);
   float checkg[12] = {
     1.0,0.0,-0.5,
     1.0,1.0,-0.5,
@@ -1646,11 +1646,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkg[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateZCenter failed");
+      sprintf(BCurveErr->_msg, "BBodyRotZCenter failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateZOrigin(surf, theta);
+  BBodyRotZOrigin(surf, theta);
   float checkh[12] = {
     0.0,1.0,-0.5,
     -1.0,1.0,-0.5,
@@ -1665,11 +1665,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkh[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateZOrigin failed");
+      sprintf(BCurveErr->_msg, "BBodyRotZOrigin failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateZStart(surf, theta);
+  BBodyRotZStart(surf, theta);
   float checki[12] = {
     0.0,1.0,-0.5,
     0.0,0.0,-0.5,
@@ -1684,14 +1684,14 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checki[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateZStart failed");
+      sprintf(BCurveErr->_msg, "BBodyRotZStart failed");
       PBErrCatch(BCurveErr);
     }
   }
   VecFloat3D axis = VecFloatCreateStatic3D();
   VecSet(&axis, 0, 1.0); VecSet(&axis, 1, 1.0); VecSet(&axis, 2, 1.0);
   VecNormalise(&axis);
-  BBodyRotateCenter(surf, &axis, theta);
+  BBodyRotAxisCenter(surf, &axis, theta);
   float checkj[12] = {
     -0.122009,0.666667,-0.044658,
     0.122008,0.333334,-0.955342,
@@ -1706,11 +1706,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkj[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateCenter failed");
+      sprintf(BCurveErr->_msg, "BBodyRotAxisCenter failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateOrigin(surf, &axis, theta);
+  BBodyRotAxisOrigin(surf, &axis, theta);
   float checkk[12] = {
     -0.244017,0.122008,0.622008,
     -0.910684,0.455342,-0.044658,
@@ -1725,11 +1725,11 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkk[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateOrigin failed");
+      sprintf(BCurveErr->_msg, "BBodyRotAxisOrigin failed");
       PBErrCatch(BCurveErr);
     }
   }
-  BBodyRotateStart(surf, &axis, theta);
+  BBodyRotAxisStart(surf, &axis, theta);
   float checkl[12] = {
     -0.244017,0.122008,0.622008,
     -1.154700,-0.211325,0.866026,
@@ -1744,7 +1744,7 @@ void UnitTestBBodyRotate() {
       ISEQUALF(checkl[3 * iCtrl + 2], surf->_ctrl[iCtrl]->_val[2]) == 
       false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(BCurveErr->_msg, "BBodyRotateStart failed");
+      sprintf(BCurveErr->_msg, "BBodyRotAxisStart failed");
       PBErrCatch(BCurveErr);
     }
   }
