@@ -1,10 +1,14 @@
 \section*{Introduction}
 
-BCurve is C library to manipulate Bezier curves of any dimension and order.\\ 
+BCurve is C library to manipulate geometry based on Bezier curves of any dimension and order.\\ 
 
-It offers function to create, clone, load, save and modify a curve, to print it, to scale, rotate (in 2D) or translate it, to get its approximate length (sum of distance between control points), to create a BCurve connecting points of a point cloud, to get the weights (coefficients of each control point given the value of the parameter of the curve), and to get the bounding box.\\ 
+It offers function to create, clone, load, save and modify a geometry, to print it, to scale, rotate (in 2D) or translate it, to get the weights (coefficients of each control point given the value of the parameter of the curve), and to get the bounding box.\\ 
 
-The library also includes a SCurve structure which is a set of BCurve (called segments) continuously connected and has the same interface as for a BCurve, plus function to add and remove segments.\\
+BCurve objects are Bezier curves from 1D to ND. For BCurve object, the library offers functions to get its approximate length (sum of distance between control points), and to create a BCurve connecting points of a point cloud.\\
+
+SCurve objects are a set of BCurve (called segments) continuously connected and has the same interface as for a BCurve, plus function to add and remove segments.\\
+
+BBody objects are extension of BCurve objects for the case MD to ND. If M equals 1 it is equivalent to a BCurve. If M equals 2 it is equivalent to a surface in ND. If M equals 3 it is equivalent ot a volume. Note that by using one dimension as the time dimension one can describes the movement of a curve, surface, etc... over time. The library offers the same functions for a BBody as for a BCurve.\\ 
 
 It uses the \begin{ttfamily}PBErr\end{ttfamily}, \begin{ttfamily}PBMath\end{ttfamily}, \begin{ttfamily}GSet\end{ttfamily}, \begin{ttfamily}Shapoid\end{ttfamily} libraries.\\
 
@@ -84,6 +88,36 @@ P_{N-2}-\left(W^{N-1}_0(t_{N-2})P_0+W^{N-1}_{N-1}(t_{N-2})P_{N-1}\right)\\
 \end{array}
 \end{equation}
 
+\subsection{BBody definition}
+
+A BBody $A$ is defined by its input dimension $D_i\in\mathbb{N}^*_+$, its output dimension $D_o\in\mathbb{N}^*_+$, its order $O\in\mathbb{N_+}$ and its $(O+1)^{D_i}$ control points $\overrightarrow{C_i}\in\mathbb{R}^{D_o}$. Control points indices are ordered as follow (for an example BBody with $D_i=3$): (0,0,0),(0,0,1),...,(0,0,O+1),(0,1,0),(0,1,1),... \\
+Note that if $D_i$ is equal to 1, a BBody is equivalent to a BCurve.\\
+The function $\overrightarrow{A}():[0.0,1.0]^{D_i}\mapsto\mathbb{R}^{D_o}$ associated to the BBody $A$ is defined by:\\
+\begin{equation}
+\overrightarrow{A}(\overrightarrow{u})=\overrightarrow{R_A}(\overrightarrow{0},\overrightarrow{u},0)
+\end{equation}
+where
+\begin{equation}
+\left\lbrace
+\begin{array}{ll}
+\overrightarrow{R_A}(\overrightarrow{c},\overrightarrow{u},d)=\overrightarrow{B_{\lbrace\overrightarrow{C}_{I(\overrightarrow{c},d)}\rbrace}}(u_d)&\textrm{if }d=D_i-1\\
+\overrightarrow{R_A}(\overrightarrow{c},\overrightarrow{u},d)=\overrightarrow{B_{\lbrace\overrightarrow{R_S}(\lbrace\overrightarrow{c}\rbrace_d,\overrightarrow{u},d+1)\rbrace}}(u_d)&\textrm{if }d\ne D_i-1\\
+\end{array}
+\right.
+\end{equation}
+where $\overrightarrow{B_{\lbrace\bullet\rbrace}}$ is the BCurve of dimension $D_o$, order $O$ and control points $\bullet$. And $\lbrace\overrightarrow{C}_{I(\overrightarrow{c},d)}\rbrace$ is the set of control points of S of indices:\\
+\begin{equation}
+\lbrace I(\overrightarrow{c},d)\rbrace=\lbrace
+\begin{array}{l}
+\sum_{i\in[0,D_i-1]|i\ne d}\left(O^{(D_i-1-i)}c_i\right)+O^{(D_i-1-d)}j
+\end{array}
+\rbrace_{j\in[0,O]}
+\end{equation}
+and $\lbrace\overrightarrow{R_A}(\lbrace\overrightarrow{c}\rbrace_d,\overrightarrow{u},d')\rbrace$ is the set of intermediate control points calculated for:\\
+\begin{equation}
+\lbrace\overrightarrow{c}\rbrace_d=\lbrace(\overrightarrow{c_0,c_1,..,c_{d-1},j,c_{d+1},..,c_{D_i-1}})\rbrace_{j\in[0,O]}
+\end{equation}
+
 \section{Interface}
 
 \begin{scriptsize}
@@ -150,4 +184,11 @@ scurve.txt:\\
 \end{ttfamily}
 \end{scriptsize}
 
+bbody.txt:\\
+
+\begin{scriptsize}
+\begin{ttfamily}
+\verbatiminput{/home/bayashi/Coding/BCurve/bbody.txt}
+\end{ttfamily}
+\end{scriptsize}
 
