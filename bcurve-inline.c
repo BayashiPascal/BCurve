@@ -1011,6 +1011,166 @@ void SCurveSetCtrl(SCurve* that, int iCtrl, VecFloat* v) {
   VecCopy((VecFloat*)GSetGet(&(that->_ctrl), iCtrl), v);
 }
 
+// Set the attached SCurve of the SCurveIter 'that' to 'curve'
+#if BUILDMODE != 0
+inline
+#endif 
+void SCurveIterSetCurve(SCurveIter* that, SCurve* curve) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (curve == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'curve' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif  
+  that->_curve = curve;
+}
+
+// Set the delta of the SCurveIter 'that' to 'delta'
+#if BUILDMODE != 0
+inline
+#endif 
+void SCurveIterSetDelta(SCurveIter* that, float delta) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (delta <= 0.0) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'delta' is invalid (%f>0)", delta);
+    PBErrCatch(BCurveErr);
+  }
+#endif  
+  that->_delta = delta;
+}
+
+// Get the attached curve of the SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+SCurve* SCurveIterCurve(SCurveIter* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return that->_curve;
+}
+
+// Get the delta of the SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+float SCurveIterGetDelta(SCurveIter* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return that->_delta;  
+}
+
+// Init the SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+void SCurveIterInit(SCurveIter* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  that->_curPos = 0.0;
+}
+
+// Step the SCurveIter 'that'
+// Return false if it couldn't step, true else
+#if BUILDMODE != 0
+inline
+#endif 
+bool SCurveIterStep(SCurveIter* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  if (that->_curPos > 
+    SCurveGetMaxU(SCurveIterCurve(that)) - PBMATH_EPSILON)
+    return false;
+  that->_curPos += that->_delta;
+  if (that->_curPos > SCurveGetMaxU(SCurveIterCurve(that)))
+    that->_curPos = SCurveGetMaxU(SCurveIterCurve(that));
+  return true;
+}
+
+// Step back the SCurveIter 'that'
+// Return false if it couldn't step, true else
+#if BUILDMODE != 0
+inline
+#endif 
+bool SCurveIterStepP(SCurveIter* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  if (that->_curPos < PBMATH_EPSILON)
+    return false;
+  that->_curPos -= that->_delta;
+  if (that->_curPos < 0.0)
+    that->_curPos = 0.0;
+  return true;
+}
+
+// Get the current value of the internal parameter of the 
+// SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+float SCurveIterGetPos(SCurveIter* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return that->_curPos;  
+}
+
+// Get the current value of the attached SCurve at the current 
+// internal position of the SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+VecFloat* SCurveIterGet(SCurveIter* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return SCurveGet(SCurveIterCurve(that), that->_curPos);  
+}
+
 // Set the value of the iCtrl-th control point to v
 #if BUILDMODE != 0
 inline

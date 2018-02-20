@@ -151,6 +151,15 @@ typedef struct SCurve {
   GSet _ctrl;
 } SCurve;
 
+typedef struct SCurveIter {
+  // Attached SCurve
+  SCurve* _curve;
+  // Current position
+  float _curPos;
+  // Step delta
+  float _delta;
+} SCurveIter;
+
 typedef struct BBody {
   // Order
   int _order;
@@ -515,6 +524,68 @@ void _SCurveScaleCenterScalar(SCurve* that, float c);
 inline
 #endif 
 void _SCurveTranslate(SCurve* that, VecFloat* v);
+
+// Create a new SCurveIter attached to the SCurve 'curve' with a step 
+// of 'delta'
+SCurveIter SCurveIterCreateStatic(SCurve* curve, float delta);
+
+// Set the attached SCurve of the SCurveIter 'that' to 'curve'
+#if BUILDMODE != 0
+inline
+#endif 
+void SCurveIterSetCurve(SCurveIter* that, SCurve* curve);
+
+// Set the delta of the SCurveIter 'that' to 'delta'
+#if BUILDMODE != 0
+inline
+#endif 
+void SCurveIterSetDelta(SCurveIter* that, float delta);
+
+// Get the attached curve of the SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+SCurve* SCurveIterCurve(SCurveIter* that);
+
+// Get the delta of the SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+float SCurveIterGetDelta(SCurveIter* that);
+
+// Init the SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+void SCurveIterInit(SCurveIter* that);
+
+// Step the SCurveIter 'that'
+// Return false if it couldn't step, true else
+#if BUILDMODE != 0
+inline
+#endif 
+bool SCurveIterStep(SCurveIter* that);
+
+// Step back the SCurveIter 'that'
+// Return false if it couldn't step, true else
+#if BUILDMODE != 0
+inline
+#endif 
+bool SCurveIterStepP(SCurveIter* that);
+
+// Get the current value of the internal parameter of the 
+// SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+float SCurveIterGetPos(SCurveIter* that);
+
+// Get the current value of the attached SCurve at the current 
+// internal position of the SCurveIter 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+VecFloat* SCurveIterGet(SCurveIter* that);
 
 // Create a new BBody of order 'order' and dimension 'dim'
 // Controls are initialized with null vectors

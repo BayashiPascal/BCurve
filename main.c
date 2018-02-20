@@ -1052,6 +1052,133 @@ void UnitTestSCurve() {
   printf("UnitTestSCurve OK\n");
 }
 
+void UnitTestSCurveIterCreate() {
+  int order = 3;
+  int dim = 2;
+  int nbSeg = 3;
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
+  for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
+    for (int iDim = dim; iDim--;)
+      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+  }
+  float delta = 0.2;
+  SCurveIter iter = SCurveIterCreateStatic(curve, delta);
+  if (iter._curve != curve || ISEQUALF(iter._curPos, 0.0) == false ||
+    ISEQUALF(iter._delta, delta) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterCreateStatic failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurveFree(&curve);
+  printf("UnitTestSCurveIterCreate OK\n");
+}
+
+void UnitTestSCurveIterSetGet() {
+  int order = 3;
+  int dim = 2;
+  int nbSeg = 3;
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
+  for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
+    for (int iDim = dim; iDim--;)
+      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+  }
+  float delta = 0.2;
+  SCurveIter iter = SCurveIterCreateStatic(curve, delta);
+  SCurve* curveB = SCurveCreate(order, dim, nbSeg);
+  SCurveIterSetCurve(&iter, curveB);
+  if (iter._curve != curveB) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterSetCurve failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (SCurveIterCurve(&iter) != curveB) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterCurve failed");
+    PBErrCatch(BCurveErr);
+  }
+  float deltaB = 0.3;
+  SCurveIterSetDelta(&iter, deltaB);
+  if (iter._delta != deltaB) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterSetDelta failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (SCurveIterGetDelta(&iter) != deltaB) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterGetDelta failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurveIterSetCurve(&iter, curve);
+  iter._curPos = 0.5;
+  if (SCurveIterGetPos(&iter) != 0.5) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterGetPos failed");
+    PBErrCatch(BCurveErr);
+  }
+  VecFloat* pos = SCurveIterGet(&iter);
+  if (ISEQUALF(VecGet(pos, 0), 3.0) == false ||
+    ISEQUALF(VecGet(pos, 1), 4.0) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterGet failed");
+    PBErrCatch(BCurveErr);
+  }
+  VecFree(&pos);
+  SCurveFree(&curve);
+  SCurveFree(&curveB);
+  printf("UnitTestSCurveIterSetGet OK\n");
+}
+
+void UnitTestSCurveIterStep() {
+  int order = 3;
+  int dim = 2;
+  int nbSeg = 3;
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
+  for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
+    for (int iDim = dim; iDim--;)
+      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+  }
+  float delta = 3.0;
+  SCurveIter iter = SCurveIterCreateStatic(curve, delta);
+  bool ret = SCurveIterStep(&iter);
+  if (ISEQUALF(SCurveIterGetPos(&iter), 3.0) == false ||
+    ret == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterStep failed");
+    PBErrCatch(BCurveErr);
+  }
+  ret = SCurveIterStep(&iter);
+  if (ISEQUALF(SCurveIterGetPos(&iter), 3.0) == false ||
+    ret == true) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterStep failed");
+    PBErrCatch(BCurveErr);
+  }
+  ret = SCurveIterStepP(&iter);
+  if (ISEQUALF(SCurveIterGetPos(&iter), 0.0) == false ||
+    ret == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterStepP failed");
+    PBErrCatch(BCurveErr);
+  }
+  ret = SCurveIterStepP(&iter);
+  if (ISEQUALF(SCurveIterGetPos(&iter), 0.0) == false ||
+    ret == true) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveIterStepP failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurveFree(&curve);
+  printf("UnitTestSCurveStep OK\n");
+}
+
+void UnitTestSCurveIter() {
+  UnitTestSCurveIterCreate();
+  UnitTestSCurveIterSetGet();
+  UnitTestSCurveIterStep();
+
+  printf("UnitTestSCurveIter OK\n");
+}
+
 void UnitTestBBodyCreateFree() {
   int order = 1;
   VecShort2D dim = VecShortCreateStatic2D();
@@ -1770,6 +1897,7 @@ void UnitTestBBody() {
 void UnitTestAll() {
   UnitTestBCurve();
   UnitTestSCurve();
+  UnitTestSCurveIter();
   UnitTestBBody();
   printf("UnitTestAll OK\n");
 }

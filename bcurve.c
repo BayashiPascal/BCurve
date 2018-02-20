@@ -811,6 +811,31 @@ Facoid* SCurveGetBoundingBox(SCurve* that) {
   return bound;
 }
 
+// Create a new SCurveIter attached to the SCurve 'curve' with a step 
+// of 'delta'
+SCurveIter SCurveIterCreateStatic(SCurve* curve, float delta) {
+#if BUILDMODE == 0
+  if (curve == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'curve' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (delta <= 0.0) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'delta' is invalid (%f>0)", delta);
+    PBErrCatch(BCurveErr);
+  }
+#endif  
+  // Declare the new SCurveIter
+  SCurveIter iter;
+  // Set the properties
+  iter._curve = curve;
+  iter._curPos = 0.0;
+  iter._delta = delta;
+  // Return the new iterator
+  return iter;
+}
+
 // Create a new BBody of order 'order' and dimension 'dim'
 // Controls are initialized with null vectors
 BBody* BBodyCreate(int order, VecShort2D* dim) {

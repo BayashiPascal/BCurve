@@ -25,6 +25,10 @@ UnitTestSCurveScale OK
 UnitTestSCurveTranslate OK
 UnitTestSCurveGetBoundingBox OK
 UnitTestSCurve OK
+UnitTestSCurveIterCreate OK
+UnitTestSCurveIterSetGet OK
+UnitTestSCurveStep OK
+UnitTestSCurveIter OK
 UnitTestBBodyCreateFree OK
 UnitTestBBodyGetSet OK
 UnitTestBBodyGet OK
