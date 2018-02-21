@@ -949,7 +949,7 @@ VecFloat* SCurveGet(SCurve* that, float u) {
   // Get the segment the corresponding to 'u'
   if (u < 0.0)
     iSeg = 0;
-  else if (u > that->_nbSeg) {
+  else if (u >= that->_nbSeg) {
     iSeg = that->_nbSeg - 1;
     u -= (float)(that->_nbSeg - 1);
   } else { 
