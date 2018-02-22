@@ -393,6 +393,12 @@ inline
 #endif 
 VecFloat* SCurveCtrl(SCurve* that, int iCtrl);
 
+// Get the set of control point of the SCurve 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+GSet* SCurveCtrls(SCurve* that);
+
 // Get a clone of the 'iSeg'-th segment
 #if BUILDMODE != 0
 inline

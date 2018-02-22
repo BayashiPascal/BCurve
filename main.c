@@ -591,6 +591,11 @@ void UnitTestSCurveGetSetCtrl() {
   int nbSeg = 3;
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   VecFloat* v = VecFloatCreate(dim);
+  if (SCurveCtrls(curve) != &(curve->_ctrl)) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveCtrls failed");
+    PBErrCatch(BCurveErr);
+  }
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
       VecSet(v, iDim, iCtrl * dim + iDim);

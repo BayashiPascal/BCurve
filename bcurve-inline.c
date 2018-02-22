@@ -539,6 +539,21 @@ VecFloat* SCurveCtrl(SCurve* that, int iCtrl) {
   return (VecFloat*)GSetGet(&(that->_ctrl), iCtrl);
 }
 
+// Get the set of control point of the SCurve 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+GSet* SCurveCtrls(SCurve* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return &(that->_ctrl);
+}
+
 // Get a clone of the 'iSeg'-th segment
 #if BUILDMODE != 0
 inline
