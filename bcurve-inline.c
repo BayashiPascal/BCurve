@@ -596,6 +596,21 @@ BCurve* SCurveSeg(SCurve* that, int iSeg) {
   return (BCurve*)GSetGet(&(that->_seg), iSeg);
 }
 
+// Get the GSet of segments of the SCurve 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+GSet* SCurveSegs(SCurve* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return &(that->_seg);
+}
+
 // Return the center of the SCurve (average of control points)
 #if BUILDMODE != 0
 inline

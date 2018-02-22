@@ -393,7 +393,7 @@ inline
 #endif 
 VecFloat* SCurveCtrl(SCurve* that, int iCtrl);
 
-// Get the set of control point of the SCurve 'that'
+// Get the GSet of control points of the SCurve 'that'
 #if BUILDMODE != 0
 inline
 #endif 
@@ -410,6 +410,12 @@ BCurve* SCurveGetSeg(SCurve* that, int iSeg);
 inline
 #endif 
 BCurve* SCurveSeg(SCurve* that, int iSeg);
+
+// Get the GSet of segments of the SCurve 'that'
+#if BUILDMODE != 0
+inline
+#endif 
+GSet* SCurveSegs(SCurve* that);
 
 // Add one segment at the end of the curve (controls are set to 
 // vectors null, except the first one which the last one of the current
