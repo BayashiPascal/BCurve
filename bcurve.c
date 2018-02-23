@@ -546,8 +546,9 @@ SCurve* SCurveGetNewDim(SCurve* that, int dim) {
     do {
       BCurve* seg = GSetIterGet(&iter);
       seg->_dim = dim;
-      for (int iCtrl = 4; iCtrl--;)
-        seg->_ctrl[iCtrl] = SCurveCtrl(ret, 3 * iSeg + iCtrl);
+      for (int iCtrl = SCurveGetOrder(that) + 1; iCtrl--;)
+        seg->_ctrl[iCtrl] = 
+          SCurveCtrl(ret, SCurveGetOrder(that) * iSeg + iCtrl);
       ++iSeg;
     } while (GSetIterStep(&iter));
     // Set the dimension of the curve
