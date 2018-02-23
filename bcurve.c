@@ -505,6 +505,58 @@ SCurve* SCurveClone(SCurve* that) {
   return clone;
 }
 
+// Return a new SCurve as a copy of the SCurve 'that' with 
+// dimension changed to 'dim'
+// if it is extended, the values of new components are 0.0
+// If it is shrinked, values are discarded from the end of the vectors
+SCurve* SCurveGetNewDim(SCurve* that, int dim) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (dim <= 0) {
+    PBMathErr->_type = PBErrTypeInvalidArg;
+    sprintf(PBMathErr->_msg, "'dim' is invalid match (%d>0)", dim);
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // If the new dimension is equals to the current one
+  if (SCurveGetDim(that) == dim) {
+    // Return the clone of the initial curve
+    return SCurveClone(that);
+  } else {
+    // Clone the initial curve
+    SCurve* ret = 
+      SCurveCreate(SCurveGetOrder(that), dim, SCurveGetNbSeg(that));
+    // Convert the dimension of each control point
+    GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
+    GSetIterForward iterNew = 
+      GSetIterForwardCreateStatic(&(ret->_ctrl));
+    do {
+      VecFloat* newCtrl = 
+        VecGetNewDim((VecFloat*)GSetIterGet(&iter), dim);
+      VecFree((VecFloat**)&(GSetIterGetElem(&iterNew)->_data));
+      GSetIterGetElem(&iterNew)->_data = newCtrl;
+    } while (GSetIterStep(&iter) && GSetIterStep(&iterNew));
+    // Correct the dimension and control points of each segment
+    GSetIterSetGSet(&iter, &(ret->_seg));
+    int iSeg = 0;
+    do {
+      BCurve* seg = GSetIterGet(&iter);
+      seg->_dim = dim;
+      for (int iCtrl = 4; iCtrl--;)
+        seg->_ctrl[iCtrl] = SCurveCtrl(ret, 3 * iSeg + iCtrl);
+      ++iSeg;
+    } while (GSetIterStep(&iter));
+    // Set the dimension of the curve
+    ret->_dim = dim;
+    // Return the new curve
+    return ret;
+  }
+}
+
 // Load the SCurve from the stream
 // If the SCurve is already allocated, it is freed before loading
 // Return true in case of success, false else

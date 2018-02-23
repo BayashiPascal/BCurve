@@ -336,6 +336,12 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg);
 // Clone the SCurve
 SCurve* SCurveClone(SCurve* that);
 
+// Return a new SCurve as a copy of the SCurve 'that' with 
+// dimension changed to 'dim'
+// if it is extended, the values of new components are 0.0
+// If it is shrinked, values are discarded from the end of the vectors
+SCurve* SCurveGetNewDim(SCurve* that, int dim);
+
 // Load the SCurve from the stream
 // If the SCurve is already allocated, it is freed before loading
 // Return true in case of success, false else

@@ -24,6 +24,7 @@ UnitTestSCurveRot OK
 UnitTestSCurveScale OK
 UnitTestSCurveTranslate OK
 UnitTestSCurveGetBoundingBox OK
+UnitTestSCurveGetNewDim OK
 UnitTestSCurve OK
 UnitTestSCurveIterCreate OK
 UnitTestSCurveIterSetGet OK

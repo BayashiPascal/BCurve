@@ -1047,6 +1047,92 @@ void UnitTestSCurveGetBoundingBox() {
   printf("UnitTestSCurveGetBoundingBox OK\n");
 }
 
+void UnitTestSCurveGetNewDim() {
+  int order = 3;
+  int dim = 3;
+  int nbSeg = 2;
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
+  for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
+    VecSet(SCurveCtrl(curve, iCtrl), 0, (float)iCtrl);
+    VecSet(SCurveCtrl(curve, iCtrl), 1, (float)iCtrl + 1);
+    VecSet(SCurveCtrl(curve, iCtrl), 2, (float)iCtrl + 2);
+  }
+  SCurve* curveA = SCurveGetNewDim(curve, 2);
+  if (SCurveGetDim(curveA) != 2 ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 0), 0), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 0), 1), 1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 1), 0), 1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 1), 1), 2.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 2), 0), 2.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 2), 1), 3.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 3), 0), 3.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 3), 1), 4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 4), 0), 4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 4), 1), 5.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 5), 0), 5.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 5), 1), 6.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 6), 0), 6.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveA, 6), 1), 7.0) == false ||
+    BCurveCtrl(SCurveSeg(curveA, 0), 0) != SCurveCtrl(curveA, 0) ||
+    BCurveCtrl(SCurveSeg(curveA, 0), 1) != SCurveCtrl(curveA, 1) ||
+    BCurveCtrl(SCurveSeg(curveA, 0), 2) != SCurveCtrl(curveA, 2) ||
+    BCurveCtrl(SCurveSeg(curveA, 0), 3) != SCurveCtrl(curveA, 3) ||
+    BCurveCtrl(SCurveSeg(curveA, 1), 0) != SCurveCtrl(curveA, 3) ||
+    BCurveCtrl(SCurveSeg(curveA, 1), 1) != SCurveCtrl(curveA, 4) ||
+    BCurveCtrl(SCurveSeg(curveA, 1), 2) != SCurveCtrl(curveA, 5) ||
+    BCurveCtrl(SCurveSeg(curveA, 1), 3) != SCurveCtrl(curveA, 6)) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveGetNewDim failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurve* curveB = SCurveGetNewDim(curve, 4);
+  if (SCurveGetDim(curveB) != 4 ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 0), 0), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 0), 1), 1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 0), 2), 2.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 0), 3), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 1), 0), 1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 1), 1), 2.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 1), 2), 3.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 1), 3), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 2), 0), 2.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 2), 1), 3.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 2), 2), 4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 2), 3), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 3), 0), 3.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 3), 1), 4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 3), 2), 5.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 3), 3), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 4), 0), 4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 4), 1), 5.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 4), 2), 6.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 4), 3), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 5), 0), 5.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 5), 1), 6.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 5), 2), 7.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 5), 3), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 6), 0), 6.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 6), 1), 7.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 6), 2), 8.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curveB, 6), 3), 0.0) == false ||
+    BCurveCtrl(SCurveSeg(curveB, 0), 0) != SCurveCtrl(curveB, 0) ||
+    BCurveCtrl(SCurveSeg(curveB, 0), 1) != SCurveCtrl(curveB, 1) ||
+    BCurveCtrl(SCurveSeg(curveB, 0), 2) != SCurveCtrl(curveB, 2) ||
+    BCurveCtrl(SCurveSeg(curveB, 0), 3) != SCurveCtrl(curveB, 3) ||
+    BCurveCtrl(SCurveSeg(curveB, 1), 0) != SCurveCtrl(curveB, 3) ||
+    BCurveCtrl(SCurveSeg(curveB, 1), 1) != SCurveCtrl(curveB, 4) ||
+    BCurveCtrl(SCurveSeg(curveB, 1), 2) != SCurveCtrl(curveB, 5) ||
+    BCurveCtrl(SCurveSeg(curveB, 1), 3) != SCurveCtrl(curveB, 6)) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveGetNewDim failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurveFree(&curve);
+  SCurveFree(&curveA);
+  SCurveFree(&curveB);
+  printf("UnitTestSCurveGetNewDim OK\n");
+}
+
 void UnitTestSCurve() {
   UnitTestSCurveCreateCloneFree();
   UnitTestSCurveLoadSavePrint();
@@ -1059,6 +1145,7 @@ void UnitTestSCurve() {
   UnitTestSCurveScale();
   UnitTestSCurveTranslate();
   UnitTestSCurveGetBoundingBox();
+  UnitTestSCurveGetNewDim();
   printf("UnitTestSCurve OK\n");
 }
 
