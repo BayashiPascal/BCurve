@@ -1,5 +1,7 @@
 // ============ BCURVE-INLINE.C ================
 
+// -------------- BCurve
+
 // ================ Functions implementation ====================
 
 // Set the value of the iCtrl-th control point to v
@@ -450,6 +452,10 @@ void _BCurveTranslate(BCurve* that, VecFloat* v) {
     // Translate the control point
     VecOp(that->_ctrl[iCtrl], 1.0, v, 1.0);
 }
+
+// -------------- SCurve
+
+// ================ Functions implementation ====================
 
 // Get the number of BCurve in the SCurve
 #if BUILDMODE != 0
@@ -1041,6 +1047,51 @@ void SCurveSetCtrl(SCurve* that, int iCtrl, VecFloat* v) {
   VecCopy((VecFloat*)GSetGet(&(that->_ctrl), iCtrl), v);
 }
 
+// Create a new SCurve from the outline of the Shapoid 'shap'
+// The Shapoid must be of dimension 2
+// Control points are ordered CCW of the Shapoid
+#if BUILDMODE != 0
+inline
+#endif 
+SCurve* SCurveCreateFromShapoid(Shapoid* shap) {
+#if BUILDMODE == 0
+  if (shap == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'shap' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (ShapoidGetDim(shap) != 2) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, 
+      "'shap' 's dimension is invalid (%d==2)", 
+      ShapoidGetDim(shap));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Declare the new curve
+  SCurve* ret = NULL;
+  // Call the appropriate function accoring to the type of the Shapoid
+  switch (ShapoidGetType(shap)) {
+    case ShapoidTypeFacoid:
+      ret = SCurveCreateFromFacoid((Facoid*)shap);
+      break;
+    case ShapoidTypePyramidoid:
+      ret = SCurveCreateFromPyramidoid((Pyramidoid*)shap);
+      break;
+    case ShapoidTypeSpheroid:
+      ret = SCurveCreateFromSpheroid((Spheroid*)shap);
+      break;
+    default:
+      break;
+  }
+  // Return the new curve
+  return ret;
+}
+
+// -------------- SCurveIter
+
+// ================ Functions implementation ====================
+
 // Set the attached SCurve of the SCurveIter 'that' to 'curve'
 #if BUILDMODE != 0
 inline
@@ -1200,6 +1251,10 @@ VecFloat* SCurveIterGet(SCurveIter* that) {
 #endif
   return SCurveGet(SCurveIterCurve(that), that->_curPos);  
 }
+
+// -------------- BBody
+
+// ================ Functions implementation ====================
 
 // Set the value of the iCtrl-th control point to v
 #if BUILDMODE != 0

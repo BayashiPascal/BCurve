@@ -17,114 +17,7 @@
 
 // ================= Define ==================
 
-// ================= Polymorphism ==================
-
-#define BCurveTranslate(Curve, Vec) _Generic(Vec, \
-  VecFloat*: _BCurveTranslate, \
-  VecFloat2D*: _BCurveTranslate, \
-  VecFloat3D*: _BCurveTranslate, \
-  default: PBErrInvalidPolymorphism)(Curve, (VecFloat*)(Vec))
-
-#define SCurveTranslate(Curve, Vec) _Generic(Vec, \
-  VecFloat*: _SCurveTranslate, \
-  VecFloat2D*: _SCurveTranslate, \
-  VecFloat3D*: _SCurveTranslate, \
-  default: PBErrInvalidPolymorphism)(Curve, (VecFloat*)(Vec))
-
-#define BBodyTranslate(Body, Vec) _Generic(Vec, \
-  VecFloat*: _BBodyTranslate, \
-  VecFloat2D*: _BBodyTranslate, \
-  VecFloat3D*: _BBodyTranslate, \
-  default: PBErrInvalidPolymorphism)(Body, (VecFloat*)(Vec))
-
-#define BCurveScaleOrigin(Curve, Scale) _Generic(Scale, \
-  VecFloat*: _BCurveScaleOriginVector, \
-  float: _BCurveScaleOriginScalar, \
-  default: PBErrInvalidPolymorphism)(Curve, Scale)
-
-#define BCurveScaleStart(Curve, Scale) _Generic(Scale, \
-  VecFloat*: _BCurveScaleStartVector, \
-  float: _BCurveScaleStartScalar, \
-  default: PBErrInvalidPolymorphism)(Curve, Scale)
-
-#define BCurveScaleCenter(Curve, Scale) _Generic(Scale, \
-  VecFloat*: _BCurveScaleCenterVector, \
-  float: _BCurveScaleCenterScalar, \
-  default: PBErrInvalidPolymorphism)(Curve, Scale)
-
-#define BBodyScaleOrigin(Body, Scale) _Generic(Scale, \
-  VecFloat*: _BBodyScaleOriginVector, \
-  float: _BBodyScaleOriginScalar, \
-  default: PBErrInvalidPolymorphism)(Body, Scale)
-
-#define BBodyScaleStart(Body, Scale) _Generic(Scale, \
-  VecFloat*: _BBodyScaleStartVector, \
-  float: _BBodyScaleStartScalar, \
-  default: PBErrInvalidPolymorphism)(Body, Scale)
-
-#define BBodyScaleCenter(Body, Scale) _Generic(Scale, \
-  VecFloat*: _BBodyScaleCenterVector, \
-  float: _BBodyScaleCenterScalar, \
-  default: PBErrInvalidPolymorphism)(Body, Scale)
-
-#define SCurveScaleOrigin(Curve, Scale) _Generic(Scale, \
-  VecFloat*: _SCurveScaleOriginVector, \
-  float: _SCurveScaleOriginScalar, \
-  default: PBErrInvalidPolymorphism)(Curve, Scale)
-
-#define SCurveScaleStart(Curve, Scale) _Generic(Scale, \
-  VecFloat*: _SCurveScaleStartVector, \
-  float: _SCurveScaleStartScalar, \
-  default: PBErrInvalidPolymorphism)(Curve, Scale)
-
-#define SCurveScaleCenter(Curve, Scale) _Generic(Scale, \
-  VecFloat*: _SCurveScaleCenterVector, \
-  float: _SCurveScaleCenterScalar, \
-  default: PBErrInvalidPolymorphism)(Curve, Scale)
-
-#define BBodyGetIndexCtrl(Body, ICtrl) _Generic(ICtrl, \
-  VecShort*: _BBodyGetIndexCtrl, \
-  VecShort2D*: _BBodyGetIndexCtrl, \
-  VecShort3D*: _BBodyGetIndexCtrl, \
-  VecShort4D*: _BBodyGetIndexCtrl, \
-  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl))
-
-#define BBodyGet(Body, U) _Generic(U, \
-  VecFloat*: _BBodyGet, \
-  VecFloat2D*: _BBodyGet, \
-  VecFloat3D*: _BBodyGet, \
-  default: PBErrInvalidPolymorphism)(Body, (VecFloat*)(U))
-
-#define BBodyCtrl(Body, ICtrl) _Generic(ICtrl, \
-  VecShort*: _BBodyCtrl, \
-  VecShort2D*: _BBodyCtrl, \
-  VecShort3D*: _BBodyCtrl, \
-  VecShort4D*: _BBodyCtrl, \
-  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl))
-
-#define BBodySetCtrl(Body, ICtrl, Vec) _Generic(ICtrl, \
-  VecShort*: _Generic(Vec, \
-    VecFloat*: _BBodySetCtrl, \
-    VecFloat2D*: _BBodySetCtrl, \
-    VecFloat3D*: _BBodySetCtrl, \
-    default: PBErrInvalidPolymorphism), \
-  VecShort2D*: _Generic(Vec, \
-    VecFloat*: _BBodySetCtrl, \
-    VecFloat2D*: _BBodySetCtrl, \
-    VecFloat3D*: _BBodySetCtrl, \
-    default: PBErrInvalidPolymorphism), \
-  VecShort3D*: _Generic(Vec, \
-    VecFloat*: _BBodySetCtrl, \
-    VecFloat2D*: _BBodySetCtrl, \
-    VecFloat3D*: _BBodySetCtrl, \
-    default: PBErrInvalidPolymorphism), \
-  VecShort4D*: _Generic(Vec, \
-    VecFloat*: _BBodySetCtrl, \
-    VecFloat2D*: _BBodySetCtrl, \
-    VecFloat3D*: _BBodySetCtrl, \
-    default: PBErrInvalidPolymorphism), \
-  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl), \
-    (VecFloat*)(Vec))
+// -------------- BCurve
 
 // ================= Data structure ===================
 
@@ -137,39 +30,6 @@ typedef struct BCurve {
   // defining the curve
   VecFloat** _ctrl;
 } BCurve;
-
-typedef struct SCurve {
-  // Order
-  int _order;
-  // Dimension
-  int _dim;
-  // Number of segments (one segment equals one BCurve)
-  int _nbSeg;
-  // Set of BCurve
-  GSet _seg;
-  // Set of control points
-  GSet _ctrl;
-} SCurve;
-
-typedef struct SCurveIter {
-  // Attached SCurve
-  SCurve* _curve;
-  // Current position
-  float _curPos;
-  // Step delta
-  float _delta;
-} SCurveIter;
-
-typedef struct BBody {
-  // Order
-  int _order;
-  // Dimensions (input/output) (for example (2,3) gives a surface in 3D)
-  VecShort2D _dim;
-  // ((_order + 1) ^ _dim[0]) control points of the surface
-  // they are ordered as follow: 
-  // (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
-  VecFloat** _ctrl;
-} BBody;
 
 // ================ Functions declaration ====================
 
@@ -328,6 +188,25 @@ VecFloat* BCurveGetWeightCtrlPt(BCurve* that, float t);
 // Return a Facoid whose axis are aligned on the standard coordinate 
 // system.
 Facoid* BCurveGetBoundingBox(BCurve* that);
+
+// -------------- SCurve
+
+// ================= Data structure ===================
+
+typedef struct SCurve {
+  // Order
+  int _order;
+  // Dimension
+  int _dim;
+  // Number of segments (one segment equals one BCurve)
+  int _nbSeg;
+  // Set of BCurve
+  GSet _seg;
+  // Set of control points
+  GSet _ctrl;
+} SCurve;
+
+// ================ Functions declaration ====================
 
 // Create a new SCurve of dimension 'dim', order 'order' and 
 // 'nbSeg' segments
@@ -543,6 +422,45 @@ inline
 #endif 
 void _SCurveTranslate(SCurve* that, VecFloat* v);
 
+// Create a new SCurve from the outline of the Shapoid 'shap'
+// The Shapoid must be of dimension 2
+// Control points are ordered CCW of the Shapoid
+#if BUILDMODE != 0
+inline
+#endif 
+SCurve* SCurveCreateFromShapoid(Shapoid* shap);
+
+// Create a new SCurve from the outline of the Facoid 'shap'
+// The Facoid must be of dimension 2
+// Control points are ordered CCW of the Shapoid
+SCurve* SCurveCreateFromFacoid(Facoid* shap);
+
+// Create a new SCurve from the outline of the Pyramidoid 'shap'
+// The Pyramidoid must be of dimension 2
+// Control points are ordered CCW of the Shapoid
+SCurve* SCurveCreateFromPyramidoid(Pyramidoid* shap);
+
+// Create a new SCurve from the outline of the Spheroid 'shap'
+// The Spheroid must be of dimension 2
+// Control points are ordered CCW of the Shapoid
+// Calculate an approximation as there is no exact solution
+SCurve* SCurveCreateFromSpheroid(Spheroid* shap);
+
+// -------------- SCurveIter
+
+// ================= Data structure ===================
+
+typedef struct SCurveIter {
+  // Attached SCurve
+  SCurve* _curve;
+  // Current position
+  float _curPos;
+  // Step delta
+  float _delta;
+} SCurveIter;
+
+// ================ Functions declaration ====================
+
 // Create a new SCurveIter attached to the SCurve 'curve' with a step 
 // of 'delta'
 SCurveIter SCurveIterCreateStatic(SCurve* curve, float delta);
@@ -604,6 +522,23 @@ float SCurveIterGetPos(SCurveIter* that);
 inline
 #endif 
 VecFloat* SCurveIterGet(SCurveIter* that);
+
+// -------------- BBody
+
+// ================= Data structure ===================
+
+typedef struct BBody {
+  // Order
+  int _order;
+  // Dimensions (input/output) (for example (2,3) gives a surface in 3D)
+  VecShort2D _dim;
+  // ((_order + 1) ^ _dim[0]) control points of the surface
+  // they are ordered as follow: 
+  // (0,0,0),(0,0,1),...,(0,0,order+1),(0,1,0),(0,1,1),...
+  VecFloat** _ctrl;
+} BBody;
+
+// ================ Functions declaration ====================
 
 // Create a new BBody of order 'order' and dimension 'dim'
 // Controls are initialized with null vectors
@@ -827,6 +762,115 @@ void BBodyRotZCenter(BBody* that, float theta);
 inline
 #endif 
 void BBodyRotZStart(BBody* that, float theta);
+
+// ================= Polymorphism ==================
+
+#define BCurveTranslate(Curve, Vec) _Generic(Vec, \
+  VecFloat*: _BCurveTranslate, \
+  VecFloat2D*: _BCurveTranslate, \
+  VecFloat3D*: _BCurveTranslate, \
+  default: PBErrInvalidPolymorphism)(Curve, (VecFloat*)(Vec))
+
+#define SCurveTranslate(Curve, Vec) _Generic(Vec, \
+  VecFloat*: _SCurveTranslate, \
+  VecFloat2D*: _SCurveTranslate, \
+  VecFloat3D*: _SCurveTranslate, \
+  default: PBErrInvalidPolymorphism)(Curve, (VecFloat*)(Vec))
+
+#define BBodyTranslate(Body, Vec) _Generic(Vec, \
+  VecFloat*: _BBodyTranslate, \
+  VecFloat2D*: _BBodyTranslate, \
+  VecFloat3D*: _BBodyTranslate, \
+  default: PBErrInvalidPolymorphism)(Body, (VecFloat*)(Vec))
+
+#define BCurveScaleOrigin(Curve, Scale) _Generic(Scale, \
+  VecFloat*: _BCurveScaleOriginVector, \
+  float: _BCurveScaleOriginScalar, \
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
+
+#define BCurveScaleStart(Curve, Scale) _Generic(Scale, \
+  VecFloat*: _BCurveScaleStartVector, \
+  float: _BCurveScaleStartScalar, \
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
+
+#define BCurveScaleCenter(Curve, Scale) _Generic(Scale, \
+  VecFloat*: _BCurveScaleCenterVector, \
+  float: _BCurveScaleCenterScalar, \
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
+
+#define BBodyScaleOrigin(Body, Scale) _Generic(Scale, \
+  VecFloat*: _BBodyScaleOriginVector, \
+  float: _BBodyScaleOriginScalar, \
+  default: PBErrInvalidPolymorphism)(Body, Scale)
+
+#define BBodyScaleStart(Body, Scale) _Generic(Scale, \
+  VecFloat*: _BBodyScaleStartVector, \
+  float: _BBodyScaleStartScalar, \
+  default: PBErrInvalidPolymorphism)(Body, Scale)
+
+#define BBodyScaleCenter(Body, Scale) _Generic(Scale, \
+  VecFloat*: _BBodyScaleCenterVector, \
+  float: _BBodyScaleCenterScalar, \
+  default: PBErrInvalidPolymorphism)(Body, Scale)
+
+#define SCurveScaleOrigin(Curve, Scale) _Generic(Scale, \
+  VecFloat*: _SCurveScaleOriginVector, \
+  float: _SCurveScaleOriginScalar, \
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
+
+#define SCurveScaleStart(Curve, Scale) _Generic(Scale, \
+  VecFloat*: _SCurveScaleStartVector, \
+  float: _SCurveScaleStartScalar, \
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
+
+#define SCurveScaleCenter(Curve, Scale) _Generic(Scale, \
+  VecFloat*: _SCurveScaleCenterVector, \
+  float: _SCurveScaleCenterScalar, \
+  default: PBErrInvalidPolymorphism)(Curve, Scale)
+
+#define BBodyGetIndexCtrl(Body, ICtrl) _Generic(ICtrl, \
+  VecShort*: _BBodyGetIndexCtrl, \
+  VecShort2D*: _BBodyGetIndexCtrl, \
+  VecShort3D*: _BBodyGetIndexCtrl, \
+  VecShort4D*: _BBodyGetIndexCtrl, \
+  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl))
+
+#define BBodyGet(Body, U) _Generic(U, \
+  VecFloat*: _BBodyGet, \
+  VecFloat2D*: _BBodyGet, \
+  VecFloat3D*: _BBodyGet, \
+  default: PBErrInvalidPolymorphism)(Body, (VecFloat*)(U))
+
+#define BBodyCtrl(Body, ICtrl) _Generic(ICtrl, \
+  VecShort*: _BBodyCtrl, \
+  VecShort2D*: _BBodyCtrl, \
+  VecShort3D*: _BBodyCtrl, \
+  VecShort4D*: _BBodyCtrl, \
+  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl))
+
+#define BBodySetCtrl(Body, ICtrl, Vec) _Generic(ICtrl, \
+  VecShort*: _Generic(Vec, \
+    VecFloat*: _BBodySetCtrl, \
+    VecFloat2D*: _BBodySetCtrl, \
+    VecFloat3D*: _BBodySetCtrl, \
+    default: PBErrInvalidPolymorphism), \
+  VecShort2D*: _Generic(Vec, \
+    VecFloat*: _BBodySetCtrl, \
+    VecFloat2D*: _BBodySetCtrl, \
+    VecFloat3D*: _BBodySetCtrl, \
+    default: PBErrInvalidPolymorphism), \
+  VecShort3D*: _Generic(Vec, \
+    VecFloat*: _BBodySetCtrl, \
+    VecFloat2D*: _BBodySetCtrl, \
+    VecFloat3D*: _BBodySetCtrl, \
+    default: PBErrInvalidPolymorphism), \
+  VecShort4D*: _Generic(Vec, \
+    VecFloat*: _BBodySetCtrl, \
+    VecFloat2D*: _BBodySetCtrl, \
+    VecFloat3D*: _BBodySetCtrl, \
+    default: PBErrInvalidPolymorphism), \
+  default: PBErrInvalidPolymorphism)(Body, (VecShort*)(ICtrl), \
+    (VecFloat*)(Vec))
 
 // ================ Inliner ====================
 

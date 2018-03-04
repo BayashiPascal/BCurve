@@ -7,11 +7,7 @@
 #include "bcurve-inline.c"
 #endif
 
-// ================ Functions declaration ====================
-
-// Recursive function to calculate the value of a BBody
-VecFloat* BBodyGetRec(BBody *that, BCurve *curve, 
-  VecShort *iCtrl, VecFloat *u, int iDimIn);
+// -------------- BCurve
 
 // ================ Functions implementation ====================
 
@@ -428,6 +424,10 @@ Facoid* BCurveGetBoundingBox(BCurve* that) {
   return res;
 }
 
+// -------------- SCurve
+
+// ================ Functions implementation ====================
+
 // Create a new SCurve of dimension 'dim', order 'order' and 
 // 'nbSeg' segments
 SCurve* SCurveCreate(int order, int dim, int nbSeg) {
@@ -704,7 +704,8 @@ void SCurvePrint(SCurve* that, FILE* stream) {
     VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
     if (iMark == 0)
       fprintf(stream, "<");
-    VecPrint(ctrl, stream);
+    //VecPrint(ctrl, stream);
+    VecFloatPrint(ctrl, stream, 6);
     if (iMark == 0)
       fprintf(stream, ">");
     if (GSetIterIsLast(&iter) == false) 
@@ -834,6 +835,8 @@ void SCurveRemoveTailSeg(SCurve* that) {
 // Get the bounding box of the SCurve.
 // Return a Facoid whose axis are aligned on the standard coordinate 
 // system.
+// TODO : better solution possible, refer to 
+// https://pomax.github.io/bezierinfo/#circles_cubic
 Facoid* SCurveGetBoundingBox(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
@@ -864,6 +867,128 @@ Facoid* SCurveGetBoundingBox(SCurve* that) {
   return bound;
 }
 
+// Create a new SCurve from the outline of the Facoid 'shap'
+// The Facoid must be of dimension 2
+// Control points are ordered CCW of the Shapoid
+SCurve* SCurveCreateFromFacoid(Facoid* shap) {
+#if BUILDMODE == 0
+  if (shap == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'shap' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (ShapoidGetDim(shap) != 2) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, 
+      "'shap' 's dimension is invalid (%d==2)", 
+      ShapoidGetDim(shap));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Create the curve
+  SCurve* ret = SCurveCreate(1, 2, 4);
+  // Set the coordinates of the control points according to the 
+  // Facoid
+  for (int i = 5; i--;)
+    VecCopy(SCurveCtrl(ret, i), ShapoidPos(shap));
+  VecOp(SCurveCtrl(ret, 1), 1.0, ShapoidAxis(shap, 0), 1.0);
+  VecOp(SCurveCtrl(ret, 2), 1.0, ShapoidAxis(shap, 0), 1.0);
+  VecOp(SCurveCtrl(ret, 2), 1.0, ShapoidAxis(shap, 1), 1.0);
+  VecOp(SCurveCtrl(ret, 3), 1.0, ShapoidAxis(shap, 1), 1.0);
+  // Return the curve
+  return ret;
+}
+
+// Create a new SCurve from the outline of the Pyramidoid 'shap'
+// The Pyramidoid must be of dimension 2
+// Control points are ordered CCW of the Shapoid
+SCurve* SCurveCreateFromPyramidoid(Pyramidoid* shap) {
+#if BUILDMODE == 0
+  if (shap == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'shap' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (ShapoidGetDim(shap) != 2) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, 
+      "'shap' 's dimension is invalid (%d==2)", 
+      ShapoidGetDim(shap));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Create the curve
+  SCurve* ret = SCurveCreate(1, 2, 3);
+  // Set the coordinates of the control points according to the 
+  // Facoid
+  for (int i = 4; i--;)
+    VecCopy(SCurveCtrl(ret, i), ShapoidPos(shap));
+  VecOp(SCurveCtrl(ret, 1), 1.0, ShapoidAxis(shap, 0), 1.0);
+  VecOp(SCurveCtrl(ret, 2), 1.0, ShapoidAxis(shap, 1), 1.0);
+  // Return the curve
+  return ret;
+}
+
+// Create a new SCurve from the outline of the Spheroid 'shap'
+// The Spheroid must be of dimension 2
+// Control points are ordered CCW of the Shapoid
+// Calculate an approximation as there is no exact solution
+SCurve* SCurveCreateFromSpheroid(Spheroid* shap) {
+#if BUILDMODE == 0
+  if (shap == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'shap' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (ShapoidGetDim(shap) != 2) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, 
+      "'shap' 's dimension is invalid (%d==2)", 
+      ShapoidGetDim(shap));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Create the curve
+  SCurve* ret = SCurveCreate(3, 2, 4);
+  // Set the control points
+  // The anchors of the curve can be easily calculated from the 
+  // position and axis of the Spheroid
+  int iAxis = 0;
+  float coeff = 0.5;
+  for (int i = 0; i < 12; i += 3) {
+    VecCopy(SCurveCtrl(ret, i), ShapoidPos(shap));
+    if (i == 6)
+      coeff *= -1.0;
+    VecOp(SCurveCtrl(ret, i), 1.0, ShapoidAxis(shap, iAxis), coeff);
+    if (i > 0)
+      VecCopy(SCurveCtrl(ret, i - 1), SCurveCtrl(ret, i));
+    if (i < 11)
+      VecCopy(SCurveCtrl(ret, i + 1), SCurveCtrl(ret, i));
+    iAxis = (iAxis == 0 ? 1 : 0);
+  }
+  VecCopy(SCurveCtrl(ret, 12), SCurveCtrl(ret, 0));
+  VecCopy(SCurveCtrl(ret, 11), SCurveCtrl(ret, 0));
+  // Calculate the others control points by transforming the 
+  // quadratic approximation of a quarter of the unit circle :
+  // A(1,0), B(1,4(sqrt(2)-1)/3), C(4(sqrt(2)-1)/3,1), D(0,1)
+  // toward the Spheroid
+  float c = 0.276142;
+  VecOp(SCurveCtrl(ret, 1), 1.0, ShapoidAxis(shap, 1), c);
+  VecOp(SCurveCtrl(ret, 2), 1.0, ShapoidAxis(shap, 0), c);
+  VecOp(SCurveCtrl(ret, 4), 1.0, ShapoidAxis(shap, 0), -1.0 * c);
+  VecOp(SCurveCtrl(ret, 5), 1.0, ShapoidAxis(shap, 1), c);
+  VecOp(SCurveCtrl(ret, 7), 1.0, ShapoidAxis(shap, 1), -1.0 * c);
+  VecOp(SCurveCtrl(ret, 8), 1.0, ShapoidAxis(shap, 0), -1.0 * c);
+  VecOp(SCurveCtrl(ret, 10), 1.0, ShapoidAxis(shap, 0), c);
+  VecOp(SCurveCtrl(ret, 11), 1.0, ShapoidAxis(shap, 1), -1.0 * c);
+  // Return the curve
+  return ret;
+}
+
+// -------------- SCurveIter
+
+// ================ Functions implementation ====================
+
 // Create a new SCurveIter attached to the SCurve 'curve' with a step 
 // of 'delta'
 SCurveIter SCurveIterCreateStatic(SCurve* curve, float delta) {
@@ -888,6 +1013,16 @@ SCurveIter SCurveIterCreateStatic(SCurve* curve, float delta) {
   // Return the new iterator
   return iter;
 }
+
+// -------------- BBody
+
+// ================ Functions declaration ====================
+
+// Recursive function to calculate the value of a BBody
+VecFloat* BBodyGetRec(BBody *that, BCurve *curve, 
+  VecShort *iCtrl, VecFloat *u, int iDimIn);
+
+// ================ Functions implementation ====================
 
 // Create a new BBody of order 'order' and dimension 'dim'
 // Controls are initialized with null vectors

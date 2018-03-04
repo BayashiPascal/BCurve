@@ -1133,6 +1133,109 @@ void UnitTestSCurveGetNewDim() {
   printf("UnitTestSCurveGetNewDim OK\n");
 }
 
+void UnitTestSCurveCreateFromShapoid() {
+  Facoid* facoid = FacoidCreate(2);
+  Pyramidoid* pyramidoid = PyramidoidCreate(2);
+  Spheroid* spheroid = SpheroidCreate(2);
+  VecFloat2D v = VecFloatCreateStatic2D();
+  VecSet(&v, 0, 1.0); VecSet(&v, 1, 2.0); 
+  ShapoidSetPos(facoid, &v);
+  ShapoidSetPos(pyramidoid, &v);
+  ShapoidSetPos(spheroid, &v);
+  VecSet(&v, 0, 3.0); VecSet(&v, 1, 4.0); 
+  ShapoidSetAxis(facoid, 0, &v);
+  ShapoidSetAxis(pyramidoid, 0, &v);
+  ShapoidSetAxis(spheroid, 0, &v);
+  VecSet(&v, 0, -5.0); VecSet(&v, 1, 6.0); 
+  ShapoidSetAxis(facoid, 1, &v);
+  ShapoidSetAxis(pyramidoid, 1, &v);
+  ShapoidSetAxis(spheroid, 1, &v);
+  SCurve* curve = SCurveCreateFromShapoid((Shapoid*)facoid);
+  if (curve == NULL || SCurveGetDim(curve) != 2 ||
+    SCurveGetOrder(curve) != 1 || SCurveGetNbSeg(curve) != 4) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveCreateFromFacoid failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (ISEQUALF(VecGet(SCurveCtrl(curve, 0), 0), 1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 0), 1), 2.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 0), 4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 1), 6.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 0), -1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 1), 12.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 0), -4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 1), 8.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 4), 0), 1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 4), 1), 2.0) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveCreateFromFacoid failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurveFree(&curve);
+  curve = SCurveCreateFromShapoid((Shapoid*)pyramidoid);
+  if (curve == NULL || SCurveGetDim(curve) != 2 ||
+    SCurveGetOrder(curve) != 1 || SCurveGetNbSeg(curve) != 3) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveCreateFromPyramidoid failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (ISEQUALF(VecGet(SCurveCtrl(curve, 0), 0), 1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 0), 1), 2.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 0), 4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 1), 6.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 0), -4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 1), 8.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 0), 1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 1), 2.0) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveCreateFromPyramidoid failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurveFree(&curve);
+  curve = SCurveCreateFromShapoid((Shapoid*)spheroid);
+  if (curve == NULL || SCurveGetDim(curve) != 2 ||
+    SCurveGetOrder(curve) != 3 || SCurveGetNbSeg(curve) != 4) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveCreateFromSpheroid failed");
+    PBErrCatch(BCurveErr);
+  }
+  if (ISEQUALF(VecGet(SCurveCtrl(curve, 0), 0), 2.5) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 0), 1), 4.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 0), 1.119290) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 1), 5.656852) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 0), -0.671574) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 1), 6.104568) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 0), -1.5) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 1), 5.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 4), 0), -2.328426) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 4), 1), 3.895432) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 5), 0), -1.880710) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 5), 1), 1.656852) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 6), 0), -0.5) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 6), 1), 0.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 7), 0), 0.880710) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 7), 1), -1.656852) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 8), 0), 2.671574) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 8), 1), -2.104568) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 9), 0), 3.5) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 9), 1), -1.0) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 10), 0), 4.328426) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 10), 1), 0.104568) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 11), 0), 3.880710) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 11), 1), 2.343148) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 12), 0), 2.5) == false ||
+    ISEQUALF(VecGet(SCurveCtrl(curve, 12), 1), 4.0) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveCreateFromSpheroid failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurveFree(&curve);
+  ShapoidFree(&facoid);
+  ShapoidFree(&pyramidoid);
+  ShapoidFree(&spheroid);
+  printf("UnitTestSCurveCreateFromShapoid OK\n");
+}
+
 void UnitTestSCurve() {
   UnitTestSCurveCreateCloneFree();
   UnitTestSCurveLoadSavePrint();
@@ -1146,6 +1249,7 @@ void UnitTestSCurve() {
   UnitTestSCurveTranslate();
   UnitTestSCurveGetBoundingBox();
   UnitTestSCurveGetNewDim();
+  UnitTestSCurveCreateFromShapoid();
   printf("UnitTestSCurve OK\n");
 }
 
