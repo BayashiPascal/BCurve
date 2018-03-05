@@ -845,7 +845,7 @@ Facoid* SCurveGetBoundingBox(SCurve* that) {
   }
 #endif
   // Declare a set to memorize the bounding box of each segment
-  GSet set = GSetCreateStatic();
+  GSetShapoid set = GSetShapoidCreateStatic();
   // For each segment
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_seg));
   do {
