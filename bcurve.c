@@ -455,7 +455,7 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
   that->_nbSeg = nbSeg;
   // Create the GSet
   that->_ctrl = GSetVecFloatCreateStatic();
-  that->_seg = GSetCreateStatic();
+  that->_seg = GSetBCurveCreateStatic();
   // For each segment
   for (int iSeg = nbSeg; iSeg--;) {
     // Create a segment

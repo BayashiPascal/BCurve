@@ -201,7 +201,7 @@ typedef struct SCurve {
   // Number of segments (one segment equals one BCurve)
   int _nbSeg;
   // Set of BCurve
-  GSet _seg;
+  GSetBCurve _seg;
   // Set of control points
   GSetVecFloat _ctrl;
 } SCurve;
@@ -300,7 +300,7 @@ BCurve* SCurveSeg(SCurve* that, int iSeg);
 #if BUILDMODE != 0
 inline
 #endif 
-GSet* SCurveSegs(SCurve* that);
+GSetBCurve* SCurveSegs(SCurve* that);
 
 // Add one segment at the end of the curve (controls are set to 
 // vectors null, except the first one which the last one of the current

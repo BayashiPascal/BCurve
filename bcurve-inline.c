@@ -606,7 +606,7 @@ BCurve* SCurveSeg(SCurve* that, int iSeg) {
 #if BUILDMODE != 0
 inline
 #endif 
-GSet* SCurveSegs(SCurve* that) {
+GSetBCurve* SCurveSegs(SCurve* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
