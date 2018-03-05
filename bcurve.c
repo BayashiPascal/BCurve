@@ -228,29 +228,29 @@ VecFloat* BCurveGet(BCurve* that, float u) {
 // The created BCurve is of same dimension as the VecFloat and of order 
 // equal to the number of VecFloat in 'set' minus one
 // Return NULL if it couldn't create the BCurve
-BCurve* BCurveFromCloudPoint(GSet* set) {
+BCurve* BCurveFromCloudPoint(GSetVecFloat* set) {
 #if BUILDMODE == 0
   if (set == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
     sprintf(BCurveErr->_msg, "'set' is null");
     PBErrCatch(BCurveErr);
   }
-  if (set->_nbElem < 1) {
+  if (GSetNbElem(set) < 1) {
     BCurveErr->_type = PBErrTypeInvalidArg;
     sprintf(BCurveErr->_msg, "'set' is empty");
     PBErrCatch(BCurveErr);
   }
 #endif
   // Declare a variable to memorize the result
-  int order = set->_nbElem - 1;
-  int dim = VecGetDim((VecFloat*)(set->_head->_data));
+  int order = GSetNbElem(set) - 1;
+  int dim = VecGetDim(GSetGet(set, 0));
   BCurve* curve = BCurveCreate(order, dim);
   // Set the first control point to the first point in the point cloud
-  BCurveSetCtrl(curve, 0, (VecFloat*)(set->_head->_data));
+  BCurveSetCtrl(curve, 0, GSetGet(set, 0));
   // If the order is greater than 0
   if (order > 0) {
     // Set the last control point to the last point in the point cloud
-    BCurveSetCtrl(curve, order, (VecFloat*)(set->_tail->_data));
+    BCurveSetCtrl(curve, order, GSetGet(set, order));
     // If the order is greater than 1
     if (order > 1) {
       // Calculate the t values for intermediate control points
@@ -260,12 +260,12 @@ BCurve* BCurveFromCloudPoint(GSet* set) {
       // in the linear system to solve
       VecShort2D dimMat = VecShortCreateStatic2D();
       // Declare a variable to memorize the t values
-      VecFloat* t = VecFloatCreate(set->_nbElem);
+      VecFloat* t = VecFloatCreate(GSetNbElem(set));
       // Set the dimensions of the matrix of the linear system
       VecSet(&dimMat, 0, order - 1);
       VecSet(&dimMat, 1, order - 1);
       // For each point 
-      GSetElem* elem = set->_head->_next;
+      GSetElem* elem = GSetGetElem(set, 1);
       int iPoint = 1;
       while (elem != NULL) {
         // Get the distance from the previous point
@@ -307,10 +307,9 @@ BCurve* BCurveFromCloudPoint(GSet* set) {
           // coordinate
           float x = VecGet((VecFloat*)(GSetGet(set, 
             VecGet(&dimMat, 1) + 1)), iDim);
-          x -= VecGet(weight, 0) * 
-            VecGet((VecFloat*)(set->_head->_data), iDim);
+          x -= VecGet(weight, 0) * VecGet(GSetGet(set, 0), iDim);
           x -= VecGet(weight, order) * 
-            VecGet((VecFloat*)(set->_tail->_data), iDim);
+            VecGet(GSetGet(set, GSetNbElem(set) - 1), iDim);
           VecSet(v, VecGet(&dimMat, 1), x);
           // Free memory
           VecFree(&weight);
@@ -455,7 +454,7 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
   that->_order = order;
   that->_nbSeg = nbSeg;
   // Create the GSet
-  that->_ctrl = GSetCreateStatic();
+  that->_ctrl = GSetVecFloatCreateStatic();
   that->_seg = GSetCreateStatic();
   // For each segment
   for (int iSeg = nbSeg; iSeg--;) {
@@ -465,7 +464,7 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
     if (iSeg != nbSeg - 1) {
       // Replace the last control points by the current first
       VecFree(seg->_ctrl + order);
-      seg->_ctrl[order] = (VecFloat*)(that->_ctrl._head->_data);
+      seg->_ctrl[order] = GSetGet(&(that->_ctrl), 0);
       // Add the control points
       for (int iCtrl = order; iCtrl--;)
         GSetPush(&(that->_ctrl), BCurveCtrl(seg, iCtrl));
@@ -498,8 +497,8 @@ SCurve* SCurveClone(SCurve* that) {
   GSetIterForward iterClone = 
     GSetIterForwardCreateStatic(&(clone->_ctrl));
   do {
-    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
-    VecFloat* ctrlClone = (VecFloat*)GSetIterGet(&iterClone);
+    VecFloat* ctrl = GSetIterGet(&iter);
+    VecFloat* ctrlClone = GSetIterGet(&iterClone);
     VecCopy(ctrlClone, ctrl);
   } while (GSetIterStep(&iter) && GSetIterStep(&iterClone));
   return clone;
@@ -732,7 +731,8 @@ void SCurveAddSegTail(SCurve* that) {
   // Free memory used by the first control point
   VecFree(seg->_ctrl);
   // Replace it with the current last control
-  seg->_ctrl[0] = that->_ctrl._tail->_data;
+  seg->_ctrl[0] = 
+    GSetGet(&(that->_ctrl), GSetNbElem(&(that->_ctrl)) - 1);
   // Add the segment to the set of segment
   GSetAppend(&(that->_seg), seg);
   // Add the new control points to the set of control points
@@ -758,7 +758,7 @@ void SCurveAddSegHead(SCurve* that) {
   // Free memory used by the last control point
   VecFree(seg->_ctrl + that->_order);
   // Replace it with the current first control
-  seg->_ctrl[that->_order] = that->_ctrl._head->_data;
+  seg->_ctrl[that->_order] = GSetGet(&(that->_ctrl), 0);
   // Add the segment to the set of segment
   GSetPush(&(that->_seg), seg);
   // Add the new control points to the set of control points

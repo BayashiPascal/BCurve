@@ -177,7 +177,7 @@ void _BCurveTranslate(BCurve* that, VecFloat* v);
 // The created BCurve is of same dimension as the VecFloat and of order 
 // equal to the number of VecFloat in 'set' minus one
 // Return NULL if it couldn't create the BCurve
-BCurve* BCurveFromCloudPoint(GSet* set);
+BCurve* BCurveFromCloudPoint(GSetVecFloat* set);
 
 // Get a VecFloat of dimension equal to the number of control points
 // Values of the VecFloat are the weight of each control point in the 
@@ -203,7 +203,7 @@ typedef struct SCurve {
   // Set of BCurve
   GSet _seg;
   // Set of control points
-  GSet _ctrl;
+  GSetVecFloat _ctrl;
 } SCurve;
 
 // ================ Functions declaration ====================
@@ -282,7 +282,7 @@ VecFloat* SCurveCtrl(SCurve* that, int iCtrl);
 #if BUILDMODE != 0
 inline
 #endif 
-GSet* SCurveCtrls(SCurve* that);
+GSetVecFloat* SCurveCtrls(SCurve* that);
 
 // Get a clone of the 'iSeg'-th segment
 #if BUILDMODE != 0

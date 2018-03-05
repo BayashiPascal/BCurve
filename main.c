@@ -344,7 +344,7 @@ void UnitTestBCurveFromCloudPoint() {
   VecFloat* vC = VecFloatCreate(dim);
   VecSet(vC, 0, 1.0); VecSet(vC, 1, 0.0);
   BCurveSetCtrl(curve, 2, vC);
-  GSet* set = GSetCreate();
+  GSetVecFloat* set = GSetVecFloatCreate();
   VecFree(&vB);
   vB = BCurveGet(curve, 0.5);
   GSetAppend(set, vA);
@@ -484,7 +484,7 @@ void UnitTestSCurveCreateCloneFree() {
     }
   } while (GSetIterStep(&iter));
   iter = GSetIterForwardCreateStatic(&(curve->_seg));
-  VecFloat* prevCtrl = (VecFloat*)(curve->_ctrl._head->_data);
+  VecFloat* prevCtrl = (VecFloat*)(curve->_ctrl._set._head->_data);
   do {
     BCurve* seg = GSetIterGet(&iter);
     if (seg->_ctrl[0] != prevCtrl) {
