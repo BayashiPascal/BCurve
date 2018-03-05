@@ -705,7 +705,7 @@ void SCurveRotStart(SCurve* that, float theta) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat* origin = GSetGet(&(that->_ctrl), 0);
+  VecFloat* origin = GSetGetFirst(&(that->_ctrl));
   // For each control point except the first one
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   if (GSetIterStep(&iter)) {
@@ -819,7 +819,7 @@ void _SCurveScaleStartVector(SCurve* that, VecFloat* v) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat* origin = GSetGet(&(that->_ctrl), 0);
+  VecFloat* origin = GSetGetFirst(&(that->_ctrl));
   // For each control point except the first one
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   if (GSetIterStep(&iter)) {
@@ -849,7 +849,7 @@ void _SCurveScaleStartScalar(SCurve* that, float c) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  VecFloat* origin = GSetGet(&(that->_ctrl), 0);
+  VecFloat* origin = GSetGetFirst(&(that->_ctrl));
   // For each control point except teh first one
   GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
   if (GSetIterStep(&iter)) {
