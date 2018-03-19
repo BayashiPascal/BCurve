@@ -990,16 +990,21 @@ SCurve* SCurveCreateFromSpheroid(Spheroid* shap) {
 // positions on the curve over t varying from 0.0 to 1.0
 float SCurveGetDistToCurve(SCurve* that, SCurve* curve) {
 #if BUILDMODE == 0
-  if (shap == NULL) {
+  if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
     sprintf(BCurveErr->_msg, "'shap' is null");
     PBErrCatch(BCurveErr);
   }
-  if (ShapoidGetDim(shap) != 2) {
+  if (curve == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'shap' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (SCurveGetDim(that) != SCurveGetDim(curve)) {
     BCurveErr->_type = PBErrTypeInvalidArg;
     sprintf(BCurveErr->_msg, 
-      "'shap' 's dimension is invalid (%d==2)", 
-      ShapoidGetDim(shap));
+      "dimensions of 'that' and 'curve' differ (%d==%d)",
+      SCurveGetDim(that), SCurveGetDim(curve));
     PBErrCatch(BCurveErr);
   }
 #endif
