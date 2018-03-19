@@ -446,6 +446,12 @@ SCurve* SCurveCreateFromPyramidoid(Pyramidoid* shap);
 // Calculate an approximation as there is no exact solution
 SCurve* SCurveCreateFromSpheroid(Spheroid* shap);
 
+// Get the distance between the SCurve 'that' and the SCurve 'curve'
+// The distance is defined as the integral of 
+// ||'that'(u(t))-'curve'(v(t))|| where u and v are the relative 
+// positions on the curve over t varying from 0.0 to 1.0
+float SCurveGetDistToCurve(SCurve* that, SCurve* curve);
+
 // -------------- SCurveIter
 
 // ================= Data structure ===================

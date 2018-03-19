@@ -984,6 +984,53 @@ SCurve* SCurveCreateFromSpheroid(Spheroid* shap) {
   return ret;
 }
 
+// Get the distance between the SCurve 'that' and the SCurve 'curve'
+// The distance is defined as the integral of 
+// ||'that'(u(t))-'curve'(v(t))|| where u and v are the relative 
+// positions on the curve over t varying from 0.0 to 1.0
+float SCurveGetDistToCurve(SCurve* that, SCurve* curve) {
+#if BUILDMODE == 0
+  if (shap == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'shap' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (ShapoidGetDim(shap) != 2) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, 
+      "'shap' 's dimension is invalid (%d==2)", 
+      ShapoidGetDim(shap));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Declare a variable to memorize the result
+  float res = 0.0;
+  // Declare a variable to memorize the step over parameter
+  float dt = 0.01;
+  int nb = (int)floor(1.0 / dt); 
+  float t = 0.0;
+  // Loop over the parameter
+  for (int i = nb; i--;) {
+    // Calculate the relative parameter for both curves
+    float u = t * SCurveGetMaxU(that);
+    float v = t * SCurveGetMaxU(curve);
+    // Get the value of both curve at these relative parameters
+    VecFloat* valA = SCurveGet(that, u);
+    VecFloat* valB = SCurveGet(curve, v);
+    // Get the distance between value
+    float dist = VecDist(valA, valB);
+    // Add to result
+    res += dist * dt;
+    // Step the parameter
+    t += dt;
+    // Free memory
+    VecFree(&valA);
+    VecFree(&valB);
+  }
+  // Return the result
+  return res;
+}
+
 // -------------- SCurveIter
 
 // ================ Functions implementation ====================

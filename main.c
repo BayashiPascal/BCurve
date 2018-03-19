@@ -1236,6 +1236,31 @@ void UnitTestSCurveCreateFromShapoid() {
   printf("UnitTestSCurveCreateFromShapoid OK\n");
 }
 
+void UnitTestSCurveGetDistToCurve() {
+  int order = 1;
+  int dim = 2;
+  int nbSeg = 1;
+  SCurve* curveA = SCurveCreate(order, dim, nbSeg);
+  SCurve* curveB = SCurveCreate(order, dim, nbSeg);
+  VecSet(SCurveCtrl(curveA, 0), 0, 0.0);
+  VecSet(SCurveCtrl(curveA, 0), 1, 0.0);
+  VecSet(SCurveCtrl(curveA, 1), 0, 1.0);
+  VecSet(SCurveCtrl(curveA, 1), 1, 0.0);
+  VecSet(SCurveCtrl(curveB, 0), 0, 0.0);
+  VecSet(SCurveCtrl(curveB, 0), 1, 2.0);
+  VecSet(SCurveCtrl(curveB, 1), 0, 1.0);
+  VecSet(SCurveCtrl(curveB, 1), 1, 2.0);
+  float dist = SCurveGetDistToCurve(curveA, curveB);
+  if (ISEQUALF(dist, 2.0) == false) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "SCurveGetDistToCurve failed");
+    PBErrCatch(BCurveErr);
+  }
+  SCurveFree(&curveA);
+  SCurveFree(&curveB);
+  printf("UnitTestSCurveGetDDistToCurve OK\n");
+}
+
 void UnitTestSCurve() {
   UnitTestSCurveCreateCloneFree();
   UnitTestSCurveLoadSavePrint();
@@ -1250,6 +1275,7 @@ void UnitTestSCurve() {
   UnitTestSCurveGetBoundingBox();
   UnitTestSCurveGetNewDim();
   UnitTestSCurveCreateFromShapoid();
+  UnitTestSCurveGetDistToCurve();
   printf("UnitTestSCurve OK\n");
 }
 
