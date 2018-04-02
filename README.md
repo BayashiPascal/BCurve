@@ -1,5 +1,5 @@
 # BCurve
-BCurve is C library to manipulate geometry based on Bezier curves of any dimension and order. 
+BCurve is a C library to manipulate geometry based on Bezier curves of any dimension and order. 
 
 It offers function to create, clone, load, save and modify a geometry, to print it, to scale, rotate (in 2D) or translate it, to get the weights (coefficients of each control point given the value of the parameter of the curve), and to get the bounding box. 
 
