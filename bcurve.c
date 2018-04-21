@@ -289,7 +289,7 @@ BCurve* BCurveFromCloudPoint(GSetVecFloat* set) {
         // in point cloud)
         for (VecSet(&dimMat, 1, 0); 
           VecGet(&dimMat, 1) < order - 1;
-          VecSet(&dimMat, 1, VecGet(&dimMat, 1) + 1)) {
+          VecSetAdd(&dimMat, 1, 1)) {
           // Get the weight of the control point at the value 
           // of t for this point
           VecFloat* weight = 
@@ -298,7 +298,7 @@ BCurve* BCurveFromCloudPoint(GSetVecFloat* set) {
           // For each intermediate control point
           for (VecSet(&dimMat, 0, 0); 
             VecGet(&dimMat, 0) < order - 1;
-            VecSet(&dimMat, 0, VecGet(&dimMat, 0) + 1))
+            VecSetAdd(&dimMat, 0, 1))
             // Set the matrix value with the corresponding
             // weight
             MatSet(m, &dimMat, VecGet(weight, 
@@ -415,9 +415,8 @@ Facoid* BCurveGetBoundingBox(BCurve* that) {
         VecSet(ShapoidAxis(res, iDim), iDim,
           VecGet(that->_ctrl[iCtrl], iDim));
     }
-    VecSet(ShapoidAxis(res, iDim), iDim,
-      VecGet(ShapoidAxis(res, iDim), iDim) - 
-      VecGet(ShapoidPos(res), iDim));
+    VecSetAdd(ShapoidAxis(res, iDim), iDim,
+      -1.0 * VecGet(ShapoidPos(res), iDim));
   }
   // Return the result
   return res;
@@ -1383,9 +1382,8 @@ Facoid* BBodyGetBoundingBox(BBody* that) {
         VecSet(ShapoidAxis(res, iDim), iDim,
           VecGet(that->_ctrl[iCtrl], iDim));
     }
-    VecSet(ShapoidAxis(res, iDim), iDim,
-      VecGet(ShapoidAxis(res, iDim), iDim) - 
-      VecGet(ShapoidPos(res), iDim));
+    VecSetAdd(ShapoidAxis(res, iDim), iDim,
+      -1.0 * VecGet(ShapoidPos(res), iDim));
   }
   // Return the result
   return res;
