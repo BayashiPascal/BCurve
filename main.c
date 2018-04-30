@@ -1034,10 +1034,10 @@ void UnitTestSCurveGetBoundingBox() {
   Facoid* bound = SCurveGetBoundingBox(curve);
   if (ISEQUALF(VecGet(ShapoidPos(bound), 0), -1.0) == false ||
     ISEQUALF(VecGet(ShapoidPos(bound), 1), -0.382683) == false ||
-    ISEQUALF(VecGet(ShapoidAxis(bound, 0), 0), 2.0) == false ||
+    ISEQUALF(VecGet(ShapoidAxis(bound, 0), 0), 2.382684) == false ||
     ISEQUALF(VecGet(ShapoidAxis(bound, 0), 1), 0.0) == false ||
     ISEQUALF(VecGet(ShapoidAxis(bound, 1), 0), 0.0) == false ||
-    ISEQUALF(VecGet(ShapoidAxis(bound, 1), 1), 1.382683) == false) {
+    ISEQUALF(VecGet(ShapoidAxis(bound, 1), 1), 1.765367) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "SCurveGetBoundingBox failed");
     PBErrCatch(BCurveErr);
