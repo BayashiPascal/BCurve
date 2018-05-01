@@ -71,7 +71,7 @@ void UnitTestBCurveLoadSavePrint() {
   BCurvePrint(curve, stdout);
   printf("\n");
   FILE* file = fopen("./bcurve.txt", "w");
-  if (BCurveSave(curve, file) == false) {
+  if (BCurveSave(curve, file, false) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "BCurveSave failed");
     PBErrCatch(BCurveErr);
@@ -548,7 +548,7 @@ void UnitTestSCurveLoadSavePrint() {
   SCurvePrint(curve, stdout);
   printf("\n");
   FILE* file = fopen("./scurve.txt", "w");
-  if (SCurveSave(curve, file) == false) {
+  if (SCurveSave(curve, file, false) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "SCurveSave failed");
     PBErrCatch(BCurveErr);
@@ -1610,7 +1610,7 @@ void UnitTestBBodyLoadSave() {
   VecSet(&v, 0, 0.0); VecSet(&v, 1, 0.0); VecSet(&v, 2, 1.0); 
   BBodySetCtrl(surf, &iCtrl, &v);
   FILE* file = fopen("./bbody.txt", "w");
-  if (BBodySave(surf, file) == false) {
+  if (BBodySave(surf, file, false) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "BBodySave failed");
     PBErrCatch(BCurveErr);

@@ -39,14 +39,22 @@ BCurve* BCurveCreate(int order, int dim);
 // Clone the BCurve
 BCurve* BCurveClone(BCurve* that);
 
+// Function which return the JSON encoding of 'that' 
+JSONNode* BCurveEncodeAsJSON(BCurve* that);
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool BCurveDecodeAsJSON(BCurve** that, JSONNode* json);
+
 // Load the BCurve from the stream
 // If the BCurve is already allocated, it is freed before loading
 // Return true upon success, false else
 bool BCurveLoad(BCurve** that, FILE* stream);
 
 // Save the BCurve to the stream
+// If 'compact' equals true it saves in compact form, else it saves in 
+// readable form
 // Return true upon success, false else
-bool BCurveSave(BCurve* that, FILE* stream);
+bool BCurveSave(BCurve* that, FILE* stream, bool compact);
 
 // Free the memory used by a BCurve
 void BCurveFree(BCurve** that);
@@ -221,14 +229,22 @@ SCurve* SCurveClone(SCurve* that);
 // If it is shrinked, values are discarded from the end of the vectors
 SCurve* SCurveGetNewDim(SCurve* that, int dim);
 
+// Function which return the JSON encoding of 'that' 
+JSONNode* SCurveEncodeAsJSON(SCurve* that);
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool SCurveDecodeAsJSON(SCurve** that, JSONNode* json);
+
 // Load the SCurve from the stream
 // If the SCurve is already allocated, it is freed before loading
 // Return true in case of success, false else
 bool SCurveLoad(SCurve** that, FILE* stream);
 
 // Save the SCurve to the stream
+// If 'compact' equals true it saves in compact form, else it saves in 
+// readable form
 // Return true upon success, false else
-bool SCurveSave(SCurve* that, FILE* stream);
+bool SCurveSave(SCurve* that, FILE* stream, bool compact);
 
 // Free the memory used by a SCurve
 void SCurveFree(SCurve** that);
@@ -605,14 +621,22 @@ BBody* BBodyClone(BBody* that);
 // Print the BBody 'that' on the stream 'stream'
 void BBodyPrint(BBody* that, FILE* stream);
 
+// Function which return the JSON encoding of 'that' 
+JSONNode* BBodyEncodeAsJSON(BBody* that);
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool BBodyDecodeAsJSON(BBody** that, JSONNode* json);
+
 // Load the BBody from the stream
 // If the BBody is already allocated, it is freed before loading
 // Return true upon success, false else
 bool BBodyLoad(BBody** that, FILE* stream);
 
 // Save the BBody to the stream
+// If 'compact' equals true it saves in compact form, else it saves in 
+// readable form
 // Return true upon success, false else
-bool BBodySave(BBody* that, FILE* stream);
+bool BBodySave(BBody* that, FILE* stream, bool compact);
 
 // Return the center of the BBody (average of control points)
 #if BUILDMODE != 0

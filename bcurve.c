@@ -65,6 +65,91 @@ BCurve* BCurveClone(BCurve* that) {
   return clone;
 }
 
+// Function which return the JSON encoding of 'that' 
+JSONNode* BCurveEncodeAsJSON(BCurve* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // Create the JSON structure
+  JSONNode* json = JSONCreate();
+  // Declare a buffer to convert value into string
+  char val[100];
+  // Encode the order
+  sprintf(val, "%d", BCurveGetOrder(that));
+  JSONAddProp(json, "_order", val);
+  // Encode the dimension
+  sprintf(val, "%d", BCurveGetDim(that));
+  JSONAddProp(json, "_dim", val);
+  // Encode the control points
+  JSONArrayStruct setCtrl = JSONArrayStructCreateStatic();
+  for (int iCtrl = 0; iCtrl < BCurveGetOrder(that) + 1; ++iCtrl)
+    JSONArrayStructAdd(&setCtrl, 
+      VecEncodeAsJSON(BCurveCtrl(that, iCtrl)));
+  JSONAddProp(json, "_ctrl", &setCtrl);
+  // Free memory
+  JSONArrayStructFlush(&setCtrl);
+  // Return the created JSON 
+  return json;
+}
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool BCurveDecodeAsJSON(BCurve** that, JSONNode* json) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+  if (json == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'json' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // If 'that' is already allocated
+  if (*that != NULL)
+    // Free memory
+    BCurveFree(that);
+  // Get the order from the JSON
+  JSONNode* prop = JSONProperty(json, "_order");
+  if (prop == NULL) {
+    return false;
+  }
+  int order = atoi(JSONLabel(JSONValue(prop, 0)));
+  // Get the dimension from the JSON
+  prop = JSONProperty(json, "_dim");
+  if (prop == NULL) {
+    return false;
+  }
+  int dim = atoi(JSONLabel(JSONValue(prop, 0)));
+  // If data are invalid
+  if (order < 0 || dim < 1)
+    return false;
+  // Allocate memory
+  *that = BCurveCreate(order, dim);
+  // Decode the control points
+  prop = JSONProperty(json, "_ctrl");
+  if (prop == NULL) {
+    return false;
+  }
+  if (JSONGetNbValue(prop) != order + 1) {
+    return false;
+  }
+  for (int iCtrl = 0; iCtrl < order + 1; ++iCtrl) {
+    JSONNode* ctrl = JSONValue(prop, iCtrl);
+    if (!VecDecodeAsJSON((*that)->_ctrl + iCtrl, ctrl) ||
+      VecGetDim((*that)->_ctrl[iCtrl]) != BCurveGetDim(*that)) {
+      return false;
+    }
+  }
+  // Return the success code
+  return true;
+}
+
 // Load the BCurve from the stream
 // If the BCurve is already allocated, it is freed before loading
 // Return true upon success, false else
@@ -81,35 +166,27 @@ bool BCurveLoad(BCurve** that, FILE* stream) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  // If 'that' is already allocated
-  if (*that != NULL)
-    // Free memory
-    BCurveFree(that);
-  // Read the order and dimension
-  int order;
-  int dim;
-  int ret = fscanf(stream, "%d %d", &order, &dim);
-  // If we couldn't read
-  if (ret == EOF)
+  // Declare a json to load the encoded data
+  JSONNode* json = JSONCreate();
+  // Load the whole encoded data
+  if (!JSONLoad(json, stream)) {
     return false;
-  // Allocate memory
-  *that = BCurveCreate(order, dim);
-  // For each control point
-  for (int iCtrl = 0; iCtrl < (order + 1); ++iCtrl) {
-    // Load the control point
-    ret = VecLoad((*that)->_ctrl + iCtrl, stream);
-    // If we couldn't read the control point or the control point
-    // is not of the correct dimension
-    if (ret == false || VecGetDim((*that)->_ctrl[iCtrl]) != (*that)->_dim)
-      return false;
   }
-  // Return success code
+  // Decode the data from the JSON
+  if (!BCurveDecodeAsJSON(that, json)) {
+    return false;
+  }
+  // Free the memory used by the JSON
+  JSONFree(&json);
+  // Return the success code
   return true;
 }
 
 // Save the BCurve to the stream
+// If 'compact' equals true it saves in compact form, else it saves in 
+// readable form
 // Return true upon success, false else
-bool BCurveSave(BCurve* that, FILE* stream) {
+bool BCurveSave(BCurve* that, FILE* stream, bool compact) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -122,21 +199,14 @@ bool BCurveSave(BCurve* that, FILE* stream) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  // Save the order and dimension
-  int ret = fprintf(stream, "%d %d\n", that->_order, that->_dim);
-  // If the fprintf failed
-  if (ret < 0)
-    // Stop here
+  // Get the JSON encoding
+  JSONNode* json = BCurveEncodeAsJSON(that);
+  // Save the JSON
+  if (!JSONSave(json, stream, compact)) {
     return false;
-  // For each control point
-  for (int iCtrl = 0; iCtrl < that->_order + 1; ++iCtrl) {
-    // Save the control point
-    ret = VecSave(that->_ctrl[iCtrl], stream);
-    // If we couldn't save the control point
-    if (ret == false)
-      // Stop here
-      return false;
   }
+  // Free memory
+  JSONFree(&json);
   // Return success code
   return true;
 }
@@ -556,6 +626,111 @@ SCurve* SCurveGetNewDim(SCurve* that, int dim) {
   }
 }
 
+// Function which return the JSON encoding of 'that' 
+JSONNode* SCurveEncodeAsJSON(SCurve* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // Create the JSON structure
+  JSONNode* json = JSONCreate();
+  // Declare a buffer to convert value into string
+  char val[100];
+  // Encode the order
+  sprintf(val, "%d", SCurveGetOrder(that));
+  JSONAddProp(json, "_order", val);
+  // Encode the dimension
+  sprintf(val, "%d", SCurveGetDim(that));
+  JSONAddProp(json, "_dim", val);
+  // Encode the nb of segment
+  sprintf(val, "%d", SCurveGetNbSeg(that));
+  JSONAddProp(json, "_nbSeg", val);
+  // Encode the control points
+  JSONArrayStruct setCtrl = JSONArrayStructCreateStatic();
+  GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
+  do {
+    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
+    JSONArrayStructAdd(&setCtrl, VecEncodeAsJSON(ctrl));
+  } while (GSetIterStep(&iter));
+  JSONAddProp(json, "_ctrl", &setCtrl);
+  // Free memory
+  JSONArrayStructFlush(&setCtrl);
+  // Return the created JSON 
+  return json;
+}
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool SCurveDecodeAsJSON(SCurve** that, JSONNode* json) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+  if (json == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'json' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // If 'that' is already allocated
+  if (*that != NULL)
+    // Free memory
+    SCurveFree(that);
+  // Get the order from the JSON
+  JSONNode* prop = JSONProperty(json, "_order");
+  if (prop == NULL) {
+    return false;
+  }
+  int order = atoi(JSONLabel(JSONValue(prop, 0)));
+  // Get the dimension from the JSON
+  prop = JSONProperty(json, "_dim");
+  if (prop == NULL) {
+    return false;
+  }
+  int dim = atoi(JSONLabel(JSONValue(prop, 0)));
+  // Get the nb of segment from the JSON
+  prop = JSONProperty(json, "_nbSeg");
+  if (prop == NULL) {
+    return false;
+  }
+  int nbSeg = atoi(JSONLabel(JSONValue(prop, 0)));
+  // If data are invalid
+  if (nbSeg < 1 || order < 0 || dim < 1)
+    return false;
+  // Allocate memory
+  *that = SCurveCreate(order, dim, nbSeg);
+  // Decode the control points
+  prop = JSONProperty(json, "_ctrl");
+  if (prop == NULL) {
+    return false;
+  }
+  if (JSONGetNbValue(prop) != SCurveGetNbCtrl(*that)) {
+    return false;
+  }
+  GSetIterForward iter = GSetIterForwardCreateStatic(&((*that)->_ctrl));
+  int iCtrl = 0;
+  do {
+    VecFloat* loadCtrl = NULL;
+    JSONNode* ctrl = JSONValue(prop, iCtrl);
+    if (!VecDecodeAsJSON(&loadCtrl, ctrl) || 
+      VecGetDim(loadCtrl) != dim) {
+      return false;
+    }
+    // Set the loaded control point into the set of control point
+    // and segment
+    VecCopy((VecFloat*)GSetIterGet(&iter), loadCtrl);
+    // Free memory used by the loaded control
+    VecFree(&loadCtrl);
+    ++iCtrl;
+  } while (GSetIterStep(&iter));
+  // Return the success code
+  return true;
+}
+
 // Load the SCurve from the stream
 // If the SCurve is already allocated, it is freed before loading
 // Return true in case of success, false else
@@ -572,46 +747,27 @@ bool SCurveLoad(SCurve** that, FILE* stream) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  // If 'that' is already allocated
-  if (*that != NULL)
-    // Free memory
-    SCurveFree(that);
-  // Read the number of segment, order and dimension
-  int nbSeg;
-  int order;
-  int dim;
-  int ret = fscanf(stream, "%d %d %d", &order, &dim, &nbSeg);
-  // If we couldn't read
-  if (ret == EOF)
+  // Declare a json to load the encoded data
+  JSONNode* json = JSONCreate();
+  // Load the whole encoded data
+  if (!JSONLoad(json, stream)) {
     return false;
-  // If data are invalid
-  if (nbSeg < 1 || order < 0 || dim < 1)
+  }
+  // Decode the data from the JSON
+  if (!SCurveDecodeAsJSON(that, json)) {
     return false;
-  // Allocate memory
-  *that = SCurveCreate(order, dim, nbSeg);
-  // For each control point
-  GSetIterForward iter = GSetIterForwardCreateStatic(&((*that)->_ctrl));
-  do {
-    // Load the control point
-    VecFloat* loadCtrl = NULL;
-    ret = VecLoad(&loadCtrl, stream);
-    // If we couldn't read the control point or the control point
-    // is not of the correct dimension
-    if (ret == false || VecGetDim(loadCtrl) != (*that)->_dim)
-      return false;
-    // Set the loaded control point into the set of control point
-    // and segment
-    VecCopy((VecFloat*)GSetIterGet(&iter), loadCtrl);
-    // Free memory used by the loaded control
-    VecFree(&loadCtrl);
-  } while (GSetIterStep(&iter));
-  // Return success code
+  }
+  // Free the memory used by the JSON
+  JSONFree(&json);
+  // Return the success code
   return true;
 }
 
 // Save the SCurve to the stream
+// If 'compact' equals true it saves in compact form, else it saves in 
+// readable form
 // Return true upon success, false else
-bool SCurveSave(SCurve* that, FILE* stream) {
+bool SCurveSave(SCurve* that, FILE* stream, bool compact) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -624,24 +780,14 @@ bool SCurveSave(SCurve* that, FILE* stream) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  // Save the nb of segment, order and dimension
-  int ret = fprintf(stream, "%d %d %d\n", 
-    that->_order, that->_dim, that->_nbSeg);
-  // If the fprintf failed
-  if (ret < 0)
-    // Stop here
+  // Get the JSON encoding
+  JSONNode* json = SCurveEncodeAsJSON(that);
+  // Save the JSON
+  if (!JSONSave(json, stream, compact)) {
     return false;
-  // For each control point
-  GSetIterForward iter = GSetIterForwardCreateStatic(&(that->_ctrl));
-  do {
-    VecFloat* ctrl = (VecFloat*)GSetIterGet(&iter);
-    // Save the control point
-    ret = VecSave(ctrl, stream);
-    // If we couldn't save the control point
-    if (ret == false)
-      // Stop here
-      return false;
-  } while (GSetIterStep(&iter));
+  }
+  // Free memory
+  JSONFree(&json);
   // Return success code
   return true;
 }
@@ -1267,6 +1413,98 @@ void BBodyPrint(BBody* that, FILE* stream) {
   }
 }
 
+// Function which return the JSON encoding of 'that' 
+JSONNode* BBodyEncodeAsJSON(BBody* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // Create the JSON structure
+  JSONNode* json = JSONCreate();
+  // Declare a buffer to convert value into string
+  char val[100];
+  // Encode the order
+  sprintf(val, "%d", BBodyGetOrder(that));
+  JSONAddProp(json, "_order", val);
+  // Encode the dimension
+  JSONAddProp(json, "_dim", VecEncodeAsJSON((VecShort*)BBodyDim(that)));
+  // Encode the control points
+  JSONArrayStruct setCtrl = JSONArrayStructCreateStatic();
+  // For each control point
+  for (int iCtrl = 0; iCtrl < BBodyGetNbCtrl(that); ++iCtrl)
+    JSONArrayStructAdd(&setCtrl, VecEncodeAsJSON(that->_ctrl[iCtrl]));
+  JSONAddProp(json, "_ctrl", &setCtrl);
+  // Free memory
+  JSONArrayStructFlush(&setCtrl);
+  // Return the created JSON 
+  return json;
+}
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool BBodyDecodeAsJSON(BBody** that, JSONNode* json) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+  if (json == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'json' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // If 'that' is already allocated
+  if (*that != NULL)
+    // Free memory
+    BBodyFree(that);
+  // Get the order from the JSON
+  JSONNode* prop = JSONProperty(json, "_order");
+  if (prop == NULL) {
+    return false;
+  }
+  int order = atoi(JSONLabel(JSONValue(prop, 0)));
+  // Get the dimension from the JSON
+  prop = JSONProperty(json, "_dim");
+  if (prop == NULL) {
+    return false;
+  }
+  VecShort* dim = NULL;
+  if (!VecDecodeAsJSON(&dim, prop)) {
+    return false;
+  }
+  // If data are invalid
+  if (order < 0 || VecGetDim(dim) != 2 || 
+    VecGet(dim, 0) < 1 || VecGet(dim, 1) < 1) {
+    return false;
+  }
+  // Allocate memory
+  *that = BBodyCreate(order, (VecShort2D*)dim);
+  // Decode the control points
+  prop = JSONProperty(json, "_ctrl");
+  if (prop == NULL) {
+    return false;
+  }
+  if (JSONGetNbValue(prop) != BBodyGetNbCtrl(*that)) {
+    return false;
+  }
+  for (int iCtrl = 0; iCtrl < BBodyGetNbCtrl(*that); ++iCtrl) {
+    JSONNode* ctrl = JSONValue(prop, iCtrl);
+    if (!VecDecodeAsJSON((*that)->_ctrl + iCtrl, ctrl))
+      return false;
+    // If the control point is not of the correct dimension
+    if (VecGetDim((*that)->_ctrl[iCtrl]) != VecGet(&((*that)->_dim), 1))
+      return false;
+  }
+  // Free memory
+  VecFree(&dim);
+  // Return the success code
+  return true;
+}
+
 // Load the BBody from the stream
 // If the BBody is already allocated, it is freed before loading
 // Return true upon success, false else
@@ -1283,45 +1521,27 @@ bool BBodyLoad(BBody** that, FILE* stream) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  // If 'that' is already allocated
-  if (*that != NULL)
-    // Free memory
-    BBodyFree(that);
-  // Read the order and dimension
-  int order;
-  VecShort* dim = NULL;
-  int ret = fscanf(stream, "%d", &order);
-  // If we couldn't read
-  if (ret == EOF)
-    return false;
-  ret = VecLoad(&dim, stream);
-  // If we couldn't read
-  if (ret == EOF ||
-    VecGetDim(dim) != 2) {
-    VecFree(&dim);
+  // Declare a json to load the encoded data
+  JSONNode* json = JSONCreate();
+  // Load the whole encoded data
+  if (!JSONLoad(json, stream)) {
     return false;
   }
-  // Allocate memory
-  *that = BBodyCreate(order, (VecShort2D*)dim);
-  // Free memory
-  VecFree(&dim);
-  // For each control point
-  for (int iCtrl = 0; iCtrl < BBodyGetNbCtrl(*that); ++iCtrl) {
-    // Load the control point
-    ret = VecLoad((*that)->_ctrl + iCtrl, stream);
-    // If we couldn't read the control point or the control point
-    // is not of the correct dimension
-    if (ret == false || 
-      VecGetDim((*that)->_ctrl[iCtrl]) != VecGet(&((*that)->_dim), 1))
-      return false;
+  // Decode the data from the JSON
+  if (!BBodyDecodeAsJSON(that, json)) {
+    return false;
   }
-  // Return success code
+  // Free the memory used by the JSON
+  JSONFree(&json);
+  // Return the success code
   return true;
 }
 
 // Save the BBody to the stream
+// If 'compact' equals true it saves in compact form, else it saves in 
+// readable form
 // Return true upon success, false else
-bool BBodySave(BBody* that, FILE* stream) {
+bool BBodySave(BBody* that, FILE* stream, bool compact) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1334,22 +1554,14 @@ bool BBodySave(BBody* that, FILE* stream) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  // Save the order and dimension
-  int ret = fprintf(stream, "%d\n", that->_order);
-  VecSave(&(that->_dim), stream);
-  // If the fprintf failed
-  if (ret < 0)
-    // Stop here
+  // Get the JSON encoding
+  JSONNode* json = BBodyEncodeAsJSON(that);
+  // Save the JSON
+  if (!JSONSave(json, stream, compact)) {
     return false;
-  // For each control point
-  for (int iCtrl = 0; iCtrl < BBodyGetNbCtrl(that); ++iCtrl) {
-    // Save the control point
-    ret = VecSave(that->_ctrl[iCtrl], stream);
-    // If we couldn't save the control point
-    if (ret == false)
-      // Stop here
-      return false;
   }
+  // Free memory
+  JSONFree(&json);
   // Return success code
   return true;
 }
