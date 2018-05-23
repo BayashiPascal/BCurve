@@ -482,10 +482,10 @@ Facoid* BCurveGetBoundingBox(BCurve* that) {
         VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
       if (VecGet(that->_ctrl[iCtrl], iDim) > 
         VecGet(ShapoidAxis(res, iDim), iDim))
-        VecSet(ShapoidAxis(res, iDim), iDim,
+        ShapoidAxisSet(res, iDim, iDim,
           VecGet(that->_ctrl[iCtrl], iDim));
     }
-    VecSetAdd(ShapoidAxis(res, iDim), iDim,
+    ShapoidAxisSetAdd(res, iDim, iDim,
       -1.0 * VecGet(ShapoidPos(res), iDim));
   }
   // Return the result
@@ -1591,10 +1591,10 @@ Facoid* BBodyGetBoundingBox(BBody* that) {
         VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
       if (VecGet(that->_ctrl[iCtrl], iDim) > 
         VecGet(ShapoidAxis(res, iDim), iDim))
-        VecSet(ShapoidAxis(res, iDim), iDim,
+        ShapoidAxisSet(res, iDim, iDim,
           VecGet(that->_ctrl[iCtrl], iDim));
     }
-    VecSetAdd(ShapoidAxis(res, iDim), iDim,
+    ShapoidAxisSetAdd(res, iDim, iDim,
       -1.0 * VecGet(ShapoidPos(res), iDim));
   }
   // Return the result
