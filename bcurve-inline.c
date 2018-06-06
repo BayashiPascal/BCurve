@@ -8,7 +8,8 @@
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveSetCtrl(BCurve* that, int iCtrl, VecFloat* v) {
+void BCurveSetCtrl(BCurve* const that, const int iCtrl, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -41,7 +42,7 @@ void BCurveSetCtrl(BCurve* that, int iCtrl, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* BCurveGetCtrl(BCurve* that, int iCtrl) {
+VecFloat* BCurveGetCtrl(const BCurve* const that, const int iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -63,7 +64,7 @@ VecFloat* BCurveGetCtrl(BCurve* that, int iCtrl) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* BCurveCtrl(BCurve* that, int iCtrl) {
+const VecFloat* BCurveCtrl(const BCurve* const that, const int iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -81,11 +82,41 @@ VecFloat* BCurveCtrl(BCurve* that, int iCtrl) {
   return that->_ctrl[iCtrl];
 }
 
+// Get the 'iDim'-th value of the 'iCtrl'-th control point
+#if BUILDMODE != 0
+inline
+#endif 
+float BCurveCtrlGet(const BCurve* const that, const int iCtrl, 
+  const int iDim) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (iCtrl < 0 || iCtrl > that->_order) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'iCtrl' is invalid (0<=%d<%d)", 
+      iCtrl, that->_order);
+    PBErrCatch(BCurveErr);
+  }
+  if (iDim < 0 || iDim > that->_dim) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'iDim' is invalid (0<=%d<%d)", 
+      iDim, that->_dim);
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Return the value
+  return VecGet(BCurveCtrl(that, iCtrl), iDim);
+}
+
+
 // Get the order of the BCurve
 #if BUILDMODE != 0
 inline
 #endif 
-int BCurveGetOrder(BCurve* that) {
+int BCurveGetOrder(const BCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -100,7 +131,7 @@ int BCurveGetOrder(BCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-int BCurveGetDim(BCurve* that) {
+int BCurveGetDim(const BCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -116,7 +147,7 @@ int BCurveGetDim(BCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-float BCurveGetApproxLen(BCurve* that) {
+float BCurveGetApproxLen(const BCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -137,7 +168,7 @@ float BCurveGetApproxLen(BCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* BCurveGetCenter(BCurve* that) {
+VecFloat* BCurveGetCenter(const BCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -160,7 +191,7 @@ VecFloat* BCurveGetCenter(BCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveRotOrigin(BCurve* that, float theta) {
+void BCurveRotOrigin(BCurve* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -185,7 +216,7 @@ void BCurveRotOrigin(BCurve* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveRotStart(BCurve* that, float theta) {
+void BCurveRotStart(BCurve* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -215,7 +246,7 @@ void BCurveRotStart(BCurve* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BCurveRotCenter(BCurve* that, float theta) {
+void BCurveRotCenter(BCurve* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -248,7 +279,8 @@ void BCurveRotCenter(BCurve* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BCurveScaleOriginVector(BCurve* that, VecFloat* v) {
+void _BCurveScaleOriginVector(BCurve* const that, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -280,7 +312,7 @@ void _BCurveScaleOriginVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BCurveScaleOriginScalar(BCurve* that, float c) {
+void _BCurveScaleOriginScalar(BCurve* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -299,7 +331,8 @@ void _BCurveScaleOriginScalar(BCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BCurveScaleStartVector(BCurve* that, VecFloat* v) {
+void _BCurveScaleStartVector(BCurve* const that, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -336,7 +369,7 @@ void _BCurveScaleStartVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BCurveScaleStartScalar(BCurve* that, float c) {
+void _BCurveScaleStartScalar(BCurve* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -361,7 +394,8 @@ void _BCurveScaleStartScalar(BCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BCurveScaleCenterVector(BCurve* that, VecFloat* v) {
+void _BCurveScaleCenterVector(BCurve* const that, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -401,7 +435,7 @@ void _BCurveScaleCenterVector(BCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BCurveScaleCenterScalar(BCurve* that, float c) {
+void _BCurveScaleCenterScalar(BCurve* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -428,7 +462,7 @@ void _BCurveScaleCenterScalar(BCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BCurveTranslate(BCurve* that, VecFloat* v) {
+void _BCurveTranslate(BCurve* const that, const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -461,7 +495,7 @@ void _BCurveTranslate(BCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-int SCurveGetNbSeg(SCurve* that) {
+int SCurveGetNbSeg(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -477,7 +511,7 @@ int SCurveGetNbSeg(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-int SCurveGetDim(SCurve* that) {
+int SCurveGetDim(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -492,7 +526,7 @@ int SCurveGetDim(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-int SCurveGetOrder(SCurve* that) {
+int SCurveGetOrder(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -507,7 +541,7 @@ int SCurveGetOrder(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveGetCtrl(SCurve* that, int iCtrl) {
+VecFloat* SCurveGetCtrl(const SCurve* const that, const int iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -528,7 +562,7 @@ VecFloat* SCurveGetCtrl(SCurve* that, int iCtrl) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveCtrl(SCurve* that, int iCtrl) {
+const VecFloat* SCurveCtrl(const SCurve* const that, const int iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -542,14 +576,43 @@ VecFloat* SCurveCtrl(SCurve* that, int iCtrl) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  return (VecFloat*)GSetGet(&(that->_ctrl), iCtrl);
+  return (const VecFloat*)GSetGet(&(that->_ctrl), iCtrl);
+}
+
+// Get the 'iDim'-th value of the 'iCtrl'-th control point
+#if BUILDMODE != 0
+inline
+#endif 
+float SCurveCtrlGet(const SCurve* const that, const int iCtrl, 
+  const int iDim) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (iCtrl < 0 || iCtrl >= SCurveGetNbCtrl(that)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'iCtrl' is invalid (0<=%d<%d)", 
+      iCtrl, SCurveGetNbCtrl(that) - 1);
+    PBErrCatch(BCurveErr);
+  }
+  if (iDim < 0 || iDim > that->_dim) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'iDim' is invalid (0<=%d<%d)", 
+      iDim, that->_dim);
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  // Return the value
+  return VecGet(SCurveCtrl(that, iCtrl), iDim);
 }
 
 // Get the set of control point of the SCurve 'that'
 #if BUILDMODE != 0
 inline
 #endif 
-GSetVecFloat* SCurveCtrls(SCurve* that) {
+const GSetVecFloat* SCurveCtrls(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -564,7 +627,7 @@ GSetVecFloat* SCurveCtrls(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-BCurve* SCurveGetSeg(SCurve* that, int iSeg) {
+BCurve* SCurveGetSeg(const SCurve* const that, const int iSeg) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -585,7 +648,7 @@ BCurve* SCurveGetSeg(SCurve* that, int iSeg) {
 #if BUILDMODE != 0
 inline
 #endif 
-BCurve* SCurveSeg(SCurve* that, int iSeg) {
+const BCurve* SCurveSeg(const SCurve* const that, const int iSeg) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -606,7 +669,7 @@ BCurve* SCurveSeg(SCurve* that, int iSeg) {
 #if BUILDMODE != 0
 inline
 #endif 
-GSetBCurve* SCurveSegs(SCurve* that) {
+const GSetBCurve* SCurveSegs(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -621,7 +684,7 @@ GSetBCurve* SCurveSegs(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveGetCenter(SCurve* that) {
+VecFloat* SCurveGetCenter(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -645,7 +708,7 @@ VecFloat* SCurveGetCenter(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-float SCurveGetMaxU(SCurve* that) {
+float SCurveGetMaxU(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -660,7 +723,7 @@ float SCurveGetMaxU(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-int SCurveGetNbCtrl(SCurve* that) {
+int SCurveGetNbCtrl(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -676,7 +739,7 @@ int SCurveGetNbCtrl(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveRotOrigin(SCurve* that, float theta) {
+void SCurveRotOrigin(SCurve* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -697,7 +760,7 @@ void SCurveRotOrigin(SCurve* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveRotStart(SCurve* that, float theta) {
+void SCurveRotStart(SCurve* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -726,7 +789,7 @@ void SCurveRotStart(SCurve* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveRotCenter(SCurve* that, float theta) {
+void SCurveRotCenter(SCurve* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -756,7 +819,8 @@ void SCurveRotCenter(SCurve* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _SCurveScaleOriginVector(SCurve* that, VecFloat* v) {
+void _SCurveScaleOriginVector(SCurve* const that, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -779,7 +843,7 @@ void _SCurveScaleOriginVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _SCurveScaleOriginScalar(SCurve* that, float c) {
+void _SCurveScaleOriginScalar(SCurve* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -800,7 +864,8 @@ void _SCurveScaleOriginScalar(SCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _SCurveScaleStartVector(SCurve* that, VecFloat* v) {
+void _SCurveScaleStartVector(SCurve* const that, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -841,7 +906,7 @@ void _SCurveScaleStartVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _SCurveScaleStartScalar(SCurve* that, float c) {
+void _SCurveScaleStartScalar(SCurve* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -870,7 +935,8 @@ void _SCurveScaleStartScalar(SCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _SCurveScaleCenterVector(SCurve* that, VecFloat* v) {
+void _SCurveScaleCenterVector(SCurve* const that, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -911,7 +977,7 @@ void _SCurveScaleCenterVector(SCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _SCurveScaleCenterScalar(SCurve* that, float c) {
+void _SCurveScaleCenterScalar(SCurve* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -939,7 +1005,7 @@ void _SCurveScaleCenterScalar(SCurve* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _SCurveTranslate(SCurve* that, VecFloat* v) {
+void _SCurveTranslate(SCurve* const that, const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -972,7 +1038,7 @@ void _SCurveTranslate(SCurve* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveGet(SCurve* that, float u) {
+VecFloat* SCurveGet(const SCurve* const that, const float u) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -982,18 +1048,20 @@ VecFloat* SCurveGet(SCurve* that, float u) {
 #endif
   // Declare a variable to memorize the relevant segment
   int iSeg = 0;
+  // Declare a variable to memorize the local parameter value
+  float uloc = u;
   // Get the segment the corresponding to 'u'
-  if (u < 0.0)
+  if (u < 0.0) {
     iSeg = 0;
-  else if (u >= that->_nbSeg) {
+  } else if (u >= that->_nbSeg) {
     iSeg = that->_nbSeg - 1;
-    u -= (float)(that->_nbSeg - 1);
+    uloc = u - (float)(that->_nbSeg - 1);
   } else { 
     iSeg = (int)floor(u);
-    u -= (float)iSeg;
+    uloc = u - (float)iSeg;
   }
   // Get the value of the BCurve
-  return BCurveGet(SCurveSeg(that, iSeg), u);
+  return BCurveGet(SCurveSeg(that, iSeg), uloc);
 }
 
 // Get the approximate length of the SCurve (sum of approxLen 
@@ -1001,7 +1069,7 @@ VecFloat* SCurveGet(SCurve* that, float u) {
 #if BUILDMODE != 0
 inline
 #endif 
-float SCurveGetApproxLen(SCurve* that) {
+float SCurveGetApproxLen(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1025,7 +1093,8 @@ float SCurveGetApproxLen(SCurve* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveSetCtrl(SCurve* that, int iCtrl, VecFloat* v) {
+void SCurveSetCtrl(SCurve* const that, const int iCtrl, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1047,13 +1116,42 @@ void SCurveSetCtrl(SCurve* that, int iCtrl, VecFloat* v) {
   VecCopy((VecFloat*)GSetGet(&(that->_ctrl), iCtrl), v);
 }
 
+// Set the 'iDim'-th value of the 'iCtrl'-th control point to 'v'
+#if BUILDMODE != 0
+inline
+#endif 
+void SCurveCtrlSet(SCurve* const that, const int iCtrl, const int iDim, 
+  float v) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (iCtrl < 0 || iCtrl >= SCurveGetNbCtrl(that)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'iCtrl' is invalid (0<=%d<%d)", 
+      iCtrl, SCurveGetNbCtrl(that));
+    PBErrCatch(BCurveErr);
+  }
+  if (iDim < 0 || iDim >= SCurveGetDim(that)) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'iDim' is invalid (0<=%d<%d)", 
+      iDim, SCurveGetDim(that));
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  VecSet((VecFloat*)GSetGet(&(that->_ctrl), iCtrl), iDim, v);
+}
+
+
 // Create a new SCurve from the outline of the Shapoid 'shap'
 // The Shapoid must be of dimension 2
 // Control points are ordered CCW of the Shapoid
 #if BUILDMODE != 0
 inline
 #endif 
-SCurve* SCurveCreateFromShapoid(Shapoid* shap) {
+SCurve* SCurveCreateFromShapoid(const Shapoid* const shap) {
 #if BUILDMODE == 0
   if (shap == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1096,7 +1194,8 @@ SCurve* SCurveCreateFromShapoid(Shapoid* shap) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveIterSetCurve(SCurveIter* that, SCurve* curve) {
+void SCurveIterSetCurve(SCurveIter* const that, 
+  const SCurve* const curve) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1116,7 +1215,7 @@ void SCurveIterSetCurve(SCurveIter* that, SCurve* curve) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveIterSetDelta(SCurveIter* that, float delta) {
+void SCurveIterSetDelta(SCurveIter* const that, const float delta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1136,7 +1235,7 @@ void SCurveIterSetDelta(SCurveIter* that, float delta) {
 #if BUILDMODE != 0
 inline
 #endif 
-SCurve* SCurveIterCurve(SCurveIter* that) {
+const SCurve* SCurveIterCurve(const SCurveIter* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1151,7 +1250,7 @@ SCurve* SCurveIterCurve(SCurveIter* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-float SCurveIterGetDelta(SCurveIter* that) {
+float SCurveIterGetDelta(const SCurveIter* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1166,7 +1265,7 @@ float SCurveIterGetDelta(SCurveIter* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void SCurveIterInit(SCurveIter* that) {
+void SCurveIterInit(SCurveIter* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1182,7 +1281,7 @@ void SCurveIterInit(SCurveIter* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-bool SCurveIterStep(SCurveIter* that) {
+bool SCurveIterStep(SCurveIter* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1204,7 +1303,7 @@ bool SCurveIterStep(SCurveIter* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-bool SCurveIterStepP(SCurveIter* that) {
+bool SCurveIterStepP(SCurveIter* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1225,7 +1324,7 @@ bool SCurveIterStepP(SCurveIter* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-float SCurveIterGetPos(SCurveIter* that) {
+float SCurveIterGetPos(const SCurveIter* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1241,7 +1340,7 @@ float SCurveIterGetPos(SCurveIter* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* SCurveIterGet(SCurveIter* that) {
+VecFloat* SCurveIterGet(const SCurveIter* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1260,7 +1359,8 @@ VecFloat* SCurveIterGet(SCurveIter* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BBodySetCtrl(BBody* that, VecShort* iCtrl, VecFloat* v) {
+void _BBodySetCtrl(BBody* const that, const VecShort* const iCtrl, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1302,7 +1402,7 @@ void _BBodySetCtrl(BBody* that, VecShort* iCtrl, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-int BBodyGetNbCtrl(BBody* that) {
+int BBodyGetNbCtrl(const BBody* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1318,7 +1418,8 @@ int BBodyGetNbCtrl(BBody* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* _BBodyCtrl(BBody* that, VecShort* iCtrl) {
+const VecFloat* _BBodyCtrl(const BBody* const that, 
+  const VecShort* const iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1353,7 +1454,8 @@ VecFloat* _BBodyCtrl(BBody* that, VecShort* iCtrl) {
 #if BUILDMODE != 0
 inline
 #endif 
-int _BBodyGetIndexCtrl(BBody* that, VecShort* iCtrl) {
+int _BBodyGetIndexCtrl(const BBody* const that, 
+  const VecShort* const iCtrl) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1390,7 +1492,7 @@ int _BBodyGetIndexCtrl(BBody* that, VecShort* iCtrl) {
 #if BUILDMODE != 0
 inline
 #endif 
-int BBodyGetOrder(BBody* that) {
+int BBodyGetOrder(const BBody* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1405,7 +1507,7 @@ int BBodyGetOrder(BBody* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecShort2D* BBodyDim(BBody* that) {
+const VecShort2D* BBodyDim(const BBody* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1420,7 +1522,7 @@ VecShort2D* BBodyDim(BBody* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecShort2D BBodyGetDim(BBody* that) {
+VecShort2D BBodyGetDim(const BBody* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1435,7 +1537,7 @@ VecShort2D BBodyGetDim(BBody* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-VecFloat* BBodyGetCenter(BBody* that) {
+VecFloat* BBodyGetCenter(const BBody* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1457,7 +1559,7 @@ VecFloat* BBodyGetCenter(BBody* that) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BBodyTranslate(BBody* that, VecFloat* v) {
+void _BBodyTranslate(BBody* const that, const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1486,7 +1588,8 @@ void _BBodyTranslate(BBody* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BBodyScaleOriginVector(BBody* that, VecFloat* v) {
+void _BBodyScaleOriginVector(BBody* const that, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1518,7 +1621,7 @@ void _BBodyScaleOriginVector(BBody* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BBodyScaleOriginScalar(BBody* that, float c) {
+void _BBodyScaleOriginScalar(BBody* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1537,7 +1640,7 @@ void _BBodyScaleOriginScalar(BBody* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BBodyScaleStartVector(BBody* that, VecFloat* v) {
+void _BBodyScaleStartVector(BBody* const that, const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1574,7 +1677,7 @@ void _BBodyScaleStartVector(BBody* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BBodyScaleStartScalar(BBody* that, float c) {
+void _BBodyScaleStartScalar(BBody* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1599,7 +1702,8 @@ void _BBodyScaleStartScalar(BBody* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BBodyScaleCenterVector(BBody* that, VecFloat* v) {
+void _BBodyScaleCenterVector(BBody* const that, 
+  const VecFloat* const v) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1639,7 +1743,7 @@ void _BBodyScaleCenterVector(BBody* that, VecFloat* v) {
 #if BUILDMODE != 0
 inline
 #endif 
-void _BBodyScaleCenterScalar(BBody* that, float c) {
+void _BBodyScaleCenterScalar(BBody* const that, const float c) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1668,7 +1772,8 @@ void _BBodyScaleCenterScalar(BBody* that, float c) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotAxisOrigin(BBody* that, VecFloat3D* axis, float theta) {
+void BBodyRotAxisOrigin(BBody* const that, 
+  const VecFloat3D* const axis, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1701,7 +1806,8 @@ void BBodyRotAxisOrigin(BBody* that, VecFloat3D* axis, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotAxisCenter(BBody* that, VecFloat3D* axis, float theta) {
+void BBodyRotAxisCenter(BBody* const that, 
+  const VecFloat3D* const axis, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1741,7 +1847,8 @@ void BBodyRotAxisCenter(BBody* that, VecFloat3D* axis, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotAxisStart(BBody* that, VecFloat3D* axis, float theta) {
+void BBodyRotAxisStart(BBody* const that, const VecFloat3D* const axis, 
+  const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1779,7 +1886,7 @@ void BBodyRotAxisStart(BBody* that, VecFloat3D* axis, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotXOrigin(BBody* that, float theta) {
+void BBodyRotXOrigin(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1807,7 +1914,7 @@ void BBodyRotXOrigin(BBody* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotXCenter(BBody* that, float theta) {
+void BBodyRotXCenter(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1842,7 +1949,7 @@ void BBodyRotXCenter(BBody* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotXStart(BBody* that, float theta) {
+void BBodyRotXStart(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1875,7 +1982,7 @@ void BBodyRotXStart(BBody* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotYOrigin(BBody* that, float theta) {
+void BBodyRotYOrigin(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1903,7 +2010,7 @@ void BBodyRotYOrigin(BBody* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotYCenter(BBody* that, float theta) {
+void BBodyRotYCenter(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1938,7 +2045,7 @@ void BBodyRotYCenter(BBody* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotYStart(BBody* that, float theta) {
+void BBodyRotYStart(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1971,7 +2078,7 @@ void BBodyRotYStart(BBody* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotZOrigin(BBody* that, float theta) {
+void BBodyRotZOrigin(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1999,7 +2106,7 @@ void BBodyRotZOrigin(BBody* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotZCenter(BBody* that, float theta) {
+void BBodyRotZCenter(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -2034,7 +2141,7 @@ void BBodyRotZCenter(BBody* that, float theta) {
 #if BUILDMODE != 0
 inline
 #endif 
-void BBodyRotZStart(BBody* that, float theta) {
+void BBodyRotZStart(BBody* const that, const float theta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;

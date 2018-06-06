@@ -12,7 +12,7 @@
 // ================ Functions implementation ====================
 
 // Create a new BCurve of order 'order' and dimension 'dim'
-BCurve* BCurveCreate(int order, int dim) {
+BCurve* BCurveCreate(const int order, const int dim) {
 #if BUILDMODE == 0
   if (order < 0) {
     BCurveErr->_type = PBErrTypeInvalidArg;
@@ -28,8 +28,8 @@ BCurve* BCurveCreate(int order, int dim) {
   // Allocate memory
   BCurve* that = PBErrMalloc(BCurveErr, sizeof(BCurve));
   // Set the values
-  that->_dim = dim;
-  that->_order = order;
+  *((int*)&(that->_dim)) = dim;
+  *((int*)&(that->_order)) = order;
   // Allocate memory for the array of control points
   that->_ctrl = PBErrMalloc(BCurveErr, sizeof(VecFloat*) * (order + 1));
   // For each control point
@@ -41,7 +41,7 @@ BCurve* BCurveCreate(int order, int dim) {
 }
 
 // Clone the BCurve
-BCurve* BCurveClone(BCurve* that) {
+BCurve* BCurveClone(const BCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -52,8 +52,8 @@ BCurve* BCurveClone(BCurve* that) {
   // Allocate memory for the clone
   BCurve* clone = PBErrMalloc(BCurveErr, sizeof(BCurve));
   // Clone the properties
-  clone->_dim = that->_dim;
-  clone->_order = that->_order;
+  *((int*)&(clone->_dim)) = that->_dim;
+  *((int*)&(clone->_order)) = that->_order;
   // Allocate memory for the array of control points
   clone->_ctrl = PBErrMalloc(BCurveErr, sizeof(VecFloat*) * 
     (clone->_order + 1));
@@ -66,7 +66,7 @@ BCurve* BCurveClone(BCurve* that) {
 }
 
 // Function which return the JSON encoding of 'that' 
-JSONNode* BCurveEncodeAsJSON(BCurve* that) {
+JSONNode* BCurveEncodeAsJSON(const BCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -97,7 +97,7 @@ JSONNode* BCurveEncodeAsJSON(BCurve* that) {
 }
 
 // Function which decode from JSON encoding 'json' to 'that'
-bool BCurveDecodeAsJSON(BCurve** that, JSONNode* json) {
+bool BCurveDecodeAsJSON(BCurve** that, const JSONNode* const json) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -153,7 +153,7 @@ bool BCurveDecodeAsJSON(BCurve** that, JSONNode* json) {
 // Load the BCurve from the stream
 // If the BCurve is already allocated, it is freed before loading
 // Return true upon success, false else
-bool BCurveLoad(BCurve** that, FILE* stream) {
+bool BCurveLoad(BCurve** that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -186,7 +186,8 @@ bool BCurveLoad(BCurve** that, FILE* stream) {
 // If 'compact' equals true it saves in compact form, else it saves in 
 // readable form
 // Return true upon success, false else
-bool BCurveSave(BCurve* that, FILE* stream, bool compact) {
+bool BCurveSave(const BCurve* const that, FILE* const stream, 
+  const bool compact) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -230,7 +231,7 @@ void BCurveFree(BCurve** that) {
 }
 
 // Print the BCurve on 'stream'
-void BCurvePrint(BCurve* that, FILE* stream) {
+void BCurvePrint(const BCurve* const that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -255,7 +256,7 @@ void BCurvePrint(BCurve* that, FILE* stream) {
 
 // Get the value of the BCurve at paramater 'u'
 // u can extend beyond [0.0, 1.0]
-VecFloat* BCurveGet(BCurve* that, float u) {
+VecFloat* BCurveGet(const BCurve* const that, const float u) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -298,7 +299,7 @@ VecFloat* BCurveGet(BCurve* that, float u) {
 // The created BCurve is of same dimension as the VecFloat and of order 
 // equal to the number of VecFloat in 'set' minus one
 // Return NULL if it couldn't create the BCurve
-BCurve* BCurveFromCloudPoint(GSetVecFloat* set) {
+BCurve* BCurveFromCloudPoint(const GSetVecFloat* const set) {
 #if BUILDMODE == 0
   if (set == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -423,7 +424,8 @@ BCurve* BCurveFromCloudPoint(GSetVecFloat* set) {
 // Get a VecFloat of dimension equal to the number of control points
 // Values of the VecFloat are the weight of each control point in the 
 // BCurve given the curve's order and the value of 't' (in [0.0,1.0])
-VecFloat* BCurveGetWeightCtrlPt(BCurve* that, float t) {
+VecFloat* BCurveGetWeightCtrlPt(const BCurve* const that, 
+  const float t) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -459,7 +461,7 @@ VecFloat* BCurveGetWeightCtrlPt(BCurve* that, float t) {
 // Get the bounding box of the BCurve.
 // Return a Facoid whose axis are aligned on the standard coordinate 
 // system.
-Facoid* BCurveGetBoundingBox(BCurve* that) {
+Facoid* BCurveGetBoundingBox(const BCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -468,26 +470,33 @@ Facoid* BCurveGetBoundingBox(BCurve* that) {
   }
 #endif
   // Declare a variable to memorize the result
-  Facoid* res = FacoidCreate(that->_dim);
+  Facoid* res = FacoidCreate(BCurveGetDim(that));
+  // Create 2 vectors to memorize min and max coordinates in each 
+  // dimensions
+  VecFloat* min = VecClone(BCurveCtrl(that, 0));
+  VecFloat* max = VecClone(BCurveCtrl(that, 0));
   // For each dimension
   for (int iDim = that->_dim; iDim--;) {
-    // Initialise the bounding box in this dimension
-    VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[0], iDim));
-    VecSet(res->_s._axis[iDim], iDim, VecGet(that->_ctrl[0], iDim));
-    // For each control point
-    for (int iCtrl = that->_order + 1; iCtrl--;) {
+    // For each control point except the first one
+    for (int iCtrl = that->_order + 1; iCtrl-- && iCtrl != 0;) {
       // Update the bounding box
-      if (VecGet(that->_ctrl[iCtrl], iDim) < 
-        VecGet(res->_s._pos, iDim))
-        VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
-      if (VecGet(that->_ctrl[iCtrl], iDim) > 
-        VecGet(ShapoidAxis(res, iDim), iDim))
-        ShapoidAxisSet(res, iDim, iDim,
-          VecGet(that->_ctrl[iCtrl], iDim));
+      if (BCurveCtrlGet(that, iCtrl, iDim) < VecGet(min, iDim))
+        VecSet(min, iDim, BCurveCtrlGet(that, iCtrl, iDim));
+      if (BCurveCtrlGet(that, iCtrl, iDim) > VecGet(max, iDim))
+        VecSet(max, iDim, BCurveCtrlGet(that, iCtrl, iDim));
     }
-    ShapoidAxisSetAdd(res, iDim, iDim,
-      -1.0 * VecGet(ShapoidPos(res), iDim));
   }
+  // Update the result Facoid
+  ShapoidSetPos(res, min);
+  for (int iDim = that->_dim; iDim--;) {
+    float d = VecGet(max, iDim) - VecGet(min, iDim);
+    if (d < PBMATH_EPSILON)
+      d = 2.0 * PBMATH_EPSILON;
+    ShapoidAxisSet(res, iDim, iDim, d);
+  }
+  // Free memory
+  VecFree(&min);
+  VecFree(&max);
   // Return the result
   return res;
 }
@@ -498,7 +507,7 @@ Facoid* BCurveGetBoundingBox(BCurve* that) {
 
 // Create a new SCurve of dimension 'dim', order 'order' and 
 // 'nbSeg' segments
-SCurve* SCurveCreate(int order, int dim, int nbSeg) {
+SCurve* SCurveCreate(const int order, const int dim, const int nbSeg) {
 #if BUILDMODE == 0
   if (order < 0) {
     BCurveErr->_type = PBErrTypeInvalidArg;
@@ -519,8 +528,10 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
   // Allocate memory
   SCurve* that = PBErrMalloc(BCurveErr, sizeof(SCurve));
   // Set the values
-  that->_dim = dim;
-  that->_order = order;
+  int* d = (int*)&(that->_dim);
+  *d = dim;
+  int* o = (int*)&(that->_order);
+  *o = order;
   that->_nbSeg = nbSeg;
   // Create the GSet
   that->_ctrl = GSetVecFloatCreateStatic();
@@ -536,12 +547,12 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
       seg->_ctrl[order] = GSetGetFirst(&(that->_ctrl));
       // Add the control points
       for (int iCtrl = order; iCtrl--;)
-        GSetPush(&(that->_ctrl), BCurveCtrl(seg, iCtrl));
+        GSetPush(&(that->_ctrl), (VecFloat*)BCurveCtrl(seg, iCtrl));
     // Else, it's the first segment
     } else {
       // Add the control points
       for (int iCtrl = order + 1; iCtrl--;)
-        GSetPush(&(that->_ctrl), BCurveCtrl(seg, iCtrl));
+        GSetPush(&(that->_ctrl), (VecFloat*)BCurveCtrl(seg, iCtrl));
     }
     // Add the segment
     GSetPush(&(that->_seg), seg);
@@ -551,7 +562,7 @@ SCurve* SCurveCreate(int order, int dim, int nbSeg) {
 }
 
 // Clone the SCurve
-SCurve* SCurveClone(SCurve* that) {
+SCurve* SCurveClone(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -577,7 +588,7 @@ SCurve* SCurveClone(SCurve* that) {
 // dimension changed to 'dim'
 // if it is extended, the values of new components are 0.0
 // If it is shrinked, values are discarded from the end of the vectors
-SCurve* SCurveGetNewDim(SCurve* that, int dim) {
+SCurve* SCurveGetNewDim(const SCurve* const that, const int dim) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -605,29 +616,16 @@ SCurve* SCurveGetNewDim(SCurve* that, int dim) {
     do {
       VecFloat* newCtrl = 
         VecGetNewDim((VecFloat*)GSetIterGet(&iter), dim);
-      VecFree((VecFloat**)&(GSetIterGetElem(&iterNew)->_data));
-      GSetIterGetElem(&iterNew)->_data = newCtrl;
+      VecCopy((VecFloat*)(GSetIterGetElem(&iterNew)->_data), newCtrl);
+      VecFree(&newCtrl);
     } while (GSetIterStep(&iter) && GSetIterStep(&iterNew));
-    // Correct the dimension and control points of each segment
-    GSetIterSetGSet(&iter, &(ret->_seg));
-    int iSeg = 0;
-    do {
-      BCurve* seg = GSetIterGet(&iter);
-      seg->_dim = dim;
-      for (int iCtrl = SCurveGetOrder(that) + 1; iCtrl--;)
-        seg->_ctrl[iCtrl] = 
-          SCurveCtrl(ret, SCurveGetOrder(that) * iSeg + iCtrl);
-      ++iSeg;
-    } while (GSetIterStep(&iter));
-    // Set the dimension of the curve
-    ret->_dim = dim;
     // Return the new curve
     return ret;
   }
 }
 
 // Function which return the JSON encoding of 'that' 
-JSONNode* SCurveEncodeAsJSON(SCurve* that) {
+JSONNode* SCurveEncodeAsJSON(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -663,7 +661,7 @@ JSONNode* SCurveEncodeAsJSON(SCurve* that) {
 }
 
 // Function which decode from JSON encoding 'json' to 'that'
-bool SCurveDecodeAsJSON(SCurve** that, JSONNode* json) {
+bool SCurveDecodeAsJSON(SCurve** that, const JSONNode* const json) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -734,7 +732,7 @@ bool SCurveDecodeAsJSON(SCurve** that, JSONNode* json) {
 // Load the SCurve from the stream
 // If the SCurve is already allocated, it is freed before loading
 // Return true in case of success, false else
-bool SCurveLoad(SCurve** that, FILE* stream) {
+bool SCurveLoad(SCurve** that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -767,7 +765,8 @@ bool SCurveLoad(SCurve** that, FILE* stream) {
 // If 'compact' equals true it saves in compact form, else it saves in 
 // readable form
 // Return true upon success, false else
-bool SCurveSave(SCurve* that, FILE* stream, bool compact) {
+bool SCurveSave(const SCurve* const that, FILE* const stream, 
+  const bool compact) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -825,7 +824,7 @@ void SCurveFree(SCurve** that) {
 }
 
 // Print the SCurve on 'stream'
-void SCurvePrint(SCurve* that, FILE* stream) {
+void SCurvePrint(const SCurve* const that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -863,7 +862,7 @@ void SCurvePrint(SCurve* that, FILE* stream) {
 // Add one segment at the end of the curve (controls are set to 
 // vectors null, except the first one which the last one of the current
 // last segment)
-void SCurveAddSegTail(SCurve* that) {
+void SCurveAddSegTail(SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -889,7 +888,7 @@ void SCurveAddSegTail(SCurve* that) {
 // Add one segment at the head of the curve (controls are set to 
 // vectors null, except the last one which the first one of the current
 // first segment)
-void SCurveAddSegHead(SCurve* that) {
+void SCurveAddSegHead(SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -914,7 +913,7 @@ void SCurveAddSegHead(SCurve* that) {
 
 // Remove the first segment of the curve (which must have more than one
 // segment)
-void SCurveRemoveHeadSeg(SCurve* that) {
+void SCurveRemoveHeadSeg(SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -946,7 +945,7 @@ void SCurveRemoveHeadSeg(SCurve* that) {
 
 // Remove the last segment of the curve (which must have more than one
 // segment)
-void SCurveRemoveTailSeg(SCurve* that) {
+void SCurveRemoveTailSeg(SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -981,7 +980,7 @@ void SCurveRemoveTailSeg(SCurve* that) {
 // system.
 // TODO : better solution possible, refer to 
 // https://pomax.github.io/bezierinfo/#circles_cubic
-Facoid* SCurveGetBoundingBox(SCurve* that) {
+Facoid* SCurveGetBoundingBox(const SCurve* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1014,7 +1013,7 @@ Facoid* SCurveGetBoundingBox(SCurve* that) {
 // Create a new SCurve from the outline of the Facoid 'shap'
 // The Facoid must be of dimension 2
 // Control points are ordered CCW of the Shapoid
-SCurve* SCurveCreateFromFacoid(Facoid* shap) {
+SCurve* SCurveCreateFromFacoid(const Facoid* const shap) {
 #if BUILDMODE == 0
   if (shap == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1030,15 +1029,22 @@ SCurve* SCurveCreateFromFacoid(Facoid* shap) {
   }
 #endif
   // Create the curve
-  SCurve* ret = SCurveCreate(1, 2, 4);
+  int order = 1;
+  int dim = 2;
+  int nbSeg = 4;
+  SCurve* ret = SCurveCreate(order, dim, nbSeg);
   // Set the coordinates of the control points according to the 
   // Facoid
-  for (int i = 5; i--;)
-    VecCopy(SCurveCtrl(ret, i), ShapoidPos(shap));
-  VecOp(SCurveCtrl(ret, 1), 1.0, ShapoidAxis(shap, 0), 1.0);
-  VecOp(SCurveCtrl(ret, 2), 1.0, ShapoidAxis(shap, 0), 1.0);
-  VecOp(SCurveCtrl(ret, 2), 1.0, ShapoidAxis(shap, 1), 1.0);
-  VecOp(SCurveCtrl(ret, 3), 1.0, ShapoidAxis(shap, 1), 1.0);
+  VecFloat* v = VecClone(ShapoidPos(shap));
+  SCurveSetCtrl(ret, 0, v);
+  SCurveSetCtrl(ret, 4, v);
+  VecOp(v, 1.0, ShapoidAxis(shap, 0), 1.0);
+  SCurveSetCtrl(ret, 1, v);
+  VecOp(v, 1.0, ShapoidAxis(shap, 1), 1.0);
+  SCurveSetCtrl(ret, 2, v);
+  VecOp(v, 1.0, ShapoidAxis(shap, 0), -1.0);
+  SCurveSetCtrl(ret, 3, v);
+  VecFree(&v);
   // Return the curve
   return ret;
 }
@@ -1046,7 +1052,7 @@ SCurve* SCurveCreateFromFacoid(Facoid* shap) {
 // Create a new SCurve from the outline of the Pyramidoid 'shap'
 // The Pyramidoid must be of dimension 2
 // Control points are ordered CCW of the Shapoid
-SCurve* SCurveCreateFromPyramidoid(Pyramidoid* shap) {
+SCurve* SCurveCreateFromPyramidoid(const Pyramidoid* const shap) {
 #if BUILDMODE == 0
   if (shap == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1065,10 +1071,18 @@ SCurve* SCurveCreateFromPyramidoid(Pyramidoid* shap) {
   SCurve* ret = SCurveCreate(1, 2, 3);
   // Set the coordinates of the control points according to the 
   // Facoid
-  for (int i = 4; i--;)
-    VecCopy(SCurveCtrl(ret, i), ShapoidPos(shap));
-  VecOp(SCurveCtrl(ret, 1), 1.0, ShapoidAxis(shap, 0), 1.0);
-  VecOp(SCurveCtrl(ret, 2), 1.0, ShapoidAxis(shap, 1), 1.0);
+  VecFloat* ctrl[2] = {NULL};
+  for (int i = 2; i--;) {
+    ctrl[i] = VecClone(ShapoidPos(shap));
+  }
+  VecOp(ctrl[0], 1.0, ShapoidAxis(shap, 0), 1.0);
+  VecOp(ctrl[1], 1.0, ShapoidAxis(shap, 1), 1.0);
+  SCurveSetCtrl(ret, 0, ShapoidPos(shap));
+  SCurveSetCtrl(ret, 1, ctrl[0]);
+  SCurveSetCtrl(ret, 2, ctrl[1]);
+  SCurveSetCtrl(ret, 3, ShapoidPos(shap));
+  for (int i = 2; i--;)
+    VecFree(ctrl + i);
   // Return the curve
   return ret;
 }
@@ -1077,7 +1091,7 @@ SCurve* SCurveCreateFromPyramidoid(Pyramidoid* shap) {
 // The Spheroid must be of dimension 2
 // Control points are ordered CCW of the Shapoid
 // Calculate an approximation as there is no exact solution
-SCurve* SCurveCreateFromSpheroid(Spheroid* shap) {
+SCurve* SCurveCreateFromSpheroid(const Spheroid* const shap) {
 #if BUILDMODE == 0
   if (shap == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1099,32 +1113,39 @@ SCurve* SCurveCreateFromSpheroid(Spheroid* shap) {
   // position and axis of the Spheroid
   int iAxis = 0;
   float coeff = 0.5;
+  VecFloat* ctrl[13] = {NULL};
+  for (int i = 13; i--;)
+    ctrl[i] = VecFloatCreate(2);
   for (int i = 0; i < 12; i += 3) {
-    VecCopy(SCurveCtrl(ret, i), ShapoidPos(shap));
+    VecCopy(ctrl[i], ShapoidPos(shap));
     if (i == 6)
       coeff *= -1.0;
-    VecOp(SCurveCtrl(ret, i), 1.0, ShapoidAxis(shap, iAxis), coeff);
+    VecOp(ctrl[i], 1.0, ShapoidAxis(shap, iAxis), coeff);
     if (i > 0)
-      VecCopy(SCurveCtrl(ret, i - 1), SCurveCtrl(ret, i));
+      VecCopy(ctrl[i - 1], ctrl[i]);
     if (i < 11)
-      VecCopy(SCurveCtrl(ret, i + 1), SCurveCtrl(ret, i));
+      VecCopy(ctrl[i + 1], ctrl[i]);
     iAxis = (iAxis == 0 ? 1 : 0);
   }
-  VecCopy(SCurveCtrl(ret, 12), SCurveCtrl(ret, 0));
-  VecCopy(SCurveCtrl(ret, 11), SCurveCtrl(ret, 0));
+  VecCopy(ctrl[12], ctrl[0]);
+  VecCopy(ctrl[11], ctrl[0]);
   // Calculate the others control points by transforming the 
   // quadratic approximation of a quarter of the unit circle :
   // A(1,0), B(1,4(sqrt(2)-1)/3), C(4(sqrt(2)-1)/3,1), D(0,1)
   // toward the Spheroid
   float c = 0.276142;
-  VecOp(SCurveCtrl(ret, 1), 1.0, ShapoidAxis(shap, 1), c);
-  VecOp(SCurveCtrl(ret, 2), 1.0, ShapoidAxis(shap, 0), c);
-  VecOp(SCurveCtrl(ret, 4), 1.0, ShapoidAxis(shap, 0), -1.0 * c);
-  VecOp(SCurveCtrl(ret, 5), 1.0, ShapoidAxis(shap, 1), c);
-  VecOp(SCurveCtrl(ret, 7), 1.0, ShapoidAxis(shap, 1), -1.0 * c);
-  VecOp(SCurveCtrl(ret, 8), 1.0, ShapoidAxis(shap, 0), -1.0 * c);
-  VecOp(SCurveCtrl(ret, 10), 1.0, ShapoidAxis(shap, 0), c);
-  VecOp(SCurveCtrl(ret, 11), 1.0, ShapoidAxis(shap, 1), -1.0 * c);
+  VecOp(ctrl[1], 1.0, ShapoidAxis(shap, 1), c);
+  VecOp(ctrl[2], 1.0, ShapoidAxis(shap, 0), c);
+  VecOp(ctrl[4], 1.0, ShapoidAxis(shap, 0), -1.0 * c);
+  VecOp(ctrl[5], 1.0, ShapoidAxis(shap, 1), c);
+  VecOp(ctrl[7], 1.0, ShapoidAxis(shap, 1), -1.0 * c);
+  VecOp(ctrl[8], 1.0, ShapoidAxis(shap, 0), -1.0 * c);
+  VecOp(ctrl[10], 1.0, ShapoidAxis(shap, 0), c);
+  VecOp(ctrl[11], 1.0, ShapoidAxis(shap, 1), -1.0 * c);
+  for (int i = 13; i--;)
+    SCurveSetCtrl(ret, i, ctrl[i]);
+  for (int i = 13; i--;)
+    VecFree(ctrl + i);
   // Return the curve
   return ret;
 }
@@ -1133,7 +1154,8 @@ SCurve* SCurveCreateFromSpheroid(Spheroid* shap) {
 // The distance is defined as the integral of 
 // ||'that'(u(t))-'curve'(v(t))|| where u and v are the relative 
 // positions on the curve over t varying from 0.0 to 1.0
-float SCurveGetDistToCurve(SCurve* that, SCurve* curve) {
+float SCurveGetDistToCurve(const SCurve* const that, 
+  const SCurve* const curve) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1187,7 +1209,8 @@ float SCurveGetDistToCurve(SCurve* that, SCurve* curve) {
 
 // Create a new SCurveIter attached to the SCurve 'curve' with a step 
 // of 'delta'
-SCurveIter SCurveIterCreateStatic(SCurve* curve, float delta) {
+SCurveIter SCurveIterCreateStatic(const SCurve* const curve, 
+  const float delta) {
 #if BUILDMODE == 0
   if (curve == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1215,14 +1238,14 @@ SCurveIter SCurveIterCreateStatic(SCurve* curve, float delta) {
 // ================ Functions declaration ====================
 
 // Recursive function to calculate the value of a BBody
-VecFloat* BBodyGetRec(BBody *that, BCurve *curve, 
-  VecShort *iCtrl, VecFloat *u, int iDimIn);
+VecFloat* BBodyGetRec(const BBody* const that, BCurve* curve, 
+  VecShort* iCtrl, VecFloat* u, int iDimIn);
 
 // ================ Functions implementation ====================
 
 // Create a new BBody of order 'order' and dimension 'dim'
 // Controls are initialized with null vectors
-BBody* BBodyCreate(int order, VecShort2D* dim) {
+BBody* BBodyCreate(const int order, const VecShort2D* const dim) {
 #if BUILDMODE == 0
   if (order < 0) {
     BCurveErr->_type = PBErrTypeInvalidArg;
@@ -1244,13 +1267,13 @@ BBody* BBodyCreate(int order, VecShort2D* dim) {
   }
 #endif
   // Allocate memory for the new BBody
-  BBody *that = PBErrMalloc(BCurveErr, sizeof(BBody));
+  BBody* that = PBErrMalloc(BCurveErr, sizeof(BBody));
   // Init pointers
-  that->_dim = VecShortCreateStatic2D();
+  *((VecShort2D*)&(that->_dim)) = VecShortCreateStatic2D();
   that->_ctrl = NULL;
   // Init properties
-  that->_order = order;
-  that->_dim = *dim;
+  *((int*)&(that->_order)) = order;
+  *((VecShort2D*)&(that->_dim)) = *dim;
   // Init the control
   int nbCtrl = BBodyGetNbCtrl(that);
   that->_ctrl = PBErrMalloc(BCurveErr, sizeof(VecFloat*) * nbCtrl);
@@ -1277,7 +1300,7 @@ void BBodyFree(BBody** that) {
 
 // Get the value of the BBody at paramater 'u'
 // u can extend beyond [0.0, 1.0]
-VecFloat* _BBodyGet(BBody* that, VecFloat* u) {
+VecFloat* _BBodyGet(const BBody* const that, const VecFloat* const u) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1300,13 +1323,13 @@ VecFloat* _BBodyGet(BBody* that, VecFloat* u) {
   int nbDimIn = VecGet(&(that->_dim), 0);
   int nbDimOut = VecGet(&(that->_dim), 1);
   // Create a clone of u to be checked for components interval
-  VecFloat *uSafe = VecClone(u);
+  VecFloat* uSafe = VecClone(u);
   // Declare a vector to memorize the index of the ctrl
-  VecShort *iCtrl = VecShortCreate(nbDimIn);
+  VecShort* iCtrl = VecShortCreate(nbDimIn);
   // Declare a BCurve used for calculation
-  BCurve *curve = BCurveCreate(that->_order, nbDimOut);
+  BCurve* curve = BCurveCreate(that->_order, nbDimOut);
   // Calculate recursively the result value
-  VecFloat *res = BBodyGetRec(that, curve, iCtrl, uSafe, 0);
+  VecFloat* res = BBodyGetRec(that, curve, iCtrl, uSafe, 0);
   // Free memory
   VecFree(&uSafe);
   VecFree(&iCtrl);
@@ -1316,10 +1339,10 @@ VecFloat* _BBodyGet(BBody* that, VecFloat* u) {
 }
 
 // Recursive function to calculate the value of SCurve
-VecFloat* BBodyGetRec(BBody* that, BCurve* curve, 
+VecFloat* BBodyGetRec(const BBody* const that, BCurve* curve, 
   VecShort* iCtrl, VecFloat* u, int iDimIn) {
   // Declare a variable for the result
-  VecFloat *res = NULL;
+  VecFloat* res = NULL;
   // If we are at the last dimension in the recursion, 
   // the curve controls are the controls of the surface at current
   // position in control's space
@@ -1332,10 +1355,10 @@ VecFloat* BBodyGetRec(BBody* that, BCurve* curve,
   } else {
     // Clone the position (to edit the lower dimension at lower 
     // level of the recursion)
-    VecShort *jCtrl = VecClone(iCtrl);
+    VecShort* jCtrl = VecClone(iCtrl);
     // Declare an array of VecFloat to memorize the control at 
     // the current level
-    VecFloat **tmpCtrl = 
+    VecFloat** tmpCtrl = 
       PBErrMalloc(BCurveErr, sizeof(VecFloat*) * (that->_order + 1));
     // For each control
     for (int i = that->_order + 1; i--;) {
@@ -1369,7 +1392,7 @@ VecFloat* BBodyGetRec(BBody* that, BCurve* curve,
 }
 
 // Return a clone of the BBody 'that'
-BBody* BBodyClone(BBody* that) {
+BBody* BBodyClone(const BBody* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1388,7 +1411,7 @@ BBody* BBodyClone(BBody* that) {
 }
 
 // Print the BBody 'that' on the stream 'stream'
-void BBodyPrint(BBody* that, FILE* stream) {
+void BBodyPrint(const BBody* const that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1414,7 +1437,7 @@ void BBodyPrint(BBody* that, FILE* stream) {
 }
 
 // Function which return the JSON encoding of 'that' 
-JSONNode* BBodyEncodeAsJSON(BBody* that) {
+JSONNode* BBodyEncodeAsJSON(const BBody* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -1444,7 +1467,7 @@ JSONNode* BBodyEncodeAsJSON(BBody* that) {
 }
 
 // Function which decode from JSON encoding 'json' to 'that'
-bool BBodyDecodeAsJSON(BBody** that, JSONNode* json) {
+bool BBodyDecodeAsJSON(BBody** that, const JSONNode* const json) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -1508,7 +1531,7 @@ bool BBodyDecodeAsJSON(BBody** that, JSONNode* json) {
 // Load the BBody from the stream
 // If the BBody is already allocated, it is freed before loading
 // Return true upon success, false else
-bool BBodyLoad(BBody** that, FILE* stream) {
+bool BBodyLoad(BBody** that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1541,7 +1564,8 @@ bool BBodyLoad(BBody** that, FILE* stream) {
 // If 'compact' equals true it saves in compact form, else it saves in 
 // readable form
 // Return true upon success, false else
-bool BBodySave(BBody* that, FILE* stream, bool compact) {
+bool BBodySave(const BBody* const that, FILE* const stream, 
+  const bool compact) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1569,7 +1593,7 @@ bool BBodySave(BBody* that, FILE* stream, bool compact) {
 // Get the bounding box of the BBody.
 // Return a Facoid whose axis are aligned on the standard coordinate 
 // system.
-Facoid* BBodyGetBoundingBox(BBody* that) {
+Facoid* BBodyGetBoundingBox(const BBody* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     BCurveErr->_type = PBErrTypeNullPointer;
@@ -1590,12 +1614,11 @@ Facoid* BBodyGetBoundingBox(BBody* that) {
       if (VecGet(that->_ctrl[iCtrl], iDim) < VecGet(res->_s._pos, iDim))
         VecSet(res->_s._pos, iDim, VecGet(that->_ctrl[iCtrl], iDim));
       if (VecGet(that->_ctrl[iCtrl], iDim) > 
-        VecGet(ShapoidAxis(res, iDim), iDim))
+        ShapoidAxisGet(res, iDim, iDim))
         ShapoidAxisSet(res, iDim, iDim,
-          VecGet(that->_ctrl[iCtrl], iDim));
+        VecGet(that->_ctrl[iCtrl], iDim));
     }
-    ShapoidAxisSetAdd(res, iDim, iDim,
-      -1.0 * VecGet(ShapoidPos(res), iDim));
+    ShapoidAxisSetAdd(res, iDim, iDim, -1.0 * ShapoidPosGet(res, iDim));
   }
   // Return the result
   return res;

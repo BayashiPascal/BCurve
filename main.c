@@ -225,7 +225,7 @@ void UnitTestBCurveRot() {
   float pa[8] = {-1.0, 0.0, -3.0, 2.0, -5.0, 4.0, -7.0, 6.0};
   for (int iCtrl = order + 1; iCtrl--;)
     for (int iDim = dim; iDim--;)
-      if (ISEQUALF(VecGet(BCurveCtrl(curve, iCtrl), iDim), 
+      if (ISEQUALF(BCurveCtrlGet(curve, iCtrl, iDim), 
         pa[iCtrl * dim + iDim]) == false) {
         BCurveErr->_type = PBErrTypeUnitTestFailed;
         sprintf(BCurveErr->_msg, "BCurveRotOrigin failed");
@@ -235,7 +235,7 @@ void UnitTestBCurveRot() {
   float pb[8] = {-1.0, 0.0, -3.0,-2.0, -5.0, -4.0, -7.0, -6.0};
   for (int iCtrl = order + 1; iCtrl--;)
     for (int iDim = dim; iDim--;)
-      if (ISEQUALF(VecGet(BCurveCtrl(curve, iCtrl), iDim), 
+      if (ISEQUALF(BCurveCtrlGet(curve, iCtrl, iDim), 
         pb[iCtrl * dim + iDim]) == false) {
         BCurveErr->_type = PBErrTypeUnitTestFailed;
         sprintf(BCurveErr->_msg, "BCurveRotStart failed");
@@ -245,7 +245,7 @@ void UnitTestBCurveRot() {
   float pc[8] = {-7.0, 0.0, -5.0, -2.0, -3.0, -4.0, -1.0, -6.0};
   for (int iCtrl = order + 1; iCtrl--;)
     for (int iDim = dim; iDim--;)
-      if (ISEQUALF(VecGet(BCurveCtrl(curve, iCtrl), iDim), 
+      if (ISEQUALF(BCurveCtrlGet(curve, iCtrl, iDim), 
         pc[iCtrl * dim + iDim]) == false) {
         BCurveErr->_type = PBErrTypeUnitTestFailed;
         sprintf(BCurveErr->_msg, "BCurveRotCenter failed");
@@ -271,7 +271,7 @@ void UnitTestBCurveScale() {
   float pa[8] = {0.0,2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0};
   for (int iCtrl = order + 1; iCtrl--;)
     for (int iDim = dim; iDim--;)
-      if (ISEQUALF(VecGet(BCurveCtrl(curve, iCtrl), iDim), 
+      if (ISEQUALF(BCurveCtrlGet(curve, iCtrl, iDim), 
         pa[iCtrl * dim + iDim]) == false) {
         BCurveErr->_type = PBErrTypeUnitTestFailed;
         sprintf(BCurveErr->_msg, "BCurveScaleOrigin failed");
@@ -281,7 +281,7 @@ void UnitTestBCurveScale() {
   float pb[8] = {0.0, 2.0, 8.0, 10.0, 16.0, 18.0, 24.0, 26.0};
   for (int iCtrl = order + 1; iCtrl--;)
     for (int iDim = dim; iDim--;)
-      if (ISEQUALF(VecGet(BCurveCtrl(curve, iCtrl), iDim), 
+      if (ISEQUALF(BCurveCtrlGet(curve, iCtrl, iDim), 
         pb[iCtrl * dim + iDim]) == false) {
         BCurveErr->_type = PBErrTypeUnitTestFailed;
         sprintf(BCurveErr->_msg, "BCurveScaleStart failed");
@@ -291,7 +291,7 @@ void UnitTestBCurveScale() {
   float pc[8] = {-12.0, -10.0, 4.0, 6.0, 20.0, 22.0, 36.0, 38.0};
   for (int iCtrl = order + 1; iCtrl--;)
     for (int iDim = dim; iDim--;)
-      if (ISEQUALF(VecGet(BCurveCtrl(curve, iCtrl), iDim), 
+      if (ISEQUALF(BCurveCtrlGet(curve, iCtrl, iDim), 
         pc[iCtrl * dim + iDim]) == false) {
         BCurveErr->_type = PBErrTypeUnitTestFailed;
         sprintf(BCurveErr->_msg, "BCurveScaleCenter failed");
@@ -318,7 +318,7 @@ void UnitTestBCurveTranslate() {
   for (int iCtrl = order + 1; iCtrl--;) {
     for (int iDim = dim; iDim--;) {
       VecSet(v, iDim, iCtrl * dim + iDim);
-      if (ISEQUALF(VecGet(BCurveCtrl(curve, iCtrl), iDim), 
+      if (ISEQUALF(BCurveCtrlGet(curve, iCtrl, iDim), 
         VecGet(v, iDim) - (float)(iDim + 1)) == false) {
         BCurveErr->_type = PBErrTypeUnitTestFailed;
         sprintf(BCurveErr->_msg, "BCurveTranslate failed");
@@ -745,7 +745,7 @@ void UnitTestSCurveGet() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   for (float u = 0.0; u < SCurveGetMaxU(curve) + PBMATH_EPSILON; 
     u += 0.1) {
@@ -769,7 +769,7 @@ void UnitTestSCurveGetOrderDimNbSegMaxUNbCtrl() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   if (SCurveGetOrder(curve) != order) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
@@ -807,7 +807,7 @@ void UnitTestSCurveGetApproxLenCenter() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   VecFloat* center = SCurveGetCenter(curve);
   VecFloat* check = VecFloatCreate(dim);
@@ -837,16 +837,16 @@ void UnitTestSCurveRot() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   float theta = PBMATH_HALFPI;
   SCurveRotStart(curve, theta);
   float pa[20] = {0.0, 1.0, -2.0, 3.0, -4.0, 5.0, -6.0, 7.0, -8.0, 9.0,
       -10.0, 11.0, -12.0, 13.0, -14.0, 15.0, -16.0, 17.0, -18.0, 19.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pa[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pa[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveRotStart failed");
@@ -858,9 +858,9 @@ void UnitTestSCurveRot() {
       -8.0, -11.0, -10.0, -13.0, -12.0, -15.0, -14.0, -17.0, -16.0, 
       -19.0, -18.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pb[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pb[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveRotOrigin failed");
@@ -872,9 +872,9 @@ void UnitTestSCurveRot() {
       -11.0, -8.0, -9.0, -10.0, -7.0, -12.0, -5.0, -14.0, -3.0, -16.0,
       -1.0, -18.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pc[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pc[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveRotCenter failed");
@@ -892,16 +892,16 @@ void UnitTestSCurveScale() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   float scale = 2.0;
   SCurveScaleStart(curve, scale);
   float pa[20] = {0.0, 1.0, 4.0, 5.0, 8.0, 9.0, 12.0, 13.0, 16.0, 17.0, 
     20.0, 21.0, 24.0, 25.0, 28.0, 29.0, 32.0, 33.0, 36.0, 37.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pa[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pa[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveScaleStart failed");
@@ -912,9 +912,9 @@ void UnitTestSCurveScale() {
   float pb[20] = {0.0, 2.0, 8.0, 10.0, 16.0, 18.0, 24.0, 26.0, 32.0, 
       34.0, 40.0, 42.0, 48.0, 50.0, 56.0, 58.0, 64.0, 66.0, 72.0, 74.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pb[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pb[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveScaleOrigin failed");
@@ -926,9 +926,9 @@ void UnitTestSCurveScale() {
       28.0, 30.0, 44.0, 46.0, 60.0, 62.0, 76.0, 78.0, 92.0, 94.0, 
       108.0, 110.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pc[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pc[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveScaleCenter failed");
@@ -939,7 +939,7 @@ void UnitTestSCurveScale() {
   curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   VecFloat* v = VecFloatCreate(dim);
   VecSet(v, 0, 2.0);
@@ -949,9 +949,9 @@ void UnitTestSCurveScale() {
       -7.0, 20.0, -9.0, 24.0, -11.0, 28.0, -13.0, 32.0, -15.0, 36.0, 
       -17.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pd[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pd[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveScaleStart failed");
@@ -962,9 +962,9 @@ void UnitTestSCurveScale() {
   float pe[20] = {0.0, -1.0, 8.0, 1.0, 16.0, 3.0, 24.0, 5.0, 32.0, 
       7.0, 40.0, 9.0, 48.0, 11.0, 56.0, 13.0, 64.0, 15.0, 72.0, 17.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pe[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pe[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveScaleOrigin failed");
@@ -976,9 +976,9 @@ void UnitTestSCurveScale() {
       28.0, 9.0, 44.0, 7.0, 60.0, 5.0, 76.0, 3.0, 92.0, 1.0, 108.0, 
       -1.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       pf[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       pf[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveScaleCenter failed");
@@ -997,7 +997,7 @@ void UnitTestSCurveTranslate() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   VecFloat* v = VecFloatCreate(dim);
   VecSet(v, 0, -1.0);
@@ -1006,9 +1006,9 @@ void UnitTestSCurveTranslate() {
   float p[20] = {-1.0, 3.0, 1.0, 5.0, 3.0, 7.0, 5.0, 9.0, 7.0, 11.0, 
     9.0, 13.0, 11.0, 15.0, 13.0, 17.0, 15.0, 19.0, 17.0, 21.0};
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    if (ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 0), 
+    if (ISEQUALF(SCurveCtrlGet(curve, iCtrl, 0), 
       p[iCtrl * 2]) == false ||
-      ISEQUALF(VecGet(SCurveCtrl(curve, iCtrl), 1), 
+      ISEQUALF(SCurveCtrlGet(curve, iCtrl, 1), 
       p[iCtrl * 2 + 1]) == false) {
       BCurveErr->_type = PBErrTypeUnitTestFailed;
       sprintf(BCurveErr->_msg, "SCurveTranslate failed");
@@ -1026,18 +1026,18 @@ void UnitTestSCurveGetBoundingBox() {
   int nbSeg = 3;
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    VecSet(SCurveCtrl(curve, iCtrl), 0, 
+    SCurveCtrlSet(curve, iCtrl, 0, 
       cos(PBMATH_QUARTERPI * (float)iCtrl * 0.5));
-    VecSet(SCurveCtrl(curve, iCtrl), 1, 
+    SCurveCtrlSet(curve, iCtrl, 1, 
       sin(PBMATH_QUARTERPI * (float)iCtrl * 0.5));
   }
   Facoid* bound = SCurveGetBoundingBox(curve);
-  if (ISEQUALF(VecGet(ShapoidPos(bound), 0), -1.0) == false ||
-    ISEQUALF(VecGet(ShapoidPos(bound), 1), -0.382683) == false ||
-    ISEQUALF(VecGet(ShapoidAxis(bound, 0), 0), 2.382684) == false ||
-    ISEQUALF(VecGet(ShapoidAxis(bound, 0), 1), 0.0) == false ||
-    ISEQUALF(VecGet(ShapoidAxis(bound, 1), 0), 0.0) == false ||
-    ISEQUALF(VecGet(ShapoidAxis(bound, 1), 1), 1.765367) == false) {
+  if (ISEQUALF(ShapoidPosGet(bound, 0), -1.0) == false ||
+    ISEQUALF(ShapoidPosGet(bound, 1), -0.382683) == false ||
+    ISEQUALF(ShapoidAxisGet(bound, 0, 0), 2.382684) == false ||
+    ISEQUALF(ShapoidAxisGet(bound, 0, 1), 0.0) == false ||
+    ISEQUALF(ShapoidAxisGet(bound, 1, 0), 0.0) == false ||
+    ISEQUALF(ShapoidAxisGet(bound, 1, 1), 1.765367) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "SCurveGetBoundingBox failed");
     PBErrCatch(BCurveErr);
@@ -1053,26 +1053,26 @@ void UnitTestSCurveGetNewDim() {
   int nbSeg = 2;
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
-    VecSet(SCurveCtrl(curve, iCtrl), 0, (float)iCtrl);
-    VecSet(SCurveCtrl(curve, iCtrl), 1, (float)iCtrl + 1);
-    VecSet(SCurveCtrl(curve, iCtrl), 2, (float)iCtrl + 2);
+    SCurveCtrlSet(curve, iCtrl, 0, (float)iCtrl);
+    SCurveCtrlSet(curve, iCtrl, 1, (float)iCtrl + 1);
+    SCurveCtrlSet(curve, iCtrl, 2, (float)iCtrl + 2);
   }
   SCurve* curveA = SCurveGetNewDim(curve, 2);
   if (SCurveGetDim(curveA) != 2 ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 0), 0), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 0), 1), 1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 1), 0), 1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 1), 1), 2.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 2), 0), 2.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 2), 1), 3.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 3), 0), 3.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 3), 1), 4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 4), 0), 4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 4), 1), 5.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 5), 0), 5.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 5), 1), 6.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 6), 0), 6.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveA, 6), 1), 7.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 0, 0), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 0, 1), 1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 1, 0), 1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 1, 1), 2.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 2, 0), 2.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 2, 1), 3.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 3, 0), 3.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 3, 1), 4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 4, 0), 4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 4, 1), 5.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 5, 0), 5.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 5, 1), 6.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 6, 0), 6.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveA, 6, 1), 7.0) == false ||
     BCurveCtrl(SCurveSeg(curveA, 0), 0) != SCurveCtrl(curveA, 0) ||
     BCurveCtrl(SCurveSeg(curveA, 0), 1) != SCurveCtrl(curveA, 1) ||
     BCurveCtrl(SCurveSeg(curveA, 0), 2) != SCurveCtrl(curveA, 2) ||
@@ -1087,34 +1087,34 @@ void UnitTestSCurveGetNewDim() {
   }
   SCurve* curveB = SCurveGetNewDim(curve, 4);
   if (SCurveGetDim(curveB) != 4 ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 0), 0), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 0), 1), 1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 0), 2), 2.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 0), 3), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 1), 0), 1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 1), 1), 2.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 1), 2), 3.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 1), 3), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 2), 0), 2.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 2), 1), 3.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 2), 2), 4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 2), 3), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 3), 0), 3.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 3), 1), 4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 3), 2), 5.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 3), 3), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 4), 0), 4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 4), 1), 5.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 4), 2), 6.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 4), 3), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 5), 0), 5.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 5), 1), 6.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 5), 2), 7.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 5), 3), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 6), 0), 6.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 6), 1), 7.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 6), 2), 8.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curveB, 6), 3), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 0, 0), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 0, 1), 1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 0, 2), 2.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 0, 3), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 1, 0), 1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 1, 1), 2.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 1, 2), 3.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 1, 3), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 2, 0), 2.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 2, 1), 3.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 2, 2), 4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 2, 3), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 3, 0), 3.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 3, 1), 4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 3, 2), 5.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 3, 3), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 4, 0), 4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 4, 1), 5.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 4, 2), 6.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 4, 3), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 5, 0), 5.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 5, 1), 6.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 5, 2), 7.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 5, 3), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 6, 0), 6.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 6, 1), 7.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 6, 2), 8.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curveB, 6, 3), 0.0) == false ||
     BCurveCtrl(SCurveSeg(curveB, 0), 0) != SCurveCtrl(curveB, 0) ||
     BCurveCtrl(SCurveSeg(curveB, 0), 1) != SCurveCtrl(curveB, 1) ||
     BCurveCtrl(SCurveSeg(curveB, 0), 2) != SCurveCtrl(curveB, 2) ||
@@ -1151,22 +1151,24 @@ void UnitTestSCurveCreateFromShapoid() {
   ShapoidSetAxis(pyramidoid, 1, &v);
   ShapoidSetAxis(spheroid, 1, &v);
   SCurve* curve = SCurveCreateFromShapoid((Shapoid*)facoid);
+SCurvePrint(curve, stdout);printf("\n");
+ShapoidPrintln(facoid, stdout);
   if (curve == NULL || SCurveGetDim(curve) != 2 ||
     SCurveGetOrder(curve) != 1 || SCurveGetNbSeg(curve) != 4) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "SCurveCreateFromFacoid failed");
     PBErrCatch(BCurveErr);
   }
-  if (ISEQUALF(VecGet(SCurveCtrl(curve, 0), 0), 1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 0), 1), 2.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 0), 4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 1), 6.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 0), -1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 1), 12.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 0), -4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 1), 8.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 4), 0), 1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 4), 1), 2.0) == false) {
+  if (ISEQUALF(SCurveCtrlGet(curve, 0, 0), 1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 0, 1), 2.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 1, 0), 4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 1, 1), 6.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 2, 0), -1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 2, 1), 12.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 3, 0), -4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 3, 1), 8.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 4, 0), 1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 4, 1), 2.0) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "SCurveCreateFromFacoid failed");
     PBErrCatch(BCurveErr);
@@ -1179,14 +1181,14 @@ void UnitTestSCurveCreateFromShapoid() {
     sprintf(BCurveErr->_msg, "SCurveCreateFromPyramidoid failed");
     PBErrCatch(BCurveErr);
   }
-  if (ISEQUALF(VecGet(SCurveCtrl(curve, 0), 0), 1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 0), 1), 2.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 0), 4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 1), 6.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 0), -4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 1), 8.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 0), 1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 1), 2.0) == false) {
+  if (ISEQUALF(SCurveCtrlGet(curve, 0, 0), 1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 0, 1), 2.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 1, 0), 4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 1, 1), 6.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 2, 0), -4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 2, 1), 8.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 3, 0), 1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 3, 1), 2.0) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "SCurveCreateFromPyramidoid failed");
     PBErrCatch(BCurveErr);
@@ -1199,32 +1201,32 @@ void UnitTestSCurveCreateFromShapoid() {
     sprintf(BCurveErr->_msg, "SCurveCreateFromSpheroid failed");
     PBErrCatch(BCurveErr);
   }
-  if (ISEQUALF(VecGet(SCurveCtrl(curve, 0), 0), 2.5) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 0), 1), 4.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 0), 1.119290) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 1), 1), 5.656852) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 0), -0.671574) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 2), 1), 6.104568) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 0), -1.5) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 3), 1), 5.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 4), 0), -2.328426) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 4), 1), 3.895432) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 5), 0), -1.880710) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 5), 1), 1.656852) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 6), 0), -0.5) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 6), 1), 0.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 7), 0), 0.880710) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 7), 1), -1.656852) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 8), 0), 2.671574) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 8), 1), -2.104568) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 9), 0), 3.5) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 9), 1), -1.0) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 10), 0), 4.328426) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 10), 1), 0.104568) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 11), 0), 3.880710) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 11), 1), 2.343148) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 12), 0), 2.5) == false ||
-    ISEQUALF(VecGet(SCurveCtrl(curve, 12), 1), 4.0) == false) {
+  if (ISEQUALF(SCurveCtrlGet(curve, 0, 0), 2.5) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 0, 1), 4.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 1, 0), 1.119290) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 1, 1), 5.656852) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 2, 0), -0.671574) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 2, 1), 6.104568) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 3, 0), -1.5) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 3, 1), 5.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 4, 0), -2.328426) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 4, 1), 3.895432) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 5, 0), -1.880710) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 5, 1), 1.656852) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 6, 0), -0.5) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 6, 1), 0.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 7, 0), 0.880710) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 7, 1), -1.656852) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 8, 0), 2.671574) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 8, 1), -2.104568) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 9, 0), 3.5) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 9, 1), -1.0) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 10, 0), 4.328426) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 10, 1), 0.104568) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 11, 0), 3.880710) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 11, 1), 2.343148) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 12, 0), 2.5) == false ||
+    ISEQUALF(SCurveCtrlGet(curve, 12, 1), 4.0) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
     sprintf(BCurveErr->_msg, "SCurveCreateFromSpheroid failed");
     PBErrCatch(BCurveErr);
@@ -1242,14 +1244,14 @@ void UnitTestSCurveGetDistToCurve() {
   int nbSeg = 1;
   SCurve* curveA = SCurveCreate(order, dim, nbSeg);
   SCurve* curveB = SCurveCreate(order, dim, nbSeg);
-  VecSet(SCurveCtrl(curveA, 0), 0, 0.0);
-  VecSet(SCurveCtrl(curveA, 0), 1, 0.0);
-  VecSet(SCurveCtrl(curveA, 1), 0, 1.0);
-  VecSet(SCurveCtrl(curveA, 1), 1, 0.0);
-  VecSet(SCurveCtrl(curveB, 0), 0, 0.0);
-  VecSet(SCurveCtrl(curveB, 0), 1, 2.0);
-  VecSet(SCurveCtrl(curveB, 1), 0, 1.0);
-  VecSet(SCurveCtrl(curveB, 1), 1, 2.0);
+  SCurveCtrlSet(curveA, 0, 0, 0.0);
+  SCurveCtrlSet(curveA, 0, 1, 0.0);
+  SCurveCtrlSet(curveA, 1, 0, 1.0);
+  SCurveCtrlSet(curveA, 1, 1, 0.0);
+  SCurveCtrlSet(curveB, 0, 0, 0.0);
+  SCurveCtrlSet(curveB, 0, 1, 2.0);
+  SCurveCtrlSet(curveB, 1, 0, 1.0);
+  SCurveCtrlSet(curveB, 1, 1, 2.0);
   float dist = SCurveGetDistToCurve(curveA, curveB);
   if (ISEQUALF(dist, 2.0) == false) {
     BCurveErr->_type = PBErrTypeUnitTestFailed;
@@ -1286,7 +1288,7 @@ void UnitTestSCurveIterCreate() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   float delta = 0.2;
   SCurveIter iter = SCurveIterCreateStatic(curve, delta);
@@ -1307,7 +1309,7 @@ void UnitTestSCurveIterSetGet() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   float delta = 0.2;
   SCurveIter iter = SCurveIterCreateStatic(curve, delta);
@@ -1362,7 +1364,7 @@ void UnitTestSCurveIterStep() {
   SCurve* curve = SCurveCreate(order, dim, nbSeg);
   for (int iCtrl = SCurveGetNbCtrl(curve); iCtrl--;) {
     for (int iDim = dim; iDim--;)
-      VecSet(SCurveCtrl(curve, iCtrl), iDim, iCtrl * dim + iDim);
+      SCurveCtrlSet(curve, iCtrl, iDim, iCtrl * dim + iDim);
   }
   float delta = 3.0;
   SCurveIter iter = SCurveIterCreateStatic(curve, delta);
