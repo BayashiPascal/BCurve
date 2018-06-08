@@ -336,7 +336,7 @@ BCurve* BCurveFromCloudPoint(const GSetVecFloat* const set) {
       VecSet(&dimMat, 0, order - 1);
       VecSet(&dimMat, 1, order - 1);
       // For each point 
-      GSetElem* elem = GSetGetElem(set, 1);
+      GSetElem* elem = GSetElement(set, 1);
       int iPoint = 1;
       while (elem != NULL) {
         // Get the distance from the previous point
