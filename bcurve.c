@@ -336,16 +336,18 @@ BCurve* BCurveFromCloudPoint(const GSetVecFloat* const set) {
       VecSet(&dimMat, 0, order - 1);
       VecSet(&dimMat, 1, order - 1);
       // For each point 
-      GSetElem* elem = GSetElement(set, 1);
+      GSetIterForward iter = GSetIterForwardCreateStatic(set);
+      (void)GSetIterStep(&iter);
       int iPoint = 1;
-      while (elem != NULL) {
+      do {
         // Get the distance from the previous point
-        float d = VecDist((VecFloat*)(elem->_prev->_data),
-          (VecFloat*)(elem->_data));
+        VecFloat* curPoint = GSetIterGet(&iter);
+        VecFloat* prevPoint = 
+          GSetElemData(GSetElemPrev(GSetIterGetElem(&iter)));
+        float d = VecDist(prevPoint, curPoint);
         VecSet(t, iPoint, d + VecGet(t, iPoint - 1));
         ++iPoint;
-        elem = elem->_next;
-      }
+      } while(GSetIterStep(&iter));
       // Normalize t
       for (iPoint = 1; iPoint <= order; ++iPoint)
         VecSet(t, iPoint, VecGet(t, iPoint) / VecGet(t, order));
