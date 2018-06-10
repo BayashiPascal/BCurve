@@ -314,14 +314,14 @@ BCurve* BCurveFromCloudPoint(const GSetVecFloat* const set) {
 #endif
   // Declare a variable to memorize the result
   int order = GSetNbElem(set) - 1;
-  int dim = VecGetDim(GSetFirst(set));
+  int dim = VecGetDim(GSetHead(set));
   BCurve* curve = BCurveCreate(order, dim);
   // Set the first control point to the first point in the point cloud
-  BCurveSetCtrl(curve, 0, GSetFirst(set));
+  BCurveSetCtrl(curve, 0, GSetHead(set));
   // If the order is greater than 0
   if (order > 0) {
     // Set the last control point to the last point in the point cloud
-    BCurveSetCtrl(curve, order, GSetLast(set));
+    BCurveSetCtrl(curve, order, GSetTail(set));
     // If the order is greater than 1
     if (order > 1) {
       // Calculate the t values for intermediate control points
@@ -378,9 +378,9 @@ BCurve* BCurveFromCloudPoint(const GSetVecFloat* const set) {
           // coordinate
           float x = VecGet((VecFloat*)(GSetGet(set, 
             VecGet(&dimMat, 1) + 1)), iDim);
-          x -= VecGet(weight, 0) * VecGet(GSetFirst(set), iDim);
+          x -= VecGet(weight, 0) * VecGet(GSetHead(set), iDim);
           x -= VecGet(weight, order) * 
-            VecGet(GSetLast(set), iDim);
+            VecGet(GSetTail(set), iDim);
           VecSet(v, VecGet(&dimMat, 1), x);
           // Free memory
           VecFree(&weight);
@@ -544,7 +544,7 @@ SCurve* SCurveCreate(const int order, const int dim, const int nbSeg) {
     if (iSeg != nbSeg - 1) {
       // Replace the last control points by the current first
       VecFree(seg->_ctrl + order);
-      seg->_ctrl[order] = GSetFirst(&(that->_ctrl));
+      seg->_ctrl[order] = GSetHead(&(that->_ctrl));
       // Add the control points
       for (int iCtrl = order; iCtrl--;)
         GSetPush(&(that->_ctrl), (VecFloat*)BCurveCtrl(seg, iCtrl));
@@ -875,7 +875,7 @@ void SCurveAddSegTail(SCurve* const that) {
   // Free memory used by the first control point
   VecFree(seg->_ctrl);
   // Replace it with the current last control
-  seg->_ctrl[0] = GSetLast(&(that->_ctrl));
+  seg->_ctrl[0] = GSetTail(&(that->_ctrl));
   // Add the segment to the set of segment
   GSetAppend(&(that->_seg), seg);
   // Add the new control points to the set of control points
@@ -901,7 +901,7 @@ void SCurveAddSegHead(SCurve* const that) {
   // Free memory used by the last control point
   VecFree(seg->_ctrl + that->_order);
   // Replace it with the current first control
-  seg->_ctrl[that->_order] = GSetFirst(&(that->_ctrl));
+  seg->_ctrl[that->_order] = GSetHead(&(that->_ctrl));
   // Add the segment to the set of segment
   GSetPush(&(that->_seg), seg);
   // Add the new control points to the set of control points
