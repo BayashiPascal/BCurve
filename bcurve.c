@@ -314,7 +314,7 @@ BCurve* BCurveFromCloudPoint(const GSetVecFloat* const set) {
 #endif
   // Declare a variable to memorize the result
   int order = GSetNbElem(set) - 1;
-  int dim = VecGetDim(GSetHead(set));
+  long dim = VecGetDim(GSetHead(set));
   BCurve* curve = BCurveCreate(order, dim);
   // Set the first control point to the first point in the point cloud
   BCurveSetCtrl(curve, 0, GSetHead(set));
@@ -352,7 +352,7 @@ BCurve* BCurveFromCloudPoint(const GSetVecFloat* const set) {
       for (iPoint = 1; iPoint <= order; ++iPoint)
         VecSet(t, iPoint, VecGet(t, iPoint) / VecGet(t, order));
       // For each dimension
-      for (int iDim = dim; iDim--;) {
+      for (long iDim = dim; iDim--;) {
         // Declare a variable to memorize the matrix and vector 
         // of the linear system
         MatFloat* m = MatFloatCreate(&dimMat);
@@ -1316,7 +1316,7 @@ VecFloat* _BBodyGet(const BBody* const that, const VecFloat* const u) {
   }
   if (VecGetDim(u) != VecGet(&(that->_dim), 0)) {
     BCurveErr->_type = PBErrTypeInvalidArg;
-    sprintf(BCurveErr->_msg, "Dimension of 'u' is invalid (%d=%d)", 
+    sprintf(BCurveErr->_msg, "Dimension of 'u' is invalid (%ld=%d)", 
       VecGetDim(u), VecGet(&(that->_dim), 0));
     PBErrCatch(BCurveErr);
   }
