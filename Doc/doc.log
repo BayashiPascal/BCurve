@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.18)  30 OCT 2018 23:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.18)  4 NOV 2018 21:00
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -578,58 +578,105 @@ Underfull \hbox (badness 10000) in paragraph at lines 115--117
 
  []
 
-No file /home/bayashi/Coding/BCurve/bcurve.h.
-No file /home/bayashi/Coding/BCurve/bcurve.c.
-No file /home/bayashi/Coding/BCurve/bcurve-inline.c.
-No file /home/bayashi/Coding/PBMath/Makefile.
-No file /home/bayashi/Coding/BCurve/main.c.
-No file /home/bayashi/Coding/BCurve/unitTestRef.txt.
+File: /home/bayashi/GitHub/BCurve/bcurve.h  (verbatim)
+[4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18]
+File: /home/bayashi/GitHub/BCurve/bcurve.c  (verbatim)
+ [19]
+[20] [21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] [32] [33] [34]
+[35] [36] [37] [38] [39] [40] [41] [42] [43] [44] [45]
+File: /home/bayashi/GitHub/BCurve/bcurve-inline.c  (verbatim)
+ [46] [47] [48] [49]
+[50] [51] [52] [53] [54] [55] [56] [57] [58] [59] [60] [61] [62] [63] [64]
+[65] [66] [67] [68] [69] [70] [71] [72] [73] [74] [75] [76] [77] [78] [79]
+[80]
+File: /home/bayashi/GitHub/PBMath/Makefile  (verbatim)
+
+Overfull \hbox (812.76727pt too wide) in paragraph at lines 151--151
+[]\OT1/cmtt/m/n/8 if [ ! -d ../PBMake ]; then wget https://github.com/BayashiPa
+scal/PBMake/archive/master.zip; unzip master.zip; rm -f master.zip; sed -i 's@R
+OOT_DIR=.*@ROOT_DIR='"`pwd | awk -F/ 'NF{NF-=1};1' | sed --expression='s@ @/@g'
+`"'@' PBMake-master/Makefile.inc; mv PBMake-master ../PBMake; fi[] 
+ []
+
+
+Overfull \hbox (196.50842pt too wide) in paragraph at lines 151--151
+[]\OT1/cmtt/m/n/8 $(COMPILER) `echo "$($(repo)_EXE_DEP) $($(repo)_EXENAME).o" |
+ tr ' ' '\n' | sort -u` $(LINK_ARG) $($(repo)_LINK_ARG) -o $($(repo)_EXENAME)[]
+ 
+ []
+
+
+Overfull \hbox (188.0083pt too wide) in paragraph at lines 151--151
+[]\OT1/cmtt/m/n/8 $(COMPILER) $(BUILD_ARG) $($(repo)_BUILD_ARG) `echo "$($(repo
+)_INC_DIR)" | tr ' ' '\n' | sort -u` -c $($(repo)_DIR)/$($(repo)_EXENAME).c[] 
+ []
+
+File: /home/bayashi/GitHub/BCurve/main.c  (verbatim)
+[81] [82] [83] [84] [85] [86] [87] [88] [89] [90] [91] [92] [93] [94] [95]
+[96] [97] [98] [99] [100] [101] [102] [103] [104] [105] [106] [107] [108]
+[109] [110] [111] [112] [113] [114] [115]
+File: /home/bayashi/GitHub/BCurve/unitTestRef.txt  (verbatim)
+
+Overfull \hbox (638.51477pt too wide) in paragraph at lines 167--167
+[]\OT1/cmtt/m/n/8 order(3) dim(2) nbSeg(3) <<0.000000,1.000000>> <2.000000,3.00
+0000> <4.000000,5.000000> <<6.000000,7.000000>> <8.000000,9.000000> <10.000000,
+11.000000> <<12.000000,13.000000>> <14.000000,15.000000> <16.000000,17.000000> 
+<<18.000000,19.000000>>[] 
+ []
+
+[116]
+Overfull \hbox (22.25592pt too wide) in paragraph at lines 167--167
+[]\OT1/cmtt/m/n/8 order(1) dim(<2,3>) <0.000,0.000,0.000> <0.000,1.000,0.000><1
+.000,0.000,0.000><0.000,0.000,1.000>[] 
+ []
+
 
 Underfull \hbox (badness 10000) in paragraph at lines 171--172
 
  []
 
-No file /home/bayashi/Coding/BCurve/bcurve.txt.
+File: /home/bayashi/GitHub/BCurve/bcurve.txt  (verbatim)
 
 Underfull \hbox (badness 10000) in paragraph at lines 179--180
 
  []
 
-No file /home/bayashi/Coding/BCurve/scurve.txt.
-
+File: /home/bayashi/GitHub/BCurve/scurve.txt  (verbatim)
+[117]
 Underfull \hbox (badness 10000) in paragraph at lines 187--188
 
  []
 
-No file /home/bayashi/Coding/BCurve/bbody.txt.
-) [4] (./doc.aux) ) 
+File: /home/bayashi/GitHub/BCurve/bbody.txt  (verbatim)
+[118]) [119] (./doc.aux) ) 
 Here is how much of TeX's memory you used:
- 13269 strings out of 494314
- 255149 string characters out of 6163111
- 300773 words of memory out of 5000000
- 16357 multiletter control sequences out of 15000+600000
+ 13278 strings out of 494314
+ 255535 string characters out of 6163111
+ 299773 words of memory out of 5000000
+ 16366 multiletter control sequences out of 15000+600000
  12740 words of font info for 50 fonts, out of 8000000 for 9000
  372 hyphenation exceptions out of 8191
- 55i,27n,54p,460b,219s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex
-10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb
-></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mtt12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/ms
+ 55i,27n,54p,460b,311s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmm
+i12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmtt12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmtt8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/ms
 bm10.pfb>
 
 pdfTeX warning: pdflatex: no GlyphToUnicode entry has been inserted yet!
-Output written on doc.pdf (4 pages, 146469 bytes).
+Output written on doc.pdf (119 pages, 317850 bytes).
 PDF statistics:
- 74 PDF objects out of 1000 (max. 8388607)
+ 447 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
