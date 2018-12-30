@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.18)  4 NOV 2018 21:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.18)  30 DEC 2018 22:49
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -591,11 +591,11 @@ File: /home/bayashi/GitHub/BCurve/bcurve-inline.c  (verbatim)
 [80]
 File: /home/bayashi/GitHub/PBMath/Makefile  (verbatim)
 
-Overfull \hbox (812.76727pt too wide) in paragraph at lines 151--151
+Overfull \hbox (787.2669pt too wide) in paragraph at lines 151--151
 []\OT1/cmtt/m/n/8 if [ ! -d ../PBMake ]; then wget https://github.com/BayashiPa
-scal/PBMake/archive/master.zip; unzip master.zip; rm -f master.zip; sed -i 's@R
-OOT_DIR=.*@ROOT_DIR='"`pwd | awk -F/ 'NF{NF-=1};1' | sed --expression='s@ @/@g'
-`"'@' PBMake-master/Makefile.inc; mv PBMake-master ../PBMake; fi[] 
+scal/PBMake/archive/master.zip; unzip master.zip; rm -f master.zip; sed -i '' '
+s@ROOT_DIR=.*@ROOT_DIR='"`pwd | gawk -F/ 'NF{NF-=1};1' | sed -e 's@ @/@g'`"'@' 
+PBMake-master/Makefile.inc; mv PBMake-master ../PBMake; fi[] 
  []
 
 
@@ -652,7 +652,7 @@ File: /home/bayashi/GitHub/BCurve/bbody.txt  (verbatim)
 Here is how much of TeX's memory you used:
  13278 strings out of 494314
  255535 string characters out of 6163111
- 299773 words of memory out of 5000000
+ 300773 words of memory out of 5000000
  16366 multiletter control sequences out of 15000+600000
  12740 words of font info for 50 fonts, out of 8000000 for 9000
  372 hyphenation exceptions out of 8191
@@ -674,7 +674,7 @@ cmtt8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/ms
 bm10.pfb>
 
 pdfTeX warning: pdflatex: no GlyphToUnicode entry has been inserted yet!
-Output written on doc.pdf (119 pages, 317850 bytes).
+Output written on doc.pdf (119 pages, 317833 bytes).
 PDF statistics:
  447 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
