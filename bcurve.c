@@ -119,13 +119,13 @@ bool BCurveDecodeAsJSON(BCurve** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  int order = atoi(JSONLabel(JSONValue(prop, 0)));
+  int order = atoi(JSONLblVal(prop));
   // Get the dimension from the JSON
   prop = JSONProperty(json, "_dim");
   if (prop == NULL) {
     return false;
   }
-  int dim = atoi(JSONLabel(JSONValue(prop, 0)));
+  int dim = atoi(JSONLblVal(prop));
   // If data are invalid
   if (order < 0 || dim < 1)
     return false;
@@ -685,19 +685,19 @@ bool SCurveDecodeAsJSON(SCurve** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  int order = atoi(JSONLabel(JSONValue(prop, 0)));
+  int order = atoi(JSONLblVal(prop));
   // Get the dimension from the JSON
   prop = JSONProperty(json, "_dim");
   if (prop == NULL) {
     return false;
   }
-  int dim = atoi(JSONLabel(JSONValue(prop, 0)));
+  int dim = atoi(JSONLblVal(prop));
   // Get the nb of segment from the JSON
   prop = JSONProperty(json, "_nbSeg");
   if (prop == NULL) {
     return false;
   }
-  int nbSeg = atoi(JSONLabel(JSONValue(prop, 0)));
+  int nbSeg = atoi(JSONLblVal(prop));
   // If data are invalid
   if (nbSeg < 1 || order < 0 || dim < 1)
     return false;
@@ -1491,7 +1491,7 @@ bool BBodyDecodeAsJSON(BBody** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  int order = atoi(JSONLabel(JSONValue(prop, 0)));
+  int order = atoi(JSONLblVal(prop));
   // Get the dimension from the JSON
   prop = JSONProperty(json, "_dim");
   if (prop == NULL) {
