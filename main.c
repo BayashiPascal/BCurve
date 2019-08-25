@@ -1263,6 +1263,38 @@ void UnitTestSCurveGetDistToCurve() {
   printf("UnitTestSCurveGetDDistToCurve OK\n");
 }
 
+void UnitTestSCurveChaikin() {
+  int order = 1;
+  int dim = 2;
+  int nbSeg = 2;
+  SCurve* curve = SCurveCreate(order, dim, nbSeg);
+  SCurveCtrlSet(curve, 0, 0, 0.0);
+  SCurveCtrlSet(curve, 0, 1, 1.0);
+  SCurveCtrlSet(curve, 1, 0, 5.0);
+  SCurveCtrlSet(curve, 1, 1, 4.0);
+  SCurveCtrlSet(curve, 2, 0, 2.0);
+  SCurveCtrlSet(curve, 2, 1, 3.0);
+  float strength = 0.1;
+  int depth = 2;
+  printf("Curve before Chaikin: "); 
+  SCurvePrint(curve, stdout);printf("\n");
+  SCurve* chaikin = SCurveChaikinSubdivision(curve, strength, depth);
+  printf("Curve after Chaikin: "); 
+  SCurvePrint(chaikin, stdout);printf("\n");
+  float a[12] = {0.0, 1.0, 4.05, 3.43, 4.52, 3.72, 4.68, 3.88, 4.43,3.81, 2.0, 3.0};
+  for (int i = 0; i < 6; ++i) {
+    if (ISEQUALF(SCurveCtrlGet(chaikin, i, 0), a[2 * i]) == false ||
+      ISEQUALF(SCurveCtrlGet(chaikin, i, 1), a[2 * i + 1]) == false) {
+      BCurveErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(BCurveErr->_msg, "SCurveChaikinSubdivision failed");
+      PBErrCatch(BCurveErr);
+    }
+  }
+  SCurveFree(&curve);
+  SCurveFree(&chaikin);
+  printf("UnitTestSCurveChaikin OK\n");
+}
+
 void UnitTestSCurve() {
   UnitTestSCurveCreateCloneFree();
   UnitTestSCurveLoadSavePrint();
@@ -1278,6 +1310,7 @@ void UnitTestSCurve() {
   UnitTestSCurveGetNewDim();
   UnitTestSCurveCreateFromShapoid();
   UnitTestSCurveGetDistToCurve();
+  UnitTestSCurveChaikin();
   printf("UnitTestSCurve OK\n");
 }
 
@@ -2133,6 +2166,7 @@ void UnitTestAll() {
 
 int main() {
   UnitTestAll();
+
   // Return success code
   return 0;
 }

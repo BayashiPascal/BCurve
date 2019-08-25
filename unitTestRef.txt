@@ -25,8 +25,17 @@ UnitTestSCurveScale OK
 UnitTestSCurveTranslate OK
 UnitTestSCurveGetBoundingBox OK
 UnitTestSCurveGetNewDim OK
+order(1) dim(2) nbSeg(4) <<1.000000,2.000000>> <<4.000000,6.000000>> <<-1.000000,12.000000>> <<-4.000000,8.000000>> <<1.000000,2.000000>>
+Type: Facoid
+Dim: 2
+Pos: <1.000,2.000>
+Axis(0): <3.000,4.000>
+Axis(1): <-5.000,6.000>
 UnitTestSCurveCreateFromShapoid OK
 UnitTestSCurveGetDDistToCurve OK
+Curve before Chaikin: order(1) dim(2) nbSeg(2) <<0.000000,1.000000>> <<5.000000,4.000000>> <<2.000000,3.000000>>
+Curve after Chaikin: order(1) dim(2) nbSeg(5) <<0.000000,1.000000>> <<4.050000,3.430000>> <<4.520000,3.720000>> <<4.680000,3.880000>> <<4.430000,3.810000>> <<2.000000,3.000000>>
+UnitTestSCurveChaikin OK
 UnitTestSCurve OK
 UnitTestSCurveIterCreate OK
 UnitTestSCurveIterSetGet OK

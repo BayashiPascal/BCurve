@@ -498,6 +498,15 @@ SCurve* SCurveCreateFromSpheroid(const Spheroid* const shap);
 float SCurveGetDistToCurve(const SCurve* const that, 
   const SCurve* const curve);
 
+// Apply the chaikin curve subdivision algorithm to the SCurve 'that'
+// with 'depth' times recursion and 'strength' is the parametric
+// distance from each corner where the curve is cut at each recursion
+// 'strength' in [0.0, 1.0]
+// The SCurve must be of order 1, if it is not nothing happens
+// cf http://graphics.cs.ucdavis.edu/education/CAGDNotes/Chaikins-Algorithm.pdf
+SCurve* SCurveChaikinSubdivision(SCurve* const that, 
+  const float strength, const unsigned int depth);
+
 // -------------- SCurveIter
 
 // ================= Data structure ===================

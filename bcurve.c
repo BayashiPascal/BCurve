@@ -1205,6 +1205,274 @@ float SCurveGetDistToCurve(const SCurve* const that,
   return res;
 }
 
+// Apply the chaikin curve subdivision algorithm to the SCurve 'that'
+// with 'depth' times recursion and 'strength' is the parametric
+// distance from each corner where the curve is cut at each recursion
+// 'strength' in [0.0, 1.0]
+// The SCurve must be of order 1, if it is not nothing happens
+// cf http://graphics.cs.ucdavis.edu/education/CAGDNotes/Chaikins-Algorithm.pdf
+SCurve* SCurveChaikinSubdivision(SCurve* const that, 
+  const float strength, const unsigned int depth) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (strength < 0.0 || strength > 1.0) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'strength' is invalid (0<=%f<=1)", 
+      strength);
+    PBErrCatch(BCurveErr);
+  }
+#endif
+
+  // Init the result with a clone of the original curve
+  SCurve* res = SCurveClone(that);
+
+  // If the SCurve order is 0
+  if (SCurveGetOrder(that) == 1) {
+
+    // Loop on the depth
+    for (unsigned int iDepth = depth; iDepth--;) {
+
+      // Declare the new set of BCurve
+      GSetBCurve segs = GSetBCurveCreateStatic();
+
+      // Declare the new set of control points
+      GSetVecFloat ctrls = GSetVecFloatCreateStatic();
+
+      // Declare a variable to memorize the new segment
+      BCurve* newSeg = NULL;
+      
+      // Loop on the segments of the curve
+      GSetIterForward iter = GSetIterForwardCreateStatic(
+        SCurveSegs(res));
+      do {
+
+        // Get the current segment
+        BCurve* curSeg = GSetIterGet(&iter);
+
+        // If it's the first segment
+        if (GSetIterIsFirst(&iter)) {
+          
+          // Get the cut position
+          VecFloat* pos = BCurveGet(curSeg, 1.0 - strength);
+
+          // Create the new segment for the head of the current segment
+          newSeg = BCurveCreate(SCurveGetOrder(that), 
+            SCurveGetDim(that));
+          VecFree(newSeg->_ctrl);
+          VecFree(newSeg->_ctrl + 1);
+          newSeg->_ctrl[0] = VecClone(curSeg->_ctrl[0]);
+          newSeg->_ctrl[1] = pos;
+          
+          // Add the new segment
+          GSetAppend(&segs, newSeg);
+          GSetAppend(&ctrls, newSeg->_ctrl[0]);
+          GSetAppend(&ctrls, newSeg->_ctrl[1]);
+          
+          // Create the new segment for the tail of the current segment
+          // The second control of this segment will be set later
+          newSeg = BCurveCreate(SCurveGetOrder(that), 
+            SCurveGetDim(that));
+          VecFree(newSeg->_ctrl);
+          VecFree(newSeg->_ctrl + 1);
+          newSeg->_ctrl[0] = pos;
+          
+          // Add the new segment
+          GSetAppend(&segs, newSeg);
+          
+        // Else, if it's the last segment
+        } else if (GSetIterIsLast(&iter)) {
+          
+          // Get the cut position
+          VecFloat* pos = BCurveGet(curSeg, strength);
+
+          // Set the control of the last new segment
+          newSeg->_ctrl[1] = pos;
+          GSetAppend(&ctrls, newSeg->_ctrl[1]);
+          
+          // Create the new segment for the tail of the current segment
+          // The second control of this segment will be set later
+          newSeg = BCurveCreate(SCurveGetOrder(that), 
+            SCurveGetDim(that));
+          VecFree(newSeg->_ctrl);
+          VecFree(newSeg->_ctrl + 1);
+          newSeg->_ctrl[0] = pos;
+          newSeg->_ctrl[1] = VecClone(curSeg->_ctrl[1]);
+          
+          // Add the new segment
+          GSetAppend(&segs, newSeg);
+          GSetAppend(&ctrls, newSeg->_ctrl[1]);
+          
+        // Else, it's a segment inside the curve
+        } else {
+          
+          // Get the cut positions
+          VecFloat* posA = BCurveGet(curSeg, strength);
+          VecFloat* posB = BCurveGet(curSeg, 1.0 - strength);
+
+          // Set the second control of the last new segment
+          newSeg->_ctrl[1] = posA;
+          GSetAppend(&ctrls, newSeg->_ctrl[1]);
+          
+          // Create the new segment for the center of the current segment
+          newSeg = BCurveCreate(SCurveGetOrder(that), 
+            SCurveGetDim(that));
+          VecFree(newSeg->_ctrl);
+          VecFree(newSeg->_ctrl + 1);
+          newSeg->_ctrl[0] = posA;
+          newSeg->_ctrl[1] = posB;
+          
+          // Add the new segment
+          GSetAppend(&segs, newSeg);
+          GSetAppend(&ctrls, newSeg->_ctrl[1]);
+          
+          // Create the new segment for the tail of the current segment
+          // The second control of this segment will be set later
+          newSeg = BCurveCreate(SCurveGetOrder(that), 
+            SCurveGetDim(that));
+          VecFree(newSeg->_ctrl);
+          VecFree(newSeg->_ctrl + 1);
+          newSeg->_ctrl[0] = posB;
+          
+          // Add the new segment
+          GSetAppend(&segs, newSeg);
+          
+        }
+      } while (GSetIterStep(&iter));
+
+      // Free the current result
+      SCurveFree(&res);
+
+      // Create the new result SCurve
+      res = SCurveCreate(
+        SCurveGetOrder(that), SCurveGetDim(that), 1);
+      GSetFlush(&(res->_ctrl));
+      BCurve* curve = GSetPop((GSet*)SCurveSegs(res));
+      BCurveFree(&curve);
+      res->_seg = segs;
+      res->_ctrl = ctrls;
+      res->_nbSeg = GSetNbElem(SCurveSegs(res));
+
+    }
+  }
+
+  // Return the result
+  return res;
+}
+
+void SCurveChaikinSubdivisionOld(SCurve* const that, 
+  const float strength, const unsigned int depth) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+  if (strength < 0.0 || strength > 1.0) {
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(BCurveErr->_msg, "'strength' is invalid (0<=%f<=1)", 
+      strength);
+    PBErrCatch(BCurveErr);
+  }
+#endif  
+  // If the SCurve order is 0
+  if (SCurveGetOrder(that) == 1) {
+
+    // Loop on the depth
+    for (unsigned int iDepth = depth; iDepth--;) {
+
+      // Declare the new set of BCurve
+      GSetBCurve segs = GSetBCurveCreateStatic();
+
+      // Declare a variable to memorize the current segment and
+      // previous segment
+      BCurve* curSeg = NULL;
+      BCurve* prevSeg = NULL;
+
+      // Pop the first segment
+      prevSeg = GSetPop(&(that->_seg));
+
+      // Get the cut position on the first segment
+      VecFloat* nextSegCutPos = BCurveGet(prevSeg, 1.0 - strength);
+
+      // Flush the set of control points
+      GSetFlush(&(that->_ctrl));
+      
+      // Add the first segment to the new set of BCurve
+      GSetAppend(&segs, prevSeg);
+
+      // Add the first control point
+      GSetAppend(&(that->_ctrl), prevSeg->_ctrl[0]);
+      
+      // Loop until we have popped all the segments of the SCurve
+      while (GSetNbElem(SCurveSegs(that)) > 0) {
+        
+        // Pop one segment
+        curSeg = GSetPop(&(that->_seg));
+
+        // Get the cut position on the previous segment
+        VecFloat* prevSegCutPos = nextSegCutPos;
+        
+        // Get the cut position on the current segment
+        VecFloat* curSegCutPos = BCurveGet(curSeg, strength);
+        nextSegCutPos = BCurveGet(curSeg, 1.0 - strength);
+
+        // Create a new BCurve with the two cut positions
+        BCurve* seg = BCurveCreate(SCurveGetOrder(that), 
+          SCurveGetDim(that));
+        
+        // Replace the anchors of the new segment with the cut
+        // positions
+        VecFree(seg->_ctrl);
+        VecFree(seg->_ctrl + 1);
+        seg->_ctrl[0] = prevSegCutPos;
+        seg->_ctrl[1] = curSegCutPos;
+
+        // Replace the last anchor of the prev segment with the
+        // first cut position
+        VecFree(prevSeg->_ctrl + 1);
+        prevSeg->_ctrl[1] = prevSegCutPos;
+
+        // Replace the first anchor of the current segment with the
+        // second cut position
+        curSeg->_ctrl[0] = curSegCutPos;
+
+        // Add the new segment to the new set of BCurve
+        GSetAppend(&segs, seg);
+
+        // Add the control point
+        GSetAppend(&(that->_ctrl), seg->_ctrl[0]);
+       
+        // Set the current segment as the next prev segment
+        prevSeg = curSeg;
+        
+      }
+      
+      // Free memory
+      VecFree(&nextSegCutPos);
+      
+      // Add the last control points
+      GSetAppend(&(that->_ctrl), prevSeg->_ctrl[0]);
+      GSetAppend(&(that->_ctrl), prevSeg->_ctrl[1]);
+
+      // Add the last segment to the new set of BCurve
+      GSetAppend(&segs, prevSeg);
+
+      // Replace the old set of BCurve (which is now empty) with 
+      // the new set of BCurve
+      that->_seg = segs;
+      
+      // Update the number of segments
+      that->_nbSeg = GSetNbElem(SCurveSegs(that));
+      
+    }
+
+  }
+}
+
 // -------------- SCurveIter
 
 // ================ Functions implementation ====================
