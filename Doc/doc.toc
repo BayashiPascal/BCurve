@@ -5,7 +5,7 @@
 \contentsline {section}{\numberline {2}Interface}{4}
 \contentsline {section}{\numberline {3}Code}{20}
 \contentsline {subsection}{\numberline {3.1}bcurve.c}{20}
-\contentsline {subsection}{\numberline {3.2}bcurve-inline.c}{50}
-\contentsline {section}{\numberline {4}Makefile}{86}
-\contentsline {section}{\numberline {5}Unit tests}{86}
-\contentsline {section}{\numberline {6}Unit tests output}{121}
+\contentsline {subsection}{\numberline {3.2}bcurve-inline.c}{49}
+\contentsline {section}{\numberline {4}Makefile}{84}
+\contentsline {section}{\numberline {5}Unit tests}{84}
+\contentsline {section}{\numberline {6}Unit tests output}{119}
