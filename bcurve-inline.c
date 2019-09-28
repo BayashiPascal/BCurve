@@ -1,4 +1,4 @@
-// ============ BCURVE-INLINE.C ================
+// ============ BCURVE-static inline.C ================
 
 // -------------- BCurve
 
@@ -6,7 +6,7 @@
 
 // Set the value of the iCtrl-th control point to v
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BCurveSetCtrl(BCurve* const that, const int iCtrl, 
   const VecFloat* const v) {
@@ -40,7 +40,7 @@ void BCurveSetCtrl(BCurve* const that, const int iCtrl,
 
 // Get a copy of the iCtrl-th control point
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 VecFloat* BCurveGetCtrl(const BCurve* const that, const int iCtrl) {
 #if BUILDMODE == 0
@@ -62,7 +62,7 @@ VecFloat* BCurveGetCtrl(const BCurve* const that, const int iCtrl) {
 
 // Get the iCtrl-th control point
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 const VecFloat* BCurveCtrl(const BCurve* const that, const int iCtrl) {
 #if BUILDMODE == 0
@@ -84,7 +84,7 @@ const VecFloat* BCurveCtrl(const BCurve* const that, const int iCtrl) {
 
 // Get the 'iDim'-th value of the 'iCtrl'-th control point
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 float BCurveCtrlGet(const BCurve* const that, const int iCtrl, 
   const int iDim) {
@@ -114,7 +114,7 @@ float BCurveCtrlGet(const BCurve* const that, const int iCtrl,
 
 // Get the order of the BCurve
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int BCurveGetOrder(const BCurve* const that) {
 #if BUILDMODE == 0
@@ -129,7 +129,7 @@ int BCurveGetOrder(const BCurve* const that) {
 
 // Get the dimension of the BCurve
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int BCurveGetDim(const BCurve* const that) {
 #if BUILDMODE == 0
@@ -145,7 +145,7 @@ int BCurveGetDim(const BCurve* const that) {
 // Get the approximate length of the BCurve (sum of dist between
 // control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 float BCurveGetApproxLen(const BCurve* const that) {
 #if BUILDMODE == 0
@@ -166,7 +166,7 @@ float BCurveGetApproxLen(const BCurve* const that) {
 
 // Return the center of the BCurve (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 VecFloat* BCurveGetCenter(const BCurve* const that) {
 #if BUILDMODE == 0
@@ -189,7 +189,7 @@ VecFloat* BCurveGetCenter(const BCurve* const that) {
 // Rotate the curve CCW by 'theta' radians relatively to the origin
 // of the coordinates system
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BCurveRotOrigin(BCurve* const that, const float theta) {
 #if BUILDMODE == 0
@@ -214,7 +214,7 @@ void BCurveRotOrigin(BCurve* const that, const float theta) {
 // Rotate the curve CCW by 'theta' radians relatively to its 
 // first control point
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BCurveRotStart(BCurve* const that, const float theta) {
 #if BUILDMODE == 0
@@ -244,7 +244,7 @@ void BCurveRotStart(BCurve* const that, const float theta) {
 // Rotate the curve CCW by 'theta' radians relatively to its 
 // center
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BCurveRotCenter(BCurve* const that, const float theta) {
 #if BUILDMODE == 0
@@ -277,7 +277,7 @@ void BCurveRotCenter(BCurve* const that, const float theta) {
 
 // Scale the curve by 'v' relatively to the origin
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BCurveScaleOriginVector(BCurve* const that, 
   const VecFloat* const v) {
@@ -310,7 +310,7 @@ void _BCurveScaleOriginVector(BCurve* const that,
 
 // Scale the curve by 'c' relatively to the origin
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BCurveScaleOriginScalar(BCurve* const that, const float c) {
 #if BUILDMODE == 0
@@ -329,7 +329,7 @@ void _BCurveScaleOriginScalar(BCurve* const that, const float c) {
 // Scale the curve by 'v' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BCurveScaleStartVector(BCurve* const that, 
   const VecFloat* const v) {
@@ -367,7 +367,7 @@ void _BCurveScaleStartVector(BCurve* const that,
 // Scale the curve by 'c' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BCurveScaleStartScalar(BCurve* const that, const float c) {
 #if BUILDMODE == 0
@@ -392,7 +392,7 @@ void _BCurveScaleStartScalar(BCurve* const that, const float c) {
 // Scale the curve by 'v' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BCurveScaleCenterVector(BCurve* const that, 
   const VecFloat* const v) {
@@ -433,7 +433,7 @@ void _BCurveScaleCenterVector(BCurve* const that,
 // Scale the curve by 'c' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BCurveScaleCenterScalar(BCurve* const that, const float c) {
 #if BUILDMODE == 0
@@ -460,7 +460,7 @@ void _BCurveScaleCenterScalar(BCurve* const that, const float c) {
 
 // Translate the curve by 'v'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BCurveTranslate(BCurve* const that, const VecFloat* const v) {
 #if BUILDMODE == 0
@@ -493,7 +493,7 @@ void _BCurveTranslate(BCurve* const that, const VecFloat* const v) {
 
 // Get the number of BCurve in the SCurve
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int SCurveGetNbSeg(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -509,7 +509,7 @@ int SCurveGetNbSeg(const SCurve* const that) {
 
 // Get the dimension of the SCurve
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int SCurveGetDim(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -524,7 +524,7 @@ int SCurveGetDim(const SCurve* const that) {
 
 // Get the order of the SCurve
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int SCurveGetOrder(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -539,7 +539,7 @@ int SCurveGetOrder(const SCurve* const that) {
 
 // Get a clone of the 'iCtrl'-th control point
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 VecFloat* SCurveGetCtrl(const SCurve* const that, const int iCtrl) {
 #if BUILDMODE == 0
@@ -560,7 +560,7 @@ VecFloat* SCurveGetCtrl(const SCurve* const that, const int iCtrl) {
 
 // Get the 'iCtrl'-th control point
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 const VecFloat* SCurveCtrl(const SCurve* const that, const int iCtrl) {
 #if BUILDMODE == 0
@@ -581,7 +581,7 @@ const VecFloat* SCurveCtrl(const SCurve* const that, const int iCtrl) {
 
 // Get the 'iDim'-th value of the 'iCtrl'-th control point
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 float SCurveCtrlGet(const SCurve* const that, const int iCtrl, 
   const int iDim) {
@@ -610,7 +610,7 @@ float SCurveCtrlGet(const SCurve* const that, const int iCtrl,
 
 // Get the set of control point of the SCurve 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 const GSetVecFloat* SCurveCtrls(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -625,7 +625,7 @@ const GSetVecFloat* SCurveCtrls(const SCurve* const that) {
 
 // Get a clone of the 'iSeg'-th segment
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 BCurve* SCurveGetSeg(const SCurve* const that, const int iSeg) {
 #if BUILDMODE == 0
@@ -646,7 +646,7 @@ BCurve* SCurveGetSeg(const SCurve* const that, const int iSeg) {
 
 // Get the 'iSeg'-th segment
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 const BCurve* SCurveSeg(const SCurve* const that, const int iSeg) {
 #if BUILDMODE == 0
@@ -667,7 +667,7 @@ const BCurve* SCurveSeg(const SCurve* const that, const int iSeg) {
 
 // Get the GSet of segments of the SCurve 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 const GSetBCurve* SCurveSegs(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -682,7 +682,7 @@ const GSetBCurve* SCurveSegs(const SCurve* const that) {
 
 // Return the center of the SCurve (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 VecFloat* SCurveGetCenter(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -706,7 +706,7 @@ VecFloat* SCurveGetCenter(const SCurve* const that) {
 
 // Return the max value for the parameter 'u' of SCurveGet
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 float SCurveGetMaxU(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -721,7 +721,7 @@ float SCurveGetMaxU(const SCurve* const that) {
 
 // Get the number of control point in the SCurve
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int SCurveGetNbCtrl(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -737,7 +737,7 @@ int SCurveGetNbCtrl(const SCurve* const that) {
 // Rotate the curve CCW by 'theta' radians relatively to the origin
 // of the coordinates system
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void SCurveRotOrigin(SCurve* const that, const float theta) {
 #if BUILDMODE == 0
@@ -758,7 +758,7 @@ void SCurveRotOrigin(SCurve* const that, const float theta) {
 // Rotate the curve CCW by 'theta' radians relatively to its 
 // first control point
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void SCurveRotStart(SCurve* const that, const float theta) {
 #if BUILDMODE == 0
@@ -787,7 +787,7 @@ void SCurveRotStart(SCurve* const that, const float theta) {
 // Rotate the curve CCW by 'theta' radians relatively to its 
 // center
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void SCurveRotCenter(SCurve* const that, const float theta) {
 #if BUILDMODE == 0
@@ -817,7 +817,7 @@ void SCurveRotCenter(SCurve* const that, const float theta) {
 // Scale the curve by 'v' relatively to the origin
 // of the coordinates system
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _SCurveScaleOriginVector(SCurve* const that, 
   const VecFloat* const v) {
@@ -841,7 +841,7 @@ void _SCurveScaleOriginVector(SCurve* const that,
 // Scale the curve by 'c' relatively to the origin
 // of the coordinates system
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _SCurveScaleOriginScalar(SCurve* const that, const float c) {
 #if BUILDMODE == 0
@@ -862,7 +862,7 @@ void _SCurveScaleOriginScalar(SCurve* const that, const float c) {
 // Scale the curve by 'v' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _SCurveScaleStartVector(SCurve* const that, 
   const VecFloat* const v) {
@@ -904,7 +904,7 @@ void _SCurveScaleStartVector(SCurve* const that,
 // Scale the curve by 'c' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _SCurveScaleStartScalar(SCurve* const that, const float c) {
 #if BUILDMODE == 0
@@ -933,7 +933,7 @@ void _SCurveScaleStartScalar(SCurve* const that, const float c) {
 // Scale the curve by 'v' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _SCurveScaleCenterVector(SCurve* const that, 
   const VecFloat* const v) {
@@ -975,7 +975,7 @@ void _SCurveScaleCenterVector(SCurve* const that,
 // Scale the curve by 'c' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _SCurveScaleCenterScalar(SCurve* const that, const float c) {
 #if BUILDMODE == 0
@@ -1003,7 +1003,7 @@ void _SCurveScaleCenterScalar(SCurve* const that, const float c) {
 
 // Translate the curve by 'v'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _SCurveTranslate(SCurve* const that, const VecFloat* const v) {
 #if BUILDMODE == 0
@@ -1036,7 +1036,7 @@ void _SCurveTranslate(SCurve* const that, const VecFloat* const v) {
 // value (u - floor(u))
 // u can extend beyond [0.0, _nbSeg]
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 VecFloat* SCurveGet(const SCurve* const that, const float u) {
 #if BUILDMODE == 0
@@ -1067,7 +1067,7 @@ VecFloat* SCurveGet(const SCurve* const that, const float u) {
 // Get the approximate length of the SCurve (sum of approxLen 
 // of its BCurves)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 float SCurveGetApproxLen(const SCurve* const that) {
 #if BUILDMODE == 0
@@ -1091,7 +1091,7 @@ float SCurveGetApproxLen(const SCurve* const that) {
 
 // Set the 'iCtrl'-th control point to 'v'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void SCurveSetCtrl(SCurve* const that, const int iCtrl, 
   const VecFloat* const v) {
@@ -1118,7 +1118,7 @@ void SCurveSetCtrl(SCurve* const that, const int iCtrl,
 
 // Set the 'iDim'-th value of the 'iCtrl'-th control point to 'v'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void SCurveCtrlSet(SCurve* const that, const int iCtrl, const int iDim, 
   float v) {
@@ -1149,7 +1149,7 @@ void SCurveCtrlSet(SCurve* const that, const int iCtrl, const int iDim,
 // The Shapoid must be of dimension 2
 // Control points are ordered CCW of the Shapoid
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 SCurve* SCurveCreateFromShapoid(const Shapoid* const shap) {
 #if BUILDMODE == 0
@@ -1192,7 +1192,7 @@ SCurve* SCurveCreateFromShapoid(const Shapoid* const shap) {
 
 // Set the attached SCurve of the SCurveIter 'that' to 'curve'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void SCurveIterSetCurve(SCurveIter* const that, 
   const SCurve* const curve) {
@@ -1213,7 +1213,7 @@ void SCurveIterSetCurve(SCurveIter* const that,
 
 // Set the delta of the SCurveIter 'that' to 'delta'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void SCurveIterSetDelta(SCurveIter* const that, const float delta) {
 #if BUILDMODE == 0
@@ -1233,7 +1233,7 @@ void SCurveIterSetDelta(SCurveIter* const that, const float delta) {
 
 // Get the attached curve of the SCurveIter 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 const SCurve* SCurveIterCurve(const SCurveIter* const that) {
 #if BUILDMODE == 0
@@ -1248,7 +1248,7 @@ const SCurve* SCurveIterCurve(const SCurveIter* const that) {
 
 // Get the delta of the SCurveIter 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 float SCurveIterGetDelta(const SCurveIter* const that) {
 #if BUILDMODE == 0
@@ -1263,7 +1263,7 @@ float SCurveIterGetDelta(const SCurveIter* const that) {
 
 // Init the SCurveIter 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void SCurveIterInit(SCurveIter* const that) {
 #if BUILDMODE == 0
@@ -1279,7 +1279,7 @@ void SCurveIterInit(SCurveIter* const that) {
 // Step the SCurveIter 'that'
 // Return false if it couldn't step, true else
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 bool SCurveIterStep(SCurveIter* const that) {
 #if BUILDMODE == 0
@@ -1301,7 +1301,7 @@ bool SCurveIterStep(SCurveIter* const that) {
 // Step back the SCurveIter 'that'
 // Return false if it couldn't step, true else
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 bool SCurveIterStepP(SCurveIter* const that) {
 #if BUILDMODE == 0
@@ -1322,7 +1322,7 @@ bool SCurveIterStepP(SCurveIter* const that) {
 // Get the current value of the internal parameter of the 
 // SCurveIter 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 float SCurveIterGetPos(const SCurveIter* const that) {
 #if BUILDMODE == 0
@@ -1338,7 +1338,7 @@ float SCurveIterGetPos(const SCurveIter* const that) {
 // Get the current value of the attached SCurve at the current 
 // internal position of the SCurveIter 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 VecFloat* SCurveIterGet(const SCurveIter* const that) {
 #if BUILDMODE == 0
@@ -1357,7 +1357,7 @@ VecFloat* SCurveIterGet(const SCurveIter* const that) {
 
 // Set the value of the iCtrl-th control point to v
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BBodySetCtrl(BBody* const that, const VecShort* const iCtrl, 
   const VecFloat* const v) {
@@ -1400,7 +1400,7 @@ void _BBodySetCtrl(BBody* const that, const VecShort* const iCtrl,
 
 // Get the number of control points of the BBody 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int BBodyGetNbCtrl(const BBody* const that) {
 #if BUILDMODE == 0
@@ -1416,7 +1416,7 @@ int BBodyGetNbCtrl(const BBody* const that) {
 
 // Get the the 'iCtrl'-th control point of 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 const VecFloat* _BBodyCtrl(const BBody* const that, 
   const VecShort* const iCtrl) {
@@ -1452,7 +1452,7 @@ const VecFloat* _BBodyCtrl(const BBody* const that,
 
 // Get the index in _ctrl of the 'iCtrl' control point of 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int _BBodyGetIndexCtrl(const BBody* const that, 
   const VecShort* const iCtrl) {
@@ -1490,7 +1490,7 @@ int _BBodyGetIndexCtrl(const BBody* const that,
 
 // Get the order of the BBody 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 int BBodyGetOrder(const BBody* const that) {
 #if BUILDMODE == 0
@@ -1505,7 +1505,7 @@ int BBodyGetOrder(const BBody* const that) {
 
 // Get the dimensions of the BBody 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 const VecShort2D* BBodyDim(const BBody* const that) {
 #if BUILDMODE == 0
@@ -1520,7 +1520,7 @@ const VecShort2D* BBodyDim(const BBody* const that) {
 
 // Get a copy of the dimensions of the BBody 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 VecShort2D BBodyGetDim(const BBody* const that) {
 #if BUILDMODE == 0
@@ -1535,7 +1535,7 @@ VecShort2D BBodyGetDim(const BBody* const that) {
 
 // Return the center of the BBody (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 VecFloat* BBodyGetCenter(const BBody* const that) {
 #if BUILDMODE == 0
@@ -1557,7 +1557,7 @@ VecFloat* BBodyGetCenter(const BBody* const that) {
 
 // Translate the BBody by 'v'
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BBodyTranslate(BBody* const that, const VecFloat* const v) {
 #if BUILDMODE == 0
@@ -1586,7 +1586,7 @@ void _BBodyTranslate(BBody* const that, const VecFloat* const v) {
 
 // Scale the BBody by 'v' relatively to the origin
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BBodyScaleOriginVector(BBody* const that, 
   const VecFloat* const v) {
@@ -1619,7 +1619,7 @@ void _BBodyScaleOriginVector(BBody* const that,
 
 // Scale the BBody by 'c' relatively to the origin
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BBodyScaleOriginScalar(BBody* const that, const float c) {
 #if BUILDMODE == 0
@@ -1638,7 +1638,7 @@ void _BBodyScaleOriginScalar(BBody* const that, const float c) {
 // Scale the BBody by 'v' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BBodyScaleStartVector(BBody* const that, const VecFloat* const v) {
 #if BUILDMODE == 0
@@ -1675,7 +1675,7 @@ void _BBodyScaleStartVector(BBody* const that, const VecFloat* const v) {
 // Scale the BBody by 'c' relatively to its origin
 // (first control point)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BBodyScaleStartScalar(BBody* const that, const float c) {
 #if BUILDMODE == 0
@@ -1700,7 +1700,7 @@ void _BBodyScaleStartScalar(BBody* const that, const float c) {
 // Scale the BBody by 'v' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BBodyScaleCenterVector(BBody* const that, 
   const VecFloat* const v) {
@@ -1741,7 +1741,7 @@ void _BBodyScaleCenterVector(BBody* const that,
 // Scale the BBody by 'c' relatively to its center
 // (average of control points)
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void _BBodyScaleCenterScalar(BBody* const that, const float c) {
 #if BUILDMODE == 0
@@ -1770,7 +1770,7 @@ void _BBodyScaleCenterScalar(BBody* const that, const float c) {
 // of the coordinates system around 'axis'
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotAxisOrigin(BBody* const that, 
   const VecFloat3D* const axis, const float theta) {
@@ -1804,7 +1804,7 @@ void BBodyRotAxisOrigin(BBody* const that,
 // of the body around 'axis'
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotAxisCenter(BBody* const that, 
   const VecFloat3D* const axis, const float theta) {
@@ -1845,7 +1845,7 @@ void BBodyRotAxisCenter(BBody* const that,
 // of the body around 'axis'
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotAxisStart(BBody* const that, const VecFloat3D* const axis, 
   const float theta) {
@@ -1884,7 +1884,7 @@ void BBodyRotAxisStart(BBody* const that, const VecFloat3D* const axis,
 // of the coordinates system around X
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotXOrigin(BBody* const that, const float theta) {
 #if BUILDMODE == 0
@@ -1912,7 +1912,7 @@ void BBodyRotXOrigin(BBody* const that, const float theta) {
 // of the body around X
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotXCenter(BBody* const that, const float theta) {
 #if BUILDMODE == 0
@@ -1947,7 +1947,7 @@ void BBodyRotXCenter(BBody* const that, const float theta) {
 // of the body around X
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotXStart(BBody* const that, const float theta) {
 #if BUILDMODE == 0
@@ -1980,7 +1980,7 @@ void BBodyRotXStart(BBody* const that, const float theta) {
 // of the coordinates system around Y
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotYOrigin(BBody* const that, const float theta) {
 #if BUILDMODE == 0
@@ -2008,7 +2008,7 @@ void BBodyRotYOrigin(BBody* const that, const float theta) {
 // of the body around Y
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotYCenter(BBody* const that, const float theta) {
 #if BUILDMODE == 0
@@ -2043,7 +2043,7 @@ void BBodyRotYCenter(BBody* const that, const float theta) {
 // of the body around Y
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotYStart(BBody* const that, const float theta) {
 #if BUILDMODE == 0
@@ -2076,7 +2076,7 @@ void BBodyRotYStart(BBody* const that, const float theta) {
 // of the coordinates system around Z
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotZOrigin(BBody* const that, const float theta) {
 #if BUILDMODE == 0
@@ -2104,7 +2104,7 @@ void BBodyRotZOrigin(BBody* const that, const float theta) {
 // of the body around Z
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotZCenter(BBody* const that, const float theta) {
 #if BUILDMODE == 0
@@ -2139,7 +2139,7 @@ void BBodyRotZCenter(BBody* const that, const float theta) {
 // of the body around Z
 // dim[1] of BBody must be 3
 #if BUILDMODE != 0
-inline
+static inline
 #endif 
 void BBodyRotZStart(BBody* const that, const float theta) {
 #if BUILDMODE == 0
