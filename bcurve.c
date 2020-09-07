@@ -1783,3 +1783,274 @@ Facoid* BBodyGetBoundingBox(const BBody* const that) {
   // Return the result
   return res;
 }
+
+// Create a new BBody of order 'order' which approximates best, according
+// to least square regression, the point cloud defined by the 'nbPoints' 
+// 'inputs'/'outputs'
+// 'inputs' in [0.0, 1.0]
+// Return NULL if it couldn't find the BBody (the regression failed)
+BBody* BBodyFromPointCloud(
+           const int order,
+  const unsigned int nbPoints,
+   const VecFloat** inputs,
+   const VecFloat** outputs) {
+
+#if BUILDMODE == 0
+
+  if (inputs == NULL) {
+
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(
+      BCurveErr->_msg,
+      "'inputs' is null");
+    PBErrCatch(BCurveErr);
+
+  }
+
+  if (outputs == NULL) {
+
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(
+      BCurveErr->_msg,
+      "'outputs' is null");
+    PBErrCatch(BCurveErr);
+
+  }
+
+  if (order < 0) {
+
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(
+      BCurveErr->_msg,
+      "Invalid order (%d>=0)",
+      order);
+    PBErrCatch(BCurveErr);
+
+  }
+
+  if (nbPoints == 0) {
+
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(
+      BCurveErr->_msg,
+      "Invalid nbPoints (%d>0)",
+      nbPoints);
+    PBErrCatch(BCurveErr);
+
+  }
+
+#endif
+
+  // Get the dimensions of inputs and outputs
+  long dimInputs = VecGetDim(inputs[0]);
+  long dimOutputs = VecGetDim(outputs[0]);
+
+  // Create the BBody
+  VecShort2D dim = VecShortCreateStatic2D();
+  VecSet(
+    &dim,
+    0,
+    dimInputs);
+  VecSet(
+    &dim,
+    1,
+    dimOutputs);
+  BBody* res =
+    BBodyCreate(
+      order,
+      &dim);
+
+  // Allocate memory for the right hand side of the system for the
+  // regression
+  VecShort2D v = VecShortCreateStatic2D();
+  VecSet(
+    &v,
+    0,
+    BBodyGetNbCtrl(res));
+  VecSet(
+    &v,
+    1,
+    nbPoints);
+  MatFloat* X = MatFloatCreate(&dim);
+
+  // Loop on the points in the point cloud
+  for (
+    unsigned int iPoint = 0;
+    iPoint < nbPoints;
+    ++iPoint) {
+
+    // Set the index of the row in the matrix for this point
+    VecSet(
+      &v,
+      1,
+      iPoint);
+
+    // Get the weights of the control points for the inputs of
+    // this point
+    VecFloat* weights =
+      BBodyGetWeightCtrlPt(
+        res,
+        inputs[iPoint]);
+
+    // Loop on the control points (i.e. the column of the regression
+    // matrix)
+    for (
+      int iCtrl = BBodyGetNbCtrl(res);
+      iCtrl--;) {
+
+      // Get the weight of this control point for this point in the
+      // point cloud
+      float weight =
+        VecGet(
+          weights,
+          iCtrl);
+
+      // Set the index of the column in the matrix
+      VecSet(
+        &v,
+        0,
+        iCtrl);
+
+      // Set the weight in the matrix
+      MatSet(
+        X,
+        &v,
+        weight);
+
+    }
+
+    // Free memory
+    VecFree(&weights);
+
+  }
+
+  // Create the LeastSquareLinReg
+  LeastSquareLinReg lslr = LeastSquareLinRegCreateStatic(X);
+
+  // If the regression has no solution
+  if (LSLRIsSolvable(&lslr) == false) {
+
+    // Stop here
+    LeastSquareLinRegFreeStatic(&lslr);
+    MatFree(&X);
+    BBodyFree(&res);
+    return NULL;
+
+  }
+
+  // Loop on the outputs dimension
+  for (
+    long iOut = 0;
+    iOut < dimOutputs;
+    ++iOut) {
+
+    // Create the right hand side of the system for the regression
+    // by extracting the iOut-th component of the outputs
+    VecFloat* Y = VecFloatCreate(nbPoints);
+    for (
+      unsigned int iPoint = 0;
+      iPoint < nbPoints;
+      ++iPoint) {
+
+      float val =
+        VecGet(
+          outputs[iPoint],
+          iOut);
+      VecSet(
+        Y,
+        iPoint,
+        val);
+
+    }
+
+    // Solve the regression
+    VecFloat* beta =
+      LSLRSolve(
+        &lslr,
+        Y);
+
+    // Loop on the control points
+    for (
+      int iCtrl = BBodyGetNbCtrl(res);
+      iCtrl--;) {
+
+      // Update the iOut-th component of the control points with the
+      // result of the regression
+      float val =
+        VecGet(
+          beta,
+          iCtrl);
+      VecSet(
+        res->_ctrl[iCtrl],
+        iOut,
+        val);
+
+    }
+
+    // Free memory
+    VecFree(&beta);
+    VecFree(&Y);
+
+  }
+
+  // Free memory
+  LeastSquareLinRegFreeStatic(&lslr);
+  MatFree(&X);
+
+  // Return the result
+  return res;
+
+}
+
+// Calculate the weights of the control points of the BBody 'that'
+// for the given 'inputs'
+// Return a VecFloat with weights in same order as 'that->_ctrl'
+VecFloat* BBodyGetWeightCtrlPt(
+     const BBody* that,
+  const VecFloat* inputs) {
+
+
+#if BUILDMODE == 0
+
+  if (that == NULL) {
+
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(
+      BCurveErr->_msg,
+      "'that' is null");
+    PBErrCatch(BCurveErr);
+
+  }
+
+  if (inputs == NULL) {
+
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(
+      BCurveErr->_msg,
+      "'inputs' is null");
+    PBErrCatch(BCurveErr);
+
+  }
+
+  long dimInputs =
+    VecGet(
+      BBodyDim(that),
+      0);
+  if (VecGetDim(inputs) != dimInputs) {
+
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(
+      BCurveErr->_msg,
+      "Invalid inputs dimension (%ld>%ld)",
+      VecGetDim(inputs),
+      dimInputs);
+    PBErrCatch(BCurveErr);
+
+  }
+
+#endif
+
+  // Return the result
+  return NULL;
+
+}

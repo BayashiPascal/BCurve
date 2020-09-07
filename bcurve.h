@@ -841,6 +841,24 @@ static inline
 #endif 
 void BBodyRotZStart(BBody* const that, const float theta);
 
+// Create a new BBody of order 'order' which approximates best, according
+// to least square regression, the point cloud defined by the 'nbPoints' 
+// 'inputs'/'outputs'
+// 'inputs' in [0.0, 1.0]
+// Return NULL if it couldn't find the BBody (the regression failed)
+BBody* BBodyFromPointCloud(
+           const int order,
+  const unsigned int nbPoints,
+   const VecFloat** inputs,
+   const VecFloat** outputs);
+
+// Calculate the weights of the control points of the BBody 'that'
+// for the given 'inputs'
+// Return a VecFloat with weights in same order as 'that->_ctrl'
+VecFloat* BBodyGetWeightCtrlPt(
+     const BBody* that,
+  const VecFloat* inputs);
+
 // ================= Polymorphism ==================
 
 #define BCurveTranslate(Curve, Vec) _Generic(Vec, \
