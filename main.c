@@ -162,7 +162,7 @@ void UnitTestBCurveGet() {
   printf("UnitTestBCurveGet OK\n");
 }
 
-void UnitTestBCurveGetOrderDim() {
+void UnitTestBCurveGetOrderDimNbCtrl() {
   int order = 3;
   int dim = 2;
   BCurve* curve = BCurveCreate(order, dim);
@@ -176,8 +176,13 @@ void UnitTestBCurveGetOrderDim() {
     sprintf(BCurveErr->_msg, "BCurveGetDim failed");
     PBErrCatch(BCurveErr);
   }
+  if (BCurveGetNbCtrl(curve) != order + 1) {
+    BCurveErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(BCurveErr->_msg, "BCurveGetNbCtrl failed");
+    PBErrCatch(BCurveErr);
+  }
   BCurveFree(&curve);
-  printf("UnitTestBCurveGetOrderDim OK\n");
+  printf("UnitTestBCurveGetOrderDimNbCtrl OK\n");
 }
 
 void UnitTestBCurveGetApproxLenCenter() {
@@ -450,7 +455,7 @@ void UnitTestBCurve() {
   UnitTestBCurveLoadSavePrint();
   UnitTestBCurveGetSetCtrl();
   UnitTestBCurveGet();
-  UnitTestBCurveGetOrderDim();
+  UnitTestBCurveGetOrderDimNbCtrl();
   UnitTestBCurveGetApproxLenCenter();
   UnitTestBCurveRot();
   UnitTestBCurveScale();
@@ -2140,7 +2145,75 @@ void UnitTestBBodyRotate() {
   BBodyFree(&surf);
   printf("UnitTestBBodyRotate OK\n");
 }
-  
+
+VecFloat* PointCloud(VecFloat* input) {
+  VecFloat* v = VecFloatCreate(3);
+  float x = VecGet(input, 0);
+  float y = VecGet(input, 1);
+  VecSet(v, 0, x);
+  VecSet(v, 1, y);
+  VecSet(v, 2, x * x + y * y);
+  return v;
+}
+
+void UnitTestBBodyFromPointCloud() {
+  GSetVecFloat inputs = GSetVecFloatCreateStatic();
+  GSetVecFloat outputs = GSetVecFloatCreateStatic();
+  int nbPts = 20;
+  int dimIn = 2;
+  for (int iPt = 0; iPt < nbPts; ++iPt) {
+    VecFloat* input = VecFloatCreate(dimIn);
+    VecSet(input, 0, rnd());
+    VecSet(input, 1, rnd());
+    VecFloat* output = PointCloud(input);
+    VecSet(output, 2, VecGet(output, 2) + 0.1 * (rnd() - 0.5));
+    GSetAppend(&inputs, input);
+    GSetAppend(&outputs, output);
+  }
+  float bias;
+  int order = 1;
+  BBody* bbody = BBodyFromPointCloud(order, &inputs, &outputs, &bias);
+  BBodyPrint(bbody, stdout);printf("\n");
+  printf("bias %f\n", bias);
+  BBodyFree(&bbody);
+  order = 2;
+  bbody = BBodyFromPointCloud(order, &inputs, &outputs, &bias);
+  BBodyPrint(bbody, stdout);printf("\n");
+  printf("bias %f\n", bias);
+  BBodyFree(&bbody);
+  order = 3;
+  bbody = BBodyFromPointCloud(order, &inputs, &outputs, &bias);
+  BBodyPrint(bbody, stdout);printf("\n");
+  printf("bias %f\n", bias);
+  for (int iPt = 0; iPt < nbPts; ++iPt) {
+    VecFloat* input = VecFloatCreate(dimIn);
+    VecSet(input, 0, rnd());
+    VecSet(input, 1, rnd());
+    VecFloat* output = PointCloud(input);
+    VecFloat* prev = BBodyGet(bbody, input);
+    bias = VecDist(output, prev);
+    VecPrint(input, stdout);
+    printf(" -> ");
+    VecPrint(output, stdout);
+    printf(",");
+    VecPrint(prev, stdout);
+    printf(" %f\n", bias);
+    VecFree(&input);
+    VecFree(&output);
+    VecFree(&prev);
+  }
+  BBodyFree(&bbody);
+  while (GSetNbElem(&inputs) > 0) {
+    VecFloat* v = GSetPop(&inputs);
+    VecFree(&v);
+  }
+  while (GSetNbElem(&outputs) > 0) {
+    VecFloat* v = GSetPop(&outputs);
+    VecFree(&v);
+  }
+  printf("UnitTestBBodyFromPointCloud OK\n");
+}
+
 void UnitTestBBody() {
   UnitTestBBodyCreateFree();
   UnitTestBBodyGetSet();
@@ -2153,6 +2226,7 @@ void UnitTestBBody() {
   UnitTestBBodyScale();
   UnitTestBBodyGetBoundingBox();
   UnitTestBBodyRotate();
+  UnitTestBBodyFromPointCloud();
   printf("UnitTestBBody OK\n");
 }
 

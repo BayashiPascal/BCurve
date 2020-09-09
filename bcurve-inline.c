@@ -4,6 +4,21 @@
 
 // ================ Functions implementation ====================
 
+// Get the number of control point of the BCurve 'that'
+#if BUILDMODE != 0
+static inline
+#endif 
+int BCurveGetNbCtrl(BCurve* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    BCurveErr->_type = PBErrTypeNullPointer;
+    sprintf(BCurveErr->_msg, "'that' is null");
+    PBErrCatch(BCurveErr);
+  }
+#endif
+  return BCurveGetOrder(that) + 1;
+}
+
 // Set the value of the iCtrl-th control point to v
 #if BUILDMODE != 0
 static inline

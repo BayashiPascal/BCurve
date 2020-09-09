@@ -1395,12 +1395,6 @@ SCurveIter SCurveIterCreateStatic(const SCurve* const curve,
 
 // -------------- BBody
 
-// ================ Functions declaration ====================
-
-// Recursive function to calculate the value of a BBody
-VecFloat* BBodyGetRec(const BBody* const that, BCurve* curve, 
-  VecShort* iCtrl, VecFloat* u, int iDimIn);
-
 // ================ Functions implementation ====================
 
 // Create a new BBody of order 'order' and dimension 'dim'
@@ -1479,76 +1473,44 @@ VecFloat* _BBodyGet(const BBody* const that, const VecFloat* const u) {
     PBErrCatch(BCurveErr);
   }
 #endif
-  // Declare variables to memorize the nb of dimension
-  int nbDimIn = VecGet(&(that->_dim), 0);
-  int nbDimOut = VecGet(&(that->_dim), 1);
-  // Create a clone of u to be checked for components interval
-  VecFloat* uSafe = VecClone(u);
-  // Declare a vector to memorize the index of the ctrl
-  VecShort* iCtrl = VecShortCreate(nbDimIn);
-  // Declare a BCurve used for calculation
-  BCurve* curve = BCurveCreate(that->_order, nbDimOut);
-  // Calculate recursively the result value
-  VecFloat* res = BBodyGetRec(that, curve, iCtrl, uSafe, 0);
-  // Free memory
-  VecFree(&uSafe);
-  VecFree(&iCtrl);
-  BCurveFree(&curve);
-  // Return the result
-  return res;
-}
+  // Get the weights of the control
+  VecFloat* weights =
+    BBodyGetWeightCtrlPt(
+      that,
+      u);
 
-// Recursive function to calculate the value of SCurve
-VecFloat* BBodyGetRec(const BBody* const that, BCurve* curve, 
-  VecShort* iCtrl, VecFloat* u, int iDimIn) {
-  // Declare a variable for the result
-  VecFloat* res = NULL;
-  // If we are at the last dimension in the recursion, 
-  // the curve controls are the controls of the surface at current
-  // position in control's space
-  if (iDimIn == VecGet(&(that->_dim), 0) - 1) {
-    for (int i = that->_order + 1; i--;) {
-      VecSet(iCtrl, iDimIn, i); 
-      BCurveSetCtrl(curve, i, BBodyCtrl(that, iCtrl));
-    }
-  // Else, we are not at the last dimension in control's space
-  } else {
-    // Clone the position (to edit the lower dimension at lower 
-    // level of the recursion)
-    VecShort* jCtrl = VecClone(iCtrl);
-    // Declare an array of VecFloat to memorize the control at 
-    // the current level
-    VecFloat** tmpCtrl = 
-      PBErrMalloc(BCurveErr, sizeof(VecFloat*) * (that->_order + 1));
-    // For each control
-    for (int i = that->_order + 1; i--;) {
-      // Update the control position
-      VecSet(jCtrl, iDimIn, i);
-      // Get recursively the control (equal to the BCurve value at 
-      // lower level)
-      tmpCtrl[i] = 
-        BBodyGetRec(that, curve, jCtrl, u, iDimIn + 1);
-    }
-    // Set the control of the curve at current level
-    // Use a temporary instead of affecting directly into curve
-    // because it is shared between recursion level and affecting
-    // directly would lead to overwritting during the process
-    for (int i = that->_order + 1; i--;)
-      BCurveSetCtrl(curve, i, tmpCtrl[i]);
-    // Free the temporary Vecfloat for the controls
-    for (int i = that->_order + 1; i--;)
-      VecFree(tmpCtrl + i);
-    free(tmpCtrl);
-    // Free the temporary position in control space
-    VecFree(&jCtrl);
+  // Allocate memory for the result
+  int nbDimOut =
+    VecGet(
+      &(that->_dim),
+      1);
+  VecFloat* res = VecFloatCreate(nbDimOut);
+
+  // Get the result. This is the sum of the control points multiplied
+  // by their coefficient
+  int nbCtrl = BBodyGetNbCtrl(that);
+  for (
+    int iCtrl = nbCtrl;
+    iCtrl--;) {
+
+    float weight =
+      VecGet(
+        weights,
+        iCtrl);
+    VecOp(
+      res,
+      1.0,
+      that->_ctrl[iCtrl],
+      weight);
+
   }
-  // Here we have the curve set up with the appropriate control at the 
-  // current recursion level
-  // Calculate its value at the parameters value for the current 
-  // dimension
-  res = BCurveGet(curve, VecGet(u, iDimIn));
+
+  // Free memory
+  VecFree(&weights);
+
   // Return the result
   return res;
+
 }
 
 // Return a clone of the BBody 'that'
@@ -1785,15 +1747,18 @@ Facoid* BBodyGetBoundingBox(const BBody* const that) {
 }
 
 // Create a new BBody of order 'order' which approximates best, according
-// to least square regression, the point cloud defined by the 'nbPoints' 
+// to least square regression, the point cloud defined by the
 // 'inputs'/'outputs'
-// 'inputs' in [0.0, 1.0]
+// 'inputs' expected in [0.0, 1.0] but may be out of range
 // Return NULL if it couldn't find the BBody (the regression failed)
+// If 'bias' is not null, it is set to the average of the biases from
+// the least square regression on each output
+// 'order' must be > 0
 BBody* BBodyFromPointCloud(
-           const int order,
-  const unsigned int nbPoints,
-   const VecFloat** inputs,
-   const VecFloat** outputs) {
+            const int order,
+  const GSetVecFloat* inputs,
+  const GSetVecFloat* outputs,
+               float* bias) {
 
 #if BUILDMODE == 0
 
@@ -1817,33 +1782,55 @@ BBody* BBodyFromPointCloud(
 
   }
 
-  if (order < 0) {
+  if (order < 1) {
 
     BCurveErr->_type = PBErrTypeInvalidArg;
     sprintf(
       BCurveErr->_msg,
-      "Invalid order (%d>=0)",
+      "Invalid order (%d>=1)",
       order);
     PBErrCatch(BCurveErr);
 
   }
 
-  if (nbPoints == 0) {
+  if (GSetNbElem((GSet*)inputs) == 0) {
 
     BCurveErr->_type = PBErrTypeInvalidArg;
     sprintf(
       BCurveErr->_msg,
-      "Invalid nbPoints (%d>0)",
-      nbPoints);
+      "Empty inputs");
+    PBErrCatch(BCurveErr);
+
+  }
+
+  if (GSetNbElem((GSet*)outputs) == 0) {
+
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(
+      BCurveErr->_msg,
+      "Empty outputs");
+    PBErrCatch(BCurveErr);
+
+  }
+
+  if (GSetNbElem((GSet*)inputs) != GSetNbElem((GSet*)outputs)) {
+
+    BCurveErr->_type = PBErrTypeInvalidArg;
+    sprintf(
+      BCurveErr->_msg,
+      "Different number of inputs and outputs (%ld==%ld)",
+      GSetNbElem((GSet*)inputs),
+      GSetNbElem((GSet*)outputs));
     PBErrCatch(BCurveErr);
 
   }
 
 #endif
 
-  // Get the dimensions of inputs and outputs
-  long dimInputs = VecGetDim(inputs[0]);
-  long dimOutputs = VecGetDim(outputs[0]);
+  // Get the number and dimensions of inputs and outputs
+  long dimInputs = VecGetDim((VecFloat*)GSetHead((GSet*)inputs));
+  long dimOutputs = VecGetDim((VecFloat*)GSetHead((GSet*)outputs));
+  unsigned int nbPoints = GSetNbElem((GSet*)inputs);
 
   // Create the BBody
   VecShort2D dim = VecShortCreateStatic2D();
@@ -1860,7 +1847,7 @@ BBody* BBodyFromPointCloud(
       order,
       &dim);
 
-  // Allocate memory for the right hand side of the system for the
+  // Allocate memory for the left hand side of the system for the
   // regression
   VecShort2D v = VecShortCreateStatic2D();
   VecSet(
@@ -1871,13 +1858,16 @@ BBody* BBodyFromPointCloud(
     &v,
     1,
     nbPoints);
-  MatFloat* X = MatFloatCreate(&dim);
+  MatFloat* X = MatFloatCreate(&v);
 
   // Loop on the points in the point cloud
-  for (
-    unsigned int iPoint = 0;
-    iPoint < nbPoints;
-    ++iPoint) {
+  GSetIterForward iter = GSetIterForwardCreateStatic((GSet*)inputs);
+  bool flagStep = true;
+  unsigned int iPoint = 0;
+  do {
+
+    // Get the input
+    VecFloat* input = GSetIterGet(&iter);
 
     // Set the index of the row in the matrix for this point
     VecSet(
@@ -1890,7 +1880,7 @@ BBody* BBodyFromPointCloud(
     VecFloat* weights =
       BBodyGetWeightCtrlPt(
         res,
-        inputs[iPoint]);
+        input);
 
     // Loop on the control points (i.e. the column of the regression
     // matrix)
@@ -1922,7 +1912,11 @@ BBody* BBodyFromPointCloud(
     // Free memory
     VecFree(&weights);
 
-  }
+    // Step to the next point
+    ++iPoint;
+    flagStep = GSetIterStep(&iter);
+
+  } while (flagStep);
 
   // Create the LeastSquareLinReg
   LeastSquareLinReg lslr = LeastSquareLinRegCreateStatic(X);
@@ -1938,6 +1932,14 @@ BBody* BBodyFromPointCloud(
 
   }
 
+  // If the user requested the bias
+  if (bias != NULL) {
+
+    // Initialise the bias
+    *bias = 0.0;
+
+  }
+
   // Loop on the outputs dimension
   for (
     long iOut = 0;
@@ -1947,21 +1949,28 @@ BBody* BBodyFromPointCloud(
     // Create the right hand side of the system for the regression
     // by extracting the iOut-th component of the outputs
     VecFloat* Y = VecFloatCreate(nbPoints);
-    for (
-      unsigned int iPoint = 0;
-      iPoint < nbPoints;
-      ++iPoint) {
+    GSetIterForward iter = GSetIterForwardCreateStatic((GSet*)outputs);
+    flagStep = true;
+    iPoint = 0;
+    do {
+
+      // Get the output
+      VecFloat* output = GSetIterGet(&iter);
 
       float val =
         VecGet(
-          outputs[iPoint],
+          output,
           iOut);
       VecSet(
         Y,
         iPoint,
         val);
 
-    }
+      // Step to the next point
+      ++iPoint;
+      flagStep = GSetIterStep(&iter);
+
+    } while (flagStep);
 
     // Solve the regression
     VecFloat* beta =
@@ -1987,9 +1996,25 @@ BBody* BBodyFromPointCloud(
 
     }
 
+    // If the user requested the bias
+    if (bias != NULL) {
+
+      // Update the bias
+      *bias += LSLRGetBias(&lslr);
+
+    }
+
     // Free memory
     VecFree(&beta);
     VecFree(&Y);
+
+  }
+
+  // If the user requested the bias
+  if (bias != NULL) {
+
+    // Complete the calculation of the bias
+    *bias /= (float)dimOutputs;
 
   }
 
@@ -2050,7 +2075,105 @@ VecFloat* BBodyGetWeightCtrlPt(
 
 #endif
 
+  // Allocate memory for the result
+  VecFloat* weights = VecFloatCreate(BBodyGetNbCtrl(that));
+
+  // Get the number of inputs of BBody
+  short nbInputs =
+    VecGet(
+      BBodyDim(that),
+      0);
+
+  // Allocate memory for the weights per input
+  VecFloat** weightInputs =
+    PBErrMalloc(
+      BCurveErr,
+      sizeof(VecFloat*) * nbInputs);
+
+  // Create a BCurve of same order as the BBody to calculate the
+  // weights per inputs
+  // The dimension of outputs doesn't matter here, force it to 1
+  BCurve* bcurve =
+    BCurveCreate(
+      BBodyGetOrder(that),
+      1);
+
+  // Get the weights of each input
+  for (
+    short iInp = nbInputs;
+    iInp--;) {
+
+    float t =
+      VecGet(
+        inputs,
+        iInp);
+    weightInputs[iInp] =
+      BCurveGetWeightCtrlPt(
+        bcurve,
+        t);
+
+  }
+
+  // Loop on control points of the BBody
+  int iCtrl = 0;
+  int nbCtrlInput = BCurveGetNbCtrl(bcurve);
+  VecShort* step = VecShortCreate(nbInputs);
+  VecShort* bounds = VecShortCreate(nbInputs);
+  VecSetAll(
+    bounds,
+    nbCtrlInput);
+  bool flagStep = true;
+  do {
+
+    // Get the weight of the control
+    // This is the product of the respective weight per input 
+    float weight = 1.0;
+    for (
+      short iInp = nbInputs;
+      iInp--;) {
+
+      int jCtrl =
+        VecGet(
+          step,
+          iInp);
+        
+      weight *=
+        VecGet(
+          weightInputs[iInp],
+          jCtrl);
+
+    }
+
+    // Set the weight in the result
+    VecSet(
+      weights,
+      iCtrl,
+      weight);
+
+    // Step to the next control
+    ++iCtrl;
+    flagStep =
+      VecStep(
+        step,
+        bounds);
+
+  } while (flagStep);
+  
+
+  // Free memory
+  VecFree(&step);
+  VecFree(&bounds);
+  BCurveFree(&bcurve);
+  for (
+    short iInp = nbInputs;
+    iInp--;) {
+
+    VecFree(weightInputs + iInp);
+
+  }
+  free(weightInputs);
+
   // Return the result
-  return NULL;
+  return weights;
 
 }

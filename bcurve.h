@@ -63,6 +63,12 @@ void BCurveFree(BCurve** that);
 // Print the BCurve on 'stream'
 void BCurvePrint(const BCurve* const that, FILE* const stream);
 
+// Get the number of control point of the BCurve 'that'
+#if BUILDMODE != 0
+static inline
+#endif 
+int BCurveGetNbCtrl(BCurve* const that);
+
 // Set the value of the iCtrl-th control point to v
 #if BUILDMODE != 0
 static inline
@@ -842,15 +848,18 @@ static inline
 void BBodyRotZStart(BBody* const that, const float theta);
 
 // Create a new BBody of order 'order' which approximates best, according
-// to least square regression, the point cloud defined by the 'nbPoints' 
+// to least square regression, the point cloud defined by the
 // 'inputs'/'outputs'
-// 'inputs' in [0.0, 1.0]
+// 'inputs' expected in [0.0, 1.0] but may be out of range
 // Return NULL if it couldn't find the BBody (the regression failed)
+// If 'bias' is not null, it is set to the average of the biases from
+// the least square regression on each output
+// 'order' must be > 0
 BBody* BBodyFromPointCloud(
-           const int order,
-  const unsigned int nbPoints,
-   const VecFloat** inputs,
-   const VecFloat** outputs);
+            const int order,
+  const GSetVecFloat* inputs,
+  const GSetVecFloat* outputs,
+               float* bias);
 
 // Calculate the weights of the control points of the BBody 'that'
 // for the given 'inputs'
