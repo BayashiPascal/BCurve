@@ -434,11 +434,6 @@ VecFloat* BCurveGetWeightCtrlPt(const BCurve* const that,
     sprintf(BCurveErr->_msg, "'that' is null");
     PBErrCatch(BCurveErr);
   }
-  if (t < 0.0 - PBMATH_EPSILON || t > 1.0 + PBMATH_EPSILON) {
-    BCurveErr->_type = PBErrTypeInvalidArg;
-    sprintf(BCurveErr->_msg, "'t' is invalid (0.0<=%f<=1.0)", t);
-    PBErrCatch(BCurveErr);
-  }
 #endif
   // Declare a variable to memorize the result
   VecFloat* res = VecFloatCreate(that->_order + 1);
