@@ -1825,7 +1825,7 @@ BBody* BBodyFromPointCloud(
   // Get the number and dimensions of inputs and outputs
   long dimInputs = VecGetDim((VecFloat*)GSetHead((GSet*)inputs));
   long dimOutputs = VecGetDim((VecFloat*)GSetHead((GSet*)outputs));
-  unsigned int nbPoints = GSetNbElem((GSet*)inputs);
+  long nbPoints = GSetNbElem((GSet*)inputs);
 
   // Create the BBody
   VecShort2D dim = VecShortCreateStatic2D();
@@ -1858,7 +1858,7 @@ BBody* BBodyFromPointCloud(
   // Loop on the points in the point cloud
   GSetIterForward iter = GSetIterForwardCreateStatic((GSet*)inputs);
   bool flagStep = true;
-  unsigned int iPoint = 0;
+  long iPoint = 0;
   do {
 
     // Get the input
